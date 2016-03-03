@@ -1,57 +1,24 @@
--- This loses about 70 contacts compared to not looking into history. 
--- select sum(perday.count)
--- from (
 /*
-
-http://www.asktoapps.com/export-mysql-query-data-in-csv-file-using-command-line/
-
-mysql --host=$HOST--user=$USER--password=$PASS $DBNAME -e "select * from tablename   INTO OUTFILE  '/tmp/filename.csv'  FIELDS TERMINATED BY ',' LINES TERMINATED BY '\n';"
-
-*/
-
-select count(*) as all_members
-from 
-    civicrm_contact c
-        JOIN
-    civicrm_group_contact g ON g.contact_id = c.id AND g.group_id = 42
-        AND c.is_deleted = 0
-        AND c.is_opt_out = 0
-        and g.status = "Added"
-        join civicrm_email e on e.contact_id=c.id
-        where e.is_primary IS true  
-        and on_hold =0 
---           is_primary IS TRUE AND on_hold > 0
-        ;
-
-
-drop temporary table if exists member_metrics;
-
- /*
-select sum(if(total>1,total-1,0)) as overestimation_of_unsubscriptions
-from (
-select count(*) as total from civicrm_mailing_event_unsubscribe u join civicrm_mailing_event_queue q
-on u.event_queue_id=q.id
--- join civicrm_contact c on q.contact_id = c.id 
-group by q.contact_id
-order by total desc ) as doppelte;
-*/
-
 
 create temporary table member_metrics
 (
 id int not null auto_increment,
 added_date date,
 language varchar(5),
-number_added int, /* +100 = 100  subscribed , -1 =  1 opted out*/
+number_added int, 
+-- +100 = 100  subscribed , -1 =  1 opted out
 number_removed int,
 primary key(id)
 );
 
-
+*/
 
 /* subscriptions */
 
-insert into member_metrics
+delete from analytics_member_metrics where added_date > "1900-00-00"; 
+
+
+insert into analytics_member_metrics
 (number_added, number_removed, added_date, language)
 SELECT 
     COUNT(*) AS count, 0, percontact.added_date AS added_date, percontact.preferred_language as language
@@ -83,7 +50,7 @@ GROUP BY added_date, preferred_language ;
 
 /* unsubscribe */
 
-insert into member_metrics
+insert into analytics_member_metrics
 (number_added, number_removed, added_date, language)
 SELECT 
     0, COUNT(*) AS number_removed,
@@ -135,8 +102,10 @@ GROUP BY added_date, preferred_language
 */
 
 
-select * from member_metrics; 
+-- select * from member_metrics; 
 
+
+/*
 SELECT 
     added_date AS date,
     SUM(number_added) AS total_added,
@@ -159,6 +128,8 @@ FROM
     member_metrics
 GROUP BY added_date
 ORDER BY added_date DESC; 
+
+*/
 
 
 /*
