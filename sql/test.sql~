@@ -2,7 +2,6 @@ insert into test_oliver
 (added_date)
 select now();
 
-
 /*
 
 create temporary table member_metrics
@@ -20,7 +19,9 @@ primary key(id)
 
 /* subscriptions */
 
-delete from analytics_member_metrics where added_date > "1900-00-00"; 
+truncate table analytics_member_metrics; 
+
+-- delete from analytics_member_metrics where added_date > "1900-00-00"; 
 
 
 insert into analytics_member_metrics
