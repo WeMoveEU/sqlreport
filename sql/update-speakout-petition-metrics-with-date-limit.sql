@@ -2,6 +2,14 @@
 # Select limit = 3 für die besten 3 Länder. 
 ;
 
+
+truncate table analytics_petitions_1week; 
+
+truncate table analytics_petitions_total; 
+truncate table analytics_petitions_48h; 
+
+
+
 set @start_date :=  DATE_ADD(now(), INTERVAL - 1 WEEK);
 set @end_date := now() ;
 -- set @end_date := now();

@@ -8,6 +8,16 @@ This creates all the tables needed for WeMove sql report suite.
 */
 
 
+drop table if exists analytics_kpidates;
+
+create table analytics_kpidates
+(
+-- id int not null auto_increment,
+date datetime/*,
+-- primary key(id) */
+);
+
+
 drop table if exists analytics_member_metrics;
 
 create table analytics_member_metrics
