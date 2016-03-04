@@ -17,7 +17,8 @@ SELECT
     total_signatures,
     new_people_signees / total_signatures AS ratio_new,
     added / total_signatures AS ratio_actually_added,
-    people_who_share / total_signatures AS ratio_share
+    people_who_share / total_signatures AS ratio_share,
+	stamp as last_calculated_on	
 FROM
     (SELECT 
         civicrm_camp_id,
@@ -37,7 +38,7 @@ FROM
             SUM(IF(activity = 'Petition signature'
                 AND status = 'Opt-out', npeople, 0)) AS opted_out_signatures,
             SUM(IF(activity = 'share', npeople, 0)) AS people_who_share,
-            stamp as last_calculated_on	
+      stamp
     FROM
         analytics_petitions_1week
     GROUP BY civicrm_camp_id) AS aggregate
