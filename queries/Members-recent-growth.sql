@@ -20,14 +20,14 @@ union
 
 SELECT
  CONCAT(delta_t_h.period, " (%)") as description,   
-    SUM(number_added -number_removed) / t_total * 100 AS total,
-    SUM(IF(language = 'de_DE', number_added - number_removed, 0)) / t_de_DE * 100  AS de_DE,
-    SUM(IF(language = 'en_GB', number_added - number_removed, 0)) / t_en_GB * 100 AS en_GB,
-    SUM(IF(language = 'es_ES', number_added - number_removed, 0)) / t_es_ES * 100 AS es_ES,
-    SUM(IF(language = 'fr_FR', number_added - number_removed, 0)) / t_fr_FR * 100 AS fr_FR,
-    SUM(IF(language = 'it_IT', number_added - number_removed, 0)) / t_it_IT * 100 AS it_IT,
-    SUM(IF(language = 'en_US', number_added - number_removed, 0)) / t_en_US * 100 AS en_US,
-    SUM(if(language not in ('de_DE','en_GB',  'es_ES', 'fr_FR', 'it_IT', 'en_US'), number_added - number_removed, 0)) / t_other * 100 AS other,  
+   cast( SUM(number_added -number_removed) / t_total * 100 as decimal(5,2))  AS total,
+    cast(SUM(IF(language = 'de_DE', number_added - number_removed, 0)) / t_de_DE * 100 as decimal(5,2))  AS de_DE,
+    cast(SUM(IF(language = 'en_GB', number_added - number_removed, 0)) / t_en_GB * 100 as decimal(5,2)) AS en_GB,
+    cast(SUM(IF(language = 'es_ES', number_added - number_removed, 0)) / t_es_ES * 100 as decimal(5,2)) AS es_ES,
+    cast(SUM(IF(language = 'fr_FR', number_added - number_removed, 0)) / t_fr_FR * 100 as decimal(5,2)) AS fr_FR,
+    cast(SUM(IF(language = 'it_IT', number_added - number_removed, 0)) / t_it_IT * 100 as decimal(5,2)) AS it_IT,
+    cast(SUM(IF(language = 'en_US', number_added - number_removed, 0)) / t_en_US * 100 as decimal(5,2)) AS en_US,
+    cast(SUM(if(language not in ('de_DE','en_GB',  'es_ES', 'fr_FR', 'it_IT', 'en_US'), number_added - number_removed, 0)) / t_other * 100 as decimal(5,2)) AS other,  
     max(stamp) as last_calculated_on
 FROM
     analytics_member_metrics_dt dt
