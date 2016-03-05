@@ -1,7 +1,7 @@
 
 truncate table analytics_kpidates;
 
-insert into kpidates
+insert into analytics_kpidates
 (date) 
 SELECT DISTINCT
     DATE(created_date) AS date
