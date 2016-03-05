@@ -7,8 +7,6 @@
 truncate table analytics_active_3m;
 
 
-
-
 insert into analytics_active_3m
 (kpidate, language, active)
 SELECT 
