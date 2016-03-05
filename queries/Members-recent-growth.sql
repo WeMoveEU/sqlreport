@@ -13,20 +13,57 @@ SELECT
 FROM
     analytics_member_metrics m1
     
-    union
+    
+    
+union
+
+
 SELECT
-"new members last 7d" as description, 
-    SUM(m1.number_added -m1.number_removed) AS total,
-    SUM(IF(m1.language = 'de_DE', m1.number_added - number_removed, 0)) AS de_DE,
-    SUM(IF(m1.language = 'en_GB', m1.number_added - number_removed, 0)) AS en_GB,
-    SUM(IF(m1.language = 'es_ES', m1.number_added - number_removed, 0)) AS es_ES,
-    SUM(IF(m1.language = 'fr_FR', m1.number_added - number_removed, 0)) AS fr_FR,
-    SUM(IF(m1.language = 'it_IT', m1.number_added - number_removed, 0)) AS it_IT,
-    SUM(IF(m1.language = 'en_US', m1.number_added - number_removed, 0)) AS en_US,
-    SUM(if(language not in ('de_DE','en_GB',  'es_ES', 'fr_FR', 'it_IT', 'en_US'), m1.number_added - number_removed, 0)) AS other,  
+ CONCAT(delta_t_h.period, " (%)") as description,   
+    SUM(number_added -number_removed) / t_total * 100 AS total,
+    SUM(IF(language = 'de_DE', number_added - number_removed, 0)) / t_de_DE * 100  AS de_DE,
+    SUM(IF(language = 'en_GB', number_added - number_removed, 0)) / t_en_GB * 100 AS en_GB,
+    SUM(IF(language = 'es_ES', number_added - number_removed, 0)) / t_es_ES * 100 AS es_ES,
+    SUM(IF(language = 'fr_FR', number_added - number_removed, 0)) / t_fr_FR * 100 AS fr_FR,
+    SUM(IF(language = 'it_IT', number_added - number_removed, 0)) / t_it_IT * 100 AS it_IT,
+    SUM(IF(language = 'en_US', number_added - number_removed, 0)) / t_en_US * 100 AS en_US,
+    SUM(if(language not in ('de_DE','en_GB',  'es_ES', 'fr_FR', 'it_IT', 'en_US'), number_added - number_removed, 0)) / t_other * 100 AS other,  
     max(stamp) as last_calculated_on
 FROM
+    analytics_member_metrics_dt dt
+    join analytics_delta_t_h delta_t_h on dt.delta_t_h_id = delta_t_h.id
+    join 
+    (select 
+     SUM(m1.number_added) - 
+    SUM(m1.number_removed) AS t_total,
+    SUM(IF(m1.language = 'de_DE', m1.number_added - number_removed, 0)) AS t_de_DE,
+    SUM(IF(m1.language = 'en_GB', m1.number_added - number_removed, 0)) AS t_en_GB,
+    SUM(IF(m1.language = 'es_ES', m1.number_added - number_removed, 0)) AS t_es_ES,
+    SUM(IF(m1.language = 'fr_FR', m1.number_added - number_removed, 0)) AS t_fr_FR,
+    SUM(IF(m1.language = 'it_IT', m1.number_added - number_removed, 0)) AS t_it_IT,
+    SUM(IF(m1.language = 'en_US', m1.number_added - number_removed, 0)) AS t_en_US,
+    SUM(if(language not in ('de_DE','en_GB',  'es_ES', 'fr_FR', 'it_IT', 'en_US'), m1.number_added - number_removed, 0)) AS t_other 
+    from
     analytics_member_metrics m1
+    ) total
+    group by delta_t_h.id
     
--- GROUP BY added_date
--- ORDER BY added_date DESC; 
+
+union 
+
+SELECT
+delta_t_h.period as description,   
+    SUM(number_added -number_removed) AS total,
+    SUM(IF(language = 'de_DE', number_added - number_removed, 0)) AS de_DE,
+    SUM(IF(language = 'en_GB', number_added - number_removed, 0)) AS en_GB,
+    SUM(IF(language = 'es_ES', number_added - number_removed, 0)) AS es_ES,
+    SUM(IF(language = 'fr_FR', number_added - number_removed, 0)) AS fr_FR,
+    SUM(IF(language = 'it_IT', number_added - number_removed, 0)) AS it_IT,
+    SUM(IF(language = 'en_US', number_added - number_removed, 0)) AS en_US,
+    SUM(if(language not in ('de_DE','en_GB',  'es_ES', 'fr_FR', 'it_IT', 'en_US'), number_added - number_removed, 0)) AS other,  
+    max(stamp) as last_calculated_on
+FROM
+    analytics_member_metrics_dt dt
+    join analytics_delta_t_h delta_t_h on dt.delta_t_h_id = delta_t_h.id
+    group by delta_t_h.id
+    

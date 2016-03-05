@@ -1,9 +1,5 @@
 /* 
-This creates all the tables needed for WeMove sql report suite.
-
-
-
-
+This creates all the tables needed for WeMove sqlreport suite.
 
 */
 
@@ -16,6 +12,26 @@ id int not null auto_increment,
 date datetime,
 primary key(id) 
 );
+
+
+drop table if exists analytics_delta_t_h;
+
+create table analytics_delta_t_h 
+ (
+id int not null auto_increment,
+period varchar(255),
+hours_from float,
+hours_to float,
+primary key(id) 
+);
+
+insert into analytics_delta_t_h
+(period, hours_from, hours_to) 
+values 
+("last six hours",6,0), 
+("last 24 hours", 24,0), 
+("last week (168h)", 7*24,0), 
+("last 30 days", 30*24,0); 
 
 
 drop table if exists analytics_member_metrics;
@@ -31,20 +47,18 @@ stamp timestamp,
 primary key(id)
 );
 
-
 drop table if exists analytics_member_metrics_dt;
 
 create table analytics_member_metrics_dt
 (
 id int not null auto_increment,
-added_date date,
+delta_t_h_id int,
 language varchar(5),
-number_added int, /* +100 = 100  subscribed , -1 =  1 opted out*/
+number_added int, 
 number_removed int,
 stamp timestamp,
 primary key(id)
 );
-
 
 
 drop table if exists analytics_petitions_total;
@@ -133,8 +147,4 @@ CREATE TABLE analytics_active_1m (
     stamp timestamp,
     PRIMARY KEY (id)
 );
-
-
-create table delta h (
-
 
