@@ -12,9 +12,9 @@ drop table if exists analytics_kpidates;
 
 create table analytics_kpidates
 (
--- id int not null auto_increment,
-date datetime/*,
--- primary key(id) */
+id int not null auto_increment,
+date datetime,
+primary key(id) 
 );
 
 
@@ -30,6 +30,21 @@ number_removed int,
 stamp timestamp,
 primary key(id)
 );
+
+
+drop table if exists analytics_member_metrics_dt;
+
+create table analytics_member_metrics_dt
+(
+id int not null auto_increment,
+added_date date,
+language varchar(5),
+number_added int, /* +100 = 100  subscribed , -1 =  1 opted out*/
+number_removed int,
+stamp timestamp,
+primary key(id)
+);
+
 
 
 drop table if exists analytics_petitions_total;
@@ -118,4 +133,8 @@ CREATE TABLE analytics_active_1m (
     stamp timestamp,
     PRIMARY KEY (id)
 );
+
+
+create table delta h (
+
 

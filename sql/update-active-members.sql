@@ -5,7 +5,7 @@
 
 
 truncate table analytics_active_3m;
-truncate table analytics_active_1m;
+
 
 
 
@@ -38,6 +38,9 @@ FROM
         AND email.is_primary IS TRUE
         AND email.on_hold = 0
 GROUP BY kpidate , language;
+
+
+truncate table analytics_active_1m;
 
 
 insert into analytics_active_1m

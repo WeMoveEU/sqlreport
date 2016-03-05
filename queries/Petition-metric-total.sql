@@ -42,7 +42,7 @@ FROM
     FROM
         analytics_petitions_total
     GROUP BY civicrm_camp_id) AS aggregate
-    where total_signatures > 10 
+--    where total_signatures > 10 
 ORDER BY language,  speakout_id desc;
 
     
