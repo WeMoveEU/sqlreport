@@ -34,7 +34,7 @@ values
 ("last week (168h)", 7*24,0), 
 ("week before that", 2*7*24,7*24),
 ("last 30 days", 30*24,0),
-("month before that ", 2*30*24,30*24)
+("month before that", 2*30*24,30*24)
 ;
 
 
