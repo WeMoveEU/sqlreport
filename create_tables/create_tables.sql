@@ -30,8 +30,12 @@ insert into analytics_delta_t_h
 values 
 ("last six hours",6,0), 
 ("last 24 hours", 24,0), 
+("24 h before that", 48,24),
 ("last week (168h)", 7*24,0), 
-("last 30 days", 30*24,0); 
+("week before that", 2*7*24,7*24),
+("last 30 days", 30*24,0),
+("month before that", 2*30*24,30*24)
+;
 
 
 drop table if exists analytics_member_metrics;
@@ -41,7 +45,8 @@ create table analytics_member_metrics
 id int not null auto_increment,
 added_date date,
 language varchar(5),
-number_added int, /* +100 = 100  subscribed , -1 =  1 opted out*/
+country_id int,
+number_added int, 
 number_removed int,
 stamp timestamp,
 primary key(id)
@@ -54,6 +59,7 @@ create table analytics_member_metrics_dt
 id int not null auto_increment,
 delta_t_h_id int,
 language varchar(5),
+country_id int,
 number_added int, 
 number_removed int,
 stamp timestamp,
