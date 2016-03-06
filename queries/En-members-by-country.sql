@@ -1,8 +1,7 @@
 SELECT 
-    country_id,
-    civicrm_country.iso_code,
     civicrm_country.name,
-    SUM(number_added-number_removed) as members
+    SUM(number_added-number_removed) as members,
+    stamp as last_calculated
 FROM
     analytics_member_metrics
         LEFT JOIN
