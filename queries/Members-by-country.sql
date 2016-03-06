@@ -1,13 +1,4 @@
 SELECT 
-    *
-FROM
-    analytics_member_metrics
-WHERE
-    language = 'en_GB'; 
-
-
-
-SELECT 
     country_id,
     civicrm_country.iso_code,
     civicrm_country.name,
