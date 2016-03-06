@@ -45,7 +45,8 @@ create table analytics_member_metrics
 id int not null auto_increment,
 added_date date,
 language varchar(5),
-number_added int, /* +100 = 100  subscribed , -1 =  1 opted out*/
+country_id int,
+number_added int, 
 number_removed int,
 stamp timestamp,
 primary key(id)
@@ -58,6 +59,7 @@ create table analytics_member_metrics_dt
 id int not null auto_increment,
 delta_t_h_id int,
 language varchar(5),
+country_id int,
 number_added int, 
 number_removed int,
 stamp timestamp,
