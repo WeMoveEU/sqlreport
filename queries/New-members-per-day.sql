@@ -20,7 +20,7 @@ SELECT
     SUM(IF(language = 'fr_FR', m1.number_removed, 0)) AS un_fr_FR,
     SUM(IF(language = 'it_IT', m1.number_removed, 0)) AS un_it_IT,
     SUM(IF(language = 'en_US', m1.number_removed, 0)) AS un_en_US,
-    max(stamp) as last_calculated_on
+    max(stamp) as last_calculated
 FROM
     analytics_member_metrics m1
 GROUP BY added_date
