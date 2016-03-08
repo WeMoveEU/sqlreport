@@ -9,7 +9,7 @@ SELECT
     SUM(IF(m1.language = 'it_IT', m1.number_added - number_removed, 0)) AS it_IT,
     SUM(IF(m1.language = 'en_US', m1.number_added - number_removed, 0)) AS en_US,
     SUM(if(language not in ('de_DE','en_GB',  'es_ES', 'fr_FR', 'it_IT', 'en_US'), m1.number_added - number_removed, 0)) AS other,  
-    max(stamp) as last_calculated_on
+    max(stamp) as last_calculated
 FROM
     analytics_member_metrics m1
     
@@ -28,7 +28,7 @@ SELECT
     cast(SUM(IF(language = 'it_IT', number_added - number_removed, 0)) / t_it_IT * 100 as decimal(5,2)) AS it_IT,
     cast(SUM(IF(language = 'en_US', number_added - number_removed, 0)) / t_en_US * 100 as decimal(5,2)) AS en_US,
     cast(SUM(if(language not in ('de_DE','en_GB',  'es_ES', 'fr_FR', 'it_IT', 'en_US'), number_added - number_removed, 0)) / t_other * 100 as decimal(5,2)) AS other,  
-    max(stamp) as last_calculated_on
+    max(stamp) as last_calculated
 FROM
     analytics_member_metrics_dt dt
     join analytics_delta_t_h delta_t_h on dt.delta_t_h_id = delta_t_h.id
@@ -61,7 +61,7 @@ delta_t_h.period as description,
     SUM(IF(language = 'it_IT', number_added - number_removed, 0)) AS it_IT,
     SUM(IF(language = 'en_US', number_added - number_removed, 0)) AS en_US,
     SUM(if(language not in ('de_DE','en_GB',  'es_ES', 'fr_FR', 'it_IT', 'en_US'), number_added - number_removed, 0)) AS other,  
-    max(stamp) as last_calculated_on
+    max(stamp) as last_calculated
 FROM
     analytics_member_metrics_dt dt
     join analytics_delta_t_h delta_t_h on dt.delta_t_h_id = delta_t_h.id
