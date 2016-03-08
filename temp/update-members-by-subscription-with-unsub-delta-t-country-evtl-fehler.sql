@@ -4,15 +4,16 @@ truncate table analytics_member_metrics_dt;
 
 
 insert into analytics_member_metrics_dt
-(delta_t_h_id, number_added, number_removed, language)
+(delta_t_h_id, number_added, number_removed, language, country_id)
 SELECT 
-    delta_t_h_id, COUNT(*) AS count, 0 , percontact.preferred_language as language
+    delta_t_h_id, COUNT(*) AS count, 0 , percontact.preferred_language as language, percontact.country_id
 FROM	
     (SELECT 
      analytics_delta_t_h.id as delta_t_h_id,
         contact.id,
             MAX(DATE(hist.date)) AS added_date,
-            contact.preferred_language as preferred_language
+            contact.preferred_language as preferred_language,
+                 address.country_id as country_id
     FROM
         civicrm_contact AS contact 
     JOIN civicrm_group_contact gc ON contact.id = gc.contact_id
@@ -30,12 +31,15 @@ FROM
         /* 2 = unsubscribe 1 = bounce, with not very good timing therefore excluded from the analysis 
         very few people anyway.         
         */
+        
+	left JOIN
+    civicrm_address address ON address.contact_id = contact.id
+    and address.is_primary=1        
 	WHERE
         is_deleted = 0 AND is_opt_out = 0 
 --       and source != "change.org"
-    GROUP BY 
-    contact.id) AS percontact
-GROUP BY delta_t_h_id, preferred_language ;
+    GROUP BY  contact.id) AS percontact
+GROUP BY delta_t_h_id, country_id, preferred_language ;
 
 /*
 select * from analytics_delta_t_h;
