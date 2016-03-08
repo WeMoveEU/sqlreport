@@ -32,7 +32,7 @@ function toCsv (dom,array) {
     if (line != '') line += ','
     line += index;
   }
-  var str = line;
+  var str = line + '\r\n';
 
   for (var i = 0; i < array.length; i++) {
     var line = '';
@@ -45,7 +45,7 @@ function toCsv (dom,array) {
    
 
   var data = "text/csv;charset=utf-8," + encodeURIComponent(str);
-  jQuery (dom).html('<a href="data:' + data + '" download="data.csv">Download</a>');
+  $(dom).html('<a href="data:' + data + '" download="data.csv">Download</a>');
 } 
 
 var totalCount = dc.dataCount("#datacount")
