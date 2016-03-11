@@ -67,7 +67,7 @@ function drawTable(dom) {
  
  var thead = d3.select("thead").selectAll("th")
   .data(d3.keys(data.values[0]))
-  .enter().append("th").text(function(d){return d});
+  .enter().append("th").text(function(d){return d.replace(/_/g, ' ')});
   // fill the table
   // create rows
   var tr = d3.select("tbody").selectAll("tr")
