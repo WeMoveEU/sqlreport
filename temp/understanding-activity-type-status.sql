@@ -12,5 +12,8 @@ join civicrm_option_group g on v.option_group_id = g.id and g.name="activity_sta
 where v.value in (1,2,4,9);
 
 
+select v.id, v.label, v.name from civicrm_option_value v 
+join civicrm_option_group g on v.option_group_id = g.id and g.name="activity_type" and v.name="Join"
+;
 
 
