@@ -12,7 +12,7 @@ join civicrm_value_speakout_integration_2 custom on entity_id=c.id
 where activity_type_id in (32,54,56,57) and is_test=0
   and activity_date_time > DATE_ADD(now(), INTERVAL - 24 hour)
 group by campaign_id
-order by language, total desc
+order by language, total_signatures desc
 
 -- Having count(*) >1
 -- DATE_ADD(now(), INTERVAL - 24 hour);
