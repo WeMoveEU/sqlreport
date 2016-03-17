@@ -1,4 +1,7 @@
 
+set @join := 57;
+set @leave := 56;
+
 
 truncate table analytics_member_metrics_dt; 
 
@@ -14,7 +17,7 @@ FROM
         c.preferred_language as preferred_language
     FROM
     analytics_delta_t_h join
-    civicrm_activity a on  a.activity_type_id = 57
+    civicrm_activity a on  a.activity_type_id = @join
     and 
     a.is_test=0
     
@@ -66,3 +69,25 @@ FROM
 GROUP BY delta_t_h_id, language; 
 
 
+SELECT * from analytics_member_metrics_dt;
+
+select delta_t_h_id, sum(number_added-number_removed) from analytics_member_metrics_dt
+group by delta_t_h_id; 
+
+select delta_t_h.period as description,   
+    SUM(number_added -number_removed) AS total,
+    SUM(IF(language = 'de_DE', number_added - number_removed, 0)) AS de_DE,
+    SUM(IF(language = 'en_GB', number_added - number_removed, 0)) AS en_GB,
+    SUM(IF(language = 'es_ES', number_added - number_removed, 0)) AS es_ES,
+    SUM(IF(language = 'fr_FR', number_added - number_removed, 0)) AS fr_FR,
+    SUM(IF(language = 'it_IT', number_added - number_removed, 0)) AS it_IT,
+    SUM(IF(language = 'en_US', number_added - number_removed, 0)) AS en_US,
+    SUM(if(language not in ('de_DE','en_GB',  'es_ES', 'fr_FR', 'it_IT', 'en_US'), number_added - number_removed, 0)) AS other,  
+    max(stamp) as last_calculated
+FROM
+    analytics_member_metrics_dt dt
+    join analytics_delta_t_h delta_t_h on dt.delta_t_h_id = delta_t_h.id
+    group by delta_t_h.id
+    ;
+    
+select * from analytics_delta_t_h;
