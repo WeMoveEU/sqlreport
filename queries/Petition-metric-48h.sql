@@ -9,14 +9,14 @@ SELECT
     civicrm_camp_id AS CiviCRM_Campaign_ID,
     speakout_title,
     language,
-    new_people_signees,
+--    new_people_signees,
     added AS people_that_actually_came_in,
-    added / new_people_signees AS ratio_added,
-    pending / new_people_signees AS ratio_pending,
-    opt_out / new_people_signees AS ratio_opt_out,
+--    added / new_people_signees AS ratio_added,
+--    pending / new_people_signees AS ratio_pending,
+--    opt_out / new_people_signees AS ratio_opt_out,
     total_signatures,
     new_people_signees / total_signatures AS ratio_new,
-    added / total_signatures AS ratio_actually_added,
+--    added / total_signatures AS ratio_actually_added,
     people_who_share / total_signatures AS ratio_share,
 	stamp as last_calculated_on	
 FROM
@@ -25,6 +25,9 @@ FROM
             speakout_title,
             speakout_id,
             language,
+            
+/* ist quatsch, da Aufnahme in members nur noch passiert, wenn wirklich aufgenommen.  */
+
             SUM(IF(activity IN ('Added' , 'Pending', 'Removed'), npeople, 0)) AS new_people_signees,
             SUM(IF(activity = 'Added' AND is_opt_out = 0, npeople, 0)) AS added,
             SUM(IF(activity = 'Pending' AND is_opt_out = 0, npeople, 0)) AS pending,
@@ -32,7 +35,7 @@ FROM
             SUM(IF(is_opt_out = 1, npeople, 0)) AS opt_out,
             SUM(IF(activity = 'Petition signature', npeople, 0)) AS total_signatures,
             SUM(IF(activity = 'Petition signature'
-                AND status = 'Completed', npeople, 0)) AS completed_signatures,
+                AND status = 'Completed' or status = 'Completed New Member', npeople, 0)) AS completed_signatures,
             SUM(IF(activity = 'Petition signature'
                 AND status = 'Scheduled', npeople, 0)) AS scheduled_signatures,
             SUM(IF(activity = 'Petition signature'
