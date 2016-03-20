@@ -1,10 +1,10 @@
 
-/* subscriptions */
+/* subscriptions 
+on hold: 2 = unsubscribe 1 = bounce, with not very good timing therefore excluded from the analysis 
+        very few people anyway.         
+*/
 
 truncate table analytics_member_metrics; 
-
--- delete from analytics_member_metrics where added_date > "1900-00-00"; 
-
 
 insert into analytics_member_metrics
 (number_added, number_removed, added_date, language, country_id)
@@ -27,15 +27,11 @@ FROM
 	join civicrm_email em on em.contact_id=contact.id
         and em.is_primary is true
         and on_hold in (0,2)       
-        /* 2 = unsubscribe 1 = bounce, with not very good timing therefore excluded from the analysis 
-        very few people anyway.         
-        */
 	left JOIN
     civicrm_address address ON address.contact_id = contact.id
     and address.is_primary=1        
 	WHERE
         is_deleted = 0 AND is_opt_out = 0   
---       and source != "change.org"
     GROUP BY contact.id) AS percontact
 GROUP BY added_date, country_id, preferred_language ;
 
