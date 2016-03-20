@@ -1,9 +1,3 @@
-
-/* subscriptions 
-on hold: 2 = unsubscribe 1 = bounce, with not very good timing therefore excluded from the analysis 
-        very few people anyway.         
-*/
-
 truncate table analytics_member_metrics; 
 
 insert into analytics_member_metrics
@@ -34,9 +28,6 @@ FROM
         is_deleted = 0 AND is_opt_out = 0   
     GROUP BY contact.id) AS percontact
 GROUP BY added_date, country_id, preferred_language ;
-
-
-/* unsubscribe */
 
 insert into analytics_member_metrics
 (number_added, number_removed, added_date, language, country_id)
