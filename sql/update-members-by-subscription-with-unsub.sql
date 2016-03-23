@@ -20,14 +20,14 @@ FROM
         AND hist.status = 'Added'
 	join civicrm_email em on em.contact_id=contact.id
         and em.is_primary is true
-        and on_hold in (0,2)       
+        and on_hold in(0,2)       
 	left JOIN
     civicrm_address address ON address.contact_id = contact.id
     and address.is_primary=1        
 	WHERE
         is_deleted = 0 AND is_opt_out = 0   
     GROUP BY contact.id) AS percontact
-GROUP BY added_date, country_id, preferred_language ;
+GROUP BY added_date, country_id, preferred_language;
 
 insert into analytics_member_metrics
 (number_added, number_removed, added_date, language, country_id)
@@ -53,5 +53,5 @@ FROM
 WHERE
     contact.is_opt_out = 0
         AND contact.is_deleted = 0
-GROUP BY added_date, language , country_id ; 
+GROUP BY added_date, language, country_id; 
 
