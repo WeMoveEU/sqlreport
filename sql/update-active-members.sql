@@ -3,6 +3,11 @@
 -- -- 32 petition
 
 
+insert into analytics_calculation_times
+( calculation ) 
+values ("before active members");
+
+
 
 truncate table analytics_active_3m;
 
@@ -71,3 +76,9 @@ FROM
         AND email.on_hold = 0
 GROUP BY kpidate , language
 ;
+
+
+
+insert into analytics_calculation_times
+( calculation ) 
+values ("after active members");

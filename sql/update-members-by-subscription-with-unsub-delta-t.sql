@@ -1,4 +1,9 @@
 
+insert into analytics_calculation_times
+( calculation ) 
+values ("before delta-d update");
+
+
 set @join := 57;
 set @leave := 56;
 
@@ -73,4 +78,8 @@ FROM
 --       and source != "change.org"
     ) AS percontact
 GROUP BY delta_t_h_id, preferred_language ;
+
+insert into analytics_calculation_times
+( calculation ) 
+values ("after delta-d update");
 
