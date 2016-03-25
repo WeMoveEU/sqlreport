@@ -1,6 +1,11 @@
 
 # Select limit = 3 für die besten 3 Länder. 
-;
+
+insert into analytics_calculation_times
+( calculation ) 
+values ("before speakout petition kpis");
+
+
 
 
 truncate table analytics_petitions_1week; 
@@ -337,6 +342,10 @@ WHERE
     analytics_petitions_total.civicrm_camp_id IS NOT NULL
 ;
 
+
+insert into analytics_calculation_times
+( calculation ) 
+values ("after speakout petition kpis");
 
 
 
