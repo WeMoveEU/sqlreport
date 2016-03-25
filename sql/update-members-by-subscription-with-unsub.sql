@@ -1,3 +1,9 @@
+insert into analytics_calculation_times
+( calculation ) 
+values ("before member calculation 1");
+
+
+
 truncate table analytics_member_metrics; 
 
 insert into analytics_member_metrics
@@ -29,6 +35,14 @@ FROM
     GROUP BY contact.id) AS percontact
 GROUP BY added_date, country_id, preferred_language;
 
+
+insert into analytics_calculation_times
+( calculation ) 
+values ("after member calculation 1");
+
+
+
+
 insert into analytics_member_metrics
 (number_added, number_removed, added_date, language, country_id)
 SELECT 
@@ -54,4 +68,10 @@ WHERE
     contact.is_opt_out = 0
         AND contact.is_deleted = 0
 GROUP BY added_date, language, country_id; 
+
+
+
+insert into analytics_calculation_times
+( calculation ) 
+values ("after member calculation 2");
 

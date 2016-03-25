@@ -4,6 +4,17 @@ This creates all the tables needed for WeMove sqlreport suite.
 */
 
 
+drop table if exists analytics_calculation_times;
+
+create table analytics_calculation_times
+(
+id int not null auto_increment,
+stamp timestamp,
+primary key(id) ,
+calculation varchar(255) 
+);
+
+
 drop table if exists analytics_kpidates;
 
 create table analytics_kpidates
