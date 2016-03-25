@@ -8,6 +8,6 @@ FROM
     civicrm_country ON civicrm_country.id = country_id
 WHERE
     language = 'en_GB'
-GROUP BY country_id
+GROUP BY civicrm_country.name
 ORDER BY members DESC
 ;
