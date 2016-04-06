@@ -1,3 +1,8 @@
+
+set @join := 57;
+set @leave := 56;
+
+
 select * from analytics_delta_t_h ;
 
 select * from analytics_member_metrics_dt; 
