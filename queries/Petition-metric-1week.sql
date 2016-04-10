@@ -1,7 +1,6 @@
 /* now display the actual metrics !!! */
 
-/*CONCAT('https://act.wemove.eu/campaigns/',
-            kampagne.speakout_id) AS URL, */
+/*
 set @share:= 54;
 set @signature:=32;
 set @created_pet:=55;
@@ -15,6 +14,8 @@ set @completed_new=9;
 set @member_group=42;
 
 set @UK=1226;
+
+*/
  
 SELECT 
     CONCAT('https://act.wemove.eu/campaigns/',
