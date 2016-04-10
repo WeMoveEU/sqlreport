@@ -117,6 +117,7 @@ primary key(id)
 
 
 
+
 create table analytics_petitions_1week
 (
 id int not null auto_increment,
@@ -145,12 +146,13 @@ speakout_title varchar (255),
 language varchar(5),
 country varchar(255),
 npeople int,
-activity varchar(255), /* petition signature, share etc. */
-status varchar(255), /* completed, scheduled etc. */
+activity_type_id int, /* petition signature, share etc. */
+status_id int, /* completed, scheduled etc. */
 is_opt_out tinyint(4), 
 stamp timestamp,
 primary key(id)
 );
+
 
 
 
