@@ -1,4 +1,4 @@
-
+/* 
 set @share:= 54,
 @signature:=32,
 @created_pet:=55,
@@ -10,6 +10,8 @@ set @share:= 54,
 @completed_new=9,
 @member_group=42,
 @UK=1226;
+
+*/
 
 
 select
