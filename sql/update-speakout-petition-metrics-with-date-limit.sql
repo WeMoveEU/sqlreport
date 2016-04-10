@@ -1,11 +1,24 @@
 
 # Select limit = 3 für die besten 3 Länder. 
 
+set @share:= 54;
+set @signature:=32;
+set @created_pet:=55;
+set @leave:=56;
+set @join:=57;
+
+set @scheduled=1;
+set @completed=2;
+set @optout=4;
+set @completed_new=9; 
+set @member_group=42;
+
+set @UK=1226;
+
+
 insert into analytics_calculation_times
 ( calculation ) 
 values ("before speakout petition kpis");
-
-
 
 
 truncate table analytics_petitions_1week; 
@@ -27,6 +40,8 @@ gives wrong data for people not becoming members on the first campaign they join
 country is still missing
 */
 
+
+/* useless part about the source 
 insert into analytics_petitions_1week
 (civicrm_camp_id, activity, is_opt_out, npeople)
 SELECT 
@@ -39,7 +54,7 @@ SELECT
     JOIN civicrm_group_contact g ON g.contact_id = c.id AND g.group_id = 42
         AND c.is_deleted = 0
 
-/* DATe */
+-- DATe 
 --        and c.created_date >= '2016-02-19 12:00'
 			and  c.created_date >=  @start_date
 and  c.created_date  <=   @end_date
@@ -54,6 +69,8 @@ and  c.created_date  <=   @end_date
     FROM
         civicrm_campaign AS camp) AS kampagne ON kampagne.source_string = c.source
     GROUP BY civicrm_camp_id , status , is_opt_out;
+    
+*/
 
 /* select by activity 
 important: select distinct
@@ -76,8 +93,8 @@ SELECT
 FROM
     (SELECT DISTINCT
         civicrm_campaign.id AS civicrm_camp_id,
-            civicrm_option_value.label AS stand,
-            option_value_status.label AS status,
+            civicrm_option_value.name AS stand,
+            option_value_status.name AS status,
             c.id
     FROM
         civicrm_contact c
@@ -91,7 +108,7 @@ FROM
     JOIN civicrm_option_value AS option_value_status ON option_value_status.option_group_id = option_group_status.id
         AND civicrm_activity.status_id = option_value_status.value
     WHERE
-        civicrm_option_value.label IN ('Petition Signature' , 'share')
+        civicrm_option_value.name IN ('Petition Signature' , 'share', 'Leave', 'Join')
         /* date */
 --        and  civicrm_activity.activity_date_time >= '2016-02-19 12:00' 
 and  civicrm_activity.activity_date_time >=   @start_date

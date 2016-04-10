@@ -1,4 +1,17 @@
 
+set @share:= 54,
+@signature:=32,
+@created_pet:=55,
+@leave:=56,
+@join:=57,
+@scheduled=1,
+@completed=2,
+@optout=4,
+@completed_new=9,
+@member_group=42,
+@UK=1226;
+
+
 select
   campaign_id, c.name, custom.language_4 as language, date(activity_date_time) as date, count(*) as total,
   sum(case when a.status_id=2 and activity_type_id=32 then 1 end) as completed_existing_member,
