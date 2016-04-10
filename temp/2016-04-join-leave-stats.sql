@@ -44,3 +44,8 @@ from civicrm_activity activity
 where activity.activity_type_id=@join
 group by campaign_id,  subject
 ;
+
+select count(*), activity_type_id, subject
+from civicrm_activity activity
+where activity.activity_type_id in (@signature, @share, @join, @leave)
+group by subject
