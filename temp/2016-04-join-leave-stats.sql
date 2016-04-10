@@ -31,3 +31,16 @@ FROM
 WHERE
     activity.activity_type_id IN (@join , @leave)
 ;
+
+
+select count(*) as_number_of_leaves,  subject, campaign_id
+from civicrm_activity activity
+where activity.activity_type_id=@leave
+group by campaign_id, subject
+;
+
+select count(*) as number_of_joins,  subject, campaign_id
+from civicrm_activity activity
+where activity.activity_type_id=@join
+group by campaign_id,  subject
+;
