@@ -30,8 +30,6 @@ truncate table analytics_petitions_48h;
 
 set @start_date :=  DATE_ADD(now(), INTERVAL - 1 WEEK);
 set @end_date := now() ;
--- set @end_date := now();
-
 
 
 /* select by activity 
@@ -62,15 +60,13 @@ FROM
         civicrm_contact contact
     JOIN civicrm_activity_contact ON civicrm_activity_contact.contact_id = contact.id
     JOIN civicrm_activity activity ON activity.id = civicrm_activity_contact.activity_id 
-    and activity.activity_type_id in(@share, @signature, @leave, @join)
+    and activity.activity_type_id in (@share, @signature, @leave, @join)
 	and  activity.activity_date_time >=   @start_date
 	and  activity.activity_date_time <=   @end_date
     and activity.is_test=0
     JOIN civicrm_campaign ON civicrm_campaign.id = activity.campaign_id 
         ) AS ca
-GROUP BY civicrm_camp_id , activity_type_id, status_id
-;
-
+GROUP BY civicrm_camp_id , activity_type_id, status_id;
 
 /* now add speakout_id, speakout_name, language */
 
@@ -125,7 +121,7 @@ FROM
         civicrm_contact contact
     JOIN civicrm_activity_contact ON civicrm_activity_contact.contact_id = contact.id
     JOIN civicrm_activity activity ON activity.id = civicrm_activity_contact.activity_id 
-    and activity.activity_type_id in(@share, @signature, @leave, @join)
+    and activity.activity_type_id in (@share, @signature, @leave, @join)
 	and  activity.activity_date_time >=   @start_date
 	and  activity.activity_date_time <=   @end_date
     and activity.is_test=0
@@ -185,7 +181,7 @@ FROM
         civicrm_contact contact
     JOIN civicrm_activity_contact ON civicrm_activity_contact.contact_id = contact.id
     JOIN civicrm_activity activity ON activity.id = civicrm_activity_contact.activity_id 
-    and activity.activity_type_id in(@share, @signature, @leave, @join)
+    and activity.activity_type_id in (@share, @signature, @leave, @join)
 	and  activity.activity_date_time >=   @start_date
 	and  activity.activity_date_time <=   @end_date
     and activity.is_test=0
