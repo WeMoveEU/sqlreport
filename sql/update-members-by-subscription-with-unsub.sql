@@ -18,21 +18,22 @@ FROM
             address.country_id as country_id
     FROM
         civicrm_contact AS contact 
-    JOIN civicrm_group_contact gc ON contact.id = gc.contact_id
+/*    JOIN civicrm_group_contact gc ON contact.id = gc.contact_id
         AND gc.group_id = 42
-        AND gc.status = 'Added'
+        AND gc.status in ('Added','Removed')
+        */
     JOIN civicrm_subscription_history hist ON hist.contact_id = contact.id
-        AND hist.group_id = gc.group_id
+        AND hist.group_id = 42
         AND hist.status = 'Added'
 	join civicrm_email em on em.contact_id=contact.id
         and em.is_primary is true
-        and on_hold in(0,2)       
+        and on_hold in(0,2) 
 	left JOIN
     civicrm_address address ON address.contact_id = contact.id
     and address.is_primary=1        
 	WHERE
         is_deleted = 0 AND is_opt_out = 0   
-    GROUP BY contact.id) AS percontact
+	GROUP BY contact.id) AS percontact
 GROUP BY added_date, country_id, preferred_language;
 
 
@@ -60,7 +61,7 @@ FROM
         JOIN
     civicrm_group_contact gc ON contact.id = gc.contact_id
         AND gc.group_id = 42
-        AND gc.status = 'Added'
+        AND gc.status = 'Removed'
 	left JOIN
     civicrm_address address ON address.contact_id = contact.id
     and address.is_primary=1        

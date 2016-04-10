@@ -10,7 +10,6 @@ set @optout=4;
 set @completed_new=9; 
 set @member_group=42;
 
-
 truncate table analytics_members_country_language; 
 
 insert into analytics_members_country_language
@@ -31,5 +30,3 @@ FROM
 ;
   
  
-
-select sum(number_added), sum(number_removed) from analytics_member_metrics; 
