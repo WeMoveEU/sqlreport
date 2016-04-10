@@ -45,9 +45,22 @@ values
 ("last week (168h)", 7*24,0), 
 ("week before that", 2*7*24,7*24),
 ("last 30 days", 30*24,0),
-("month before that", 2*30*24,30*24)
+("month before that", 2*30*24,30*24),
+("2nd month before", 3*30*24,2*30*24)
 ;
 
+
+drop table if exists analytics_members_country_language;
+
+create table analytics_members_country_language
+(
+id int not null auto_increment,
+language varchar(5),
+country_id int,
+members int, 
+stamp timestamp,
+primary key(id)
+);
 
 drop table if exists analytics_member_metrics;
 

@@ -9,3 +9,6 @@ set @completed=2;
 set @optout=4;
 set @completed_new=9; 
 set @member_group=42;
+
+set @UK=1226;
+

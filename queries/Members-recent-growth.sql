@@ -1,24 +1,21 @@
+
 SELECT
 "total number of members" as description, 
-    SUM(m1.number_added) - 
-    SUM(m1.number_removed) AS total,
-   sum(if(language = 'en_GB' and (country_id != 1226 or country_id is NULL), number_added - number_removed,0)) as en_INT,
-  SUM(IF(m1.language = 'de_DE', m1.number_added - number_removed, 0)) AS de_DE,
-     SUM(IF(language = 'en_GB' and country_id = 1226, number_added - number_removed, 0)) AS UK,
+    SUM(members) AS total,
+   sum(if(language = 'en_GB' and (country_id != 1226 or country_id is NULL), members,0)) as en_INT,
+  SUM(IF(language = 'de_DE', members, 0)) AS de_DE,
+     SUM(IF(language = 'en_GB' and country_id = 1226, members, 0)) AS UK,
 --    SUM(IF(m1.language = 'en_GB', m1.number_added - number_removed, 0)) AS en_GB,
-    SUM(IF(m1.language = 'es_ES', m1.number_added - number_removed, 0)) AS es_ES,
-    SUM(IF(m1.language = 'fr_FR', m1.number_added - number_removed, 0)) AS fr_FR,
-    SUM(IF(m1.language = 'it_IT', m1.number_added - number_removed, 0)) AS it_IT,
-    SUM(IF(m1.language = 'en_US', m1.number_added - number_removed, 0)) AS en_US,
-    SUM(if(language not in ('de_DE','en_GB',  'es_ES', 'fr_FR', 'it_IT', 'en_US'), m1.number_added - number_removed, 0)) AS other,  
+    SUM(IF(language = 'es_ES',members, 0)) AS es_ES,
+    SUM(IF(language = 'fr_FR', members, 0)) AS fr_FR,
+    SUM(IF(language = 'it_IT',members, 0)) AS it_IT,
+    SUM(IF(language = 'en_US', members, 0)) AS en_US,
+    SUM(if(language not in ('de_DE','en_GB',  'es_ES', 'fr_FR', 'it_IT', 'en_US'), members, 0)) AS other,  
     max(stamp) as last_calculated
 FROM
-    analytics_member_metrics m1
-    
-    
-    
-union
+    analytics_members_country_language mcl
 
+union
 
 SELECT
  CONCAT(delta_t_h.period, " (%)") as description,   
@@ -39,21 +36,21 @@ FROM
     analytics_member_metrics_dt dt
     join analytics_delta_t_h delta_t_h on dt.delta_t_h_id = delta_t_h.id
     join 
-    (select 
-     SUM(m1.number_added) - 
-    SUM(m1.number_removed) AS t_total,
-  sum(if(language = 'en_GB' and (country_id != 1226 or country_id is NULL), number_added - number_removed,0)) as t_en_INT,
-  SUM(IF(m1.language = 'de_DE', m1.number_added - number_removed, 0)) AS t_de_DE,
-  SUM(IF(language = 'en_GB' and country_id = 1226, number_added - number_removed, 0)) as t_UK,
-  SUM(IF(m1.language = 'es_ES', m1.number_added - number_removed, 0)) AS t_es_ES,
-    SUM(IF(m1.language = 'fr_FR', m1.number_added - number_removed, 0)) AS t_fr_FR,
-    SUM(IF(m1.language = 'it_IT', m1.number_added - number_removed, 0)) AS t_it_IT,
-    SUM(IF(m1.language = 'en_US', m1.number_added - number_removed, 0)) AS t_en_US,
-    SUM(if(language not in ('de_DE','en_GB',  'es_ES', 'fr_FR', 'it_IT', 'en_US'), m1.number_added - number_removed, 0)) AS t_other 
-    from
-    analytics_member_metrics m1
-    ) total
-    group by delta_t_h.id
+    (
+        select
+   SUM(members) AS t_total,
+   sum(if(language = 'en_GB' and (country_id != 1226 or country_id is NULL), members,0)) as t_en_INT,
+  SUM(IF(language = 'de_DE', members, 0)) AS t_de_DE,
+     SUM(IF(language = 'en_GB' and country_id = 1226, members, 0)) AS t_UK,
+--    SUM(IF(m1.language = 'en_GB', m1.number_added - number_removed, 0)) AS en_GB,
+    SUM(IF(language = 'es_ES',members, 0)) AS t_es_ES,
+    SUM(IF(language = 'fr_FR', members, 0)) AS t_fr_FR,
+    SUM(IF(language = 'it_IT',members, 0)) AS t_it_IT,
+    SUM(IF(language = 'en_US', members, 0)) AS t_en_US,
+    SUM(if(language not in ('de_DE','en_GB',  'es_ES', 'fr_FR', 'it_IT', 'en_US'), members, 0)) AS t_other
+FROM
+    analytics_members_country_language mcl ) total 
+     group by delta_t_h.id
     
 union 
 

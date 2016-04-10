@@ -21,3 +21,13 @@ from civicrm_activity activity
 where activity.activity_type_id=@join
 group by date(activity_date_time),  subject
 ;
+
+SELECT 
+    SUM(IF(activity_type_id = @join, 1, 0)),
+    SUM(IF(activity_type_id = @leave, 1, 0)),
+    SUM(IF(activity_type_id = @join, 1, - 1))
+FROM
+    civicrm_activity activity
+WHERE
+    activity.activity_type_id IN (@join , @leave)
+;
