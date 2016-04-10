@@ -106,7 +106,7 @@ civicrm_camp_id int,
 speakout_name varchar(255),
 speakout_title varchar (255),
 language varchar(5),
-country varchar(255),
+country_id int, 
 npeople int,
 activity_type_id int, /* petition signature, share etc. */
 status_id int, /* completed, scheduled etc. */
@@ -126,7 +126,7 @@ civicrm_camp_id int,
 speakout_name varchar(255),
 speakout_title varchar (255),
 language varchar(5),
-country varchar(255),
+country_id int, 
 npeople int,
 activity_type_id int, /* petition signature, share etc. */
 status_id int, /* completed, scheduled etc. */
@@ -144,7 +144,7 @@ civicrm_camp_id int,
 speakout_name varchar(255),
 speakout_title varchar (255),
 language varchar(5),
-country varchar(255),
+country_id int, 
 npeople int,
 activity_type_id int, /* petition signature, share etc. */
 status_id int, /* completed, scheduled etc. */
