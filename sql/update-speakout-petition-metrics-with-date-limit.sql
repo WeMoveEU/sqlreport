@@ -44,17 +44,19 @@ Is really made sure it is about signatories, not signatures?
 
 
 insert into analytics_petitions_1week
-(civicrm_camp_id, activity_type_id, status_id, npeople)
+(civicrm_camp_id, activity_type_id, status_id, country_id, npeople)
 SELECT 
     ca.civicrm_camp_id AS civicrm_camp_id,
     ca.activity_type_id AS activity_type_id,
     ca.status_id AS status_id,
+    ca.country_id as country_id,
     COUNT(*) AS npeople
 FROM
     (SELECT DISTINCT
         civicrm_campaign.id AS civicrm_camp_id,
         activity.activity_type_id as activity_type_id,
         activity.status_id as status_id,
+        address.country_id as country_id,
         contact.id 
     FROM
         civicrm_contact contact
@@ -65,8 +67,11 @@ FROM
 	and  activity.activity_date_time <=   @end_date
     and activity.is_test=0
     JOIN civicrm_campaign ON civicrm_campaign.id = activity.campaign_id 
+          LEFT JOIN
+    civicrm_address address ON address.contact_id = contact.id
+        AND address.is_primary = 1
         ) AS ca
-GROUP BY civicrm_camp_id , activity_type_id, status_id;
+GROUP BY civicrm_camp_id , activity_type_id, country_id, status_id;
 
 /* now add speakout_id, speakout_name, language */
 
@@ -105,17 +110,19 @@ country is still missing
 */
 
 insert into analytics_petitions_48h
-(civicrm_camp_id, activity_type_id, status_id, npeople)
+(civicrm_camp_id, activity_type_id, status_id, country_id, npeople)
 SELECT 
     ca.civicrm_camp_id AS civicrm_camp_id,
     ca.activity_type_id AS activity_type_id,
     ca.status_id AS status_id,
+    ca.country_id as country_id,
     COUNT(*) AS npeople
 FROM
     (SELECT DISTINCT
         civicrm_campaign.id AS civicrm_camp_id,
         activity.activity_type_id as activity_type_id,
         activity.status_id as status_id,
+        address.country_id as country_id,
         contact.id 
     FROM
         civicrm_contact contact
@@ -126,8 +133,11 @@ FROM
 	and  activity.activity_date_time <=   @end_date
     and activity.is_test=0
     JOIN civicrm_campaign ON civicrm_campaign.id = activity.campaign_id 
+          LEFT JOIN
+    civicrm_address address ON address.contact_id = contact.id
+        AND address.is_primary = 1
         ) AS ca
-GROUP BY civicrm_camp_id , activity_type_id, status_id;
+GROUP BY civicrm_camp_id , activity_type_id, country_id, status_id;
 
 /* now add speakout_id, speakout_name, language */
 
@@ -165,17 +175,19 @@ country is still missing
 */
 
 insert into analytics_petitions_total
-(civicrm_camp_id, activity_type_id, status_id, npeople)
+(civicrm_camp_id, activity_type_id, status_id, country_id, npeople)
 SELECT 
     ca.civicrm_camp_id AS civicrm_camp_id,
     ca.activity_type_id AS activity_type_id,
     ca.status_id AS status_id,
+    ca.country_id as country_id,
     COUNT(*) AS npeople
 FROM
     (SELECT DISTINCT
         civicrm_campaign.id AS civicrm_camp_id,
         activity.activity_type_id as activity_type_id,
         activity.status_id as status_id,
+        address.country_id as country_id,
         contact.id 
     FROM
         civicrm_contact contact
@@ -186,8 +198,12 @@ FROM
 	and  activity.activity_date_time <=   @end_date
     and activity.is_test=0
     JOIN civicrm_campaign ON civicrm_campaign.id = activity.campaign_id 
+          LEFT JOIN
+    civicrm_address address ON address.contact_id = contact.id
+        AND address.is_primary = 1
         ) AS ca
-GROUP BY civicrm_camp_id , activity_type_id, status_id;
+GROUP BY civicrm_camp_id , activity_type_id, country_id, status_id;
+
 /* now add speakout_id, speakout_name, language */
 
 SET SQL_SAFE_UPDATES=0;
