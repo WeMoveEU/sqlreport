@@ -64,7 +64,7 @@ FROM
     FROM
         analytics_petitions_48h
     GROUP BY civicrm_camp_id) AS aggregate
-    where total_signatures > 20 
+    where total_signatures > 10 
 ORDER BY language,  total_signatures desc;
 
     
