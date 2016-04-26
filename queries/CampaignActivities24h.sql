@@ -22,7 +22,7 @@ activity_type_id
 
 -- UK different subject on the join 
 select 
-  campaign_id as civi_camp_id, c.name, custom.language_4 as lang, 
+  campaign_id as civi_camp_id, c.title as name, custom.language_4 as lang, 
 	sum(case when activity_type_id=32 then 1 end) as signatures, 
     sum(case when activity_type_id=32 and a.status_id in (1,9,4) then 1 end) new_people_signing,
 --  sum(case when a.status_id=2 and activity_type_id=32 then 1 end) as completed_existing_member,  
@@ -37,7 +37,7 @@ join civicrm_value_speakout_integration_2 custom on entity_id=c.id
 where activity_type_id in (32,54,56,57) and is_test=0
   and activity_date_time > DATE_ADD(now(), INTERVAL - 24 hour)
 group by campaign_id
-order by lang, signatures desc;
+order by signatures desc, lang desc;
 
 -- Having count(*) >1
 -- DATE_ADD(now(), INTERVAL - 24 hour);
