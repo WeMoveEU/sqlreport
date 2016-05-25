@@ -22,7 +22,8 @@ FROM
     JOIN webform_submissions subm ON subm.sid = data.sid
     LEFT JOIN field_data_field_mailing_id mailing ON mailing.entity_id = node.nid
     LEFT JOIN field_data_field_internal_name internal ON internal.entity_id = node.nid
-   where from_unixtime(subm.submitted) > "2016-05-22 12:05" or from_unixtime(subm.submitted) < "2016-05-21 14:08"
+
+--  where from_unixtime(subm.submitted) > "2016-05-22 12:05" or from_unixtime(subm.submitted) < "2016-05-21 14:08"
     GROUP BY node.nid , data) AS results
     
 GROUP BY internal_name
