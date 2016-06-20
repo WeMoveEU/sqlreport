@@ -51,7 +51,20 @@ SELECT
             data.nid = results.nid
                 AND data.data IN ('CS1' , 'CS2')
                 AND FROM_UNIXTIME(subm.submitted) < DATE_ADD(results.mailing_a_date,
-                INTERVAL 24 HOUR)) AS h24_pos
+                INTERVAL 24 HOUR)) AS h24_pos,
+                                 (SELECT 
+            COUNT(*)
+        FROM
+            webform_submitted_data data
+                JOIN
+            webform_submissions subm ON subm.sid = data.sid
+        WHERE
+            data.nid = results.nid
+                AND data.data IN ('CS1' , 'CS2')
+                AND FROM_UNIXTIME(subm.submitted) < DATE_ADD(results.mailing_a_date,
+                INTERVAL 48 HOUR)) AS h48_pos,
+                today() 
+
 FROM
     (SELECT 
         node.nid AS nid,
@@ -76,7 +89,7 @@ FROM
 GROUP BY internal_name
 ORDER BY RIGHT(internal_name, 2) , IF(RIGHT(internal_name, 6) = 'INT-EN',
     0,
-    1) , internal_name
+    1) , mailing_a_date desc, internal_name 
 ;
  
 
