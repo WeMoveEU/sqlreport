@@ -3,14 +3,15 @@ SELECT
 "total number of members" as description, 
     SUM(members) AS total,
    sum(if(language = 'en_GB' and (country_id != 1226 or country_id is NULL), members,0)) as en_INT,
-  SUM(IF(language = 'de_DE', members, 0)) AS de_DE,
-     SUM(IF(language = 'en_GB' and country_id = 1226, members, 0)) AS UK,
+   SUM(IF(language = 'de_DE', members, 0)) AS de_DE,
+	SUM(IF(language = 'en_GB' and country_id = 1226, members, 0)) AS UK,
 --    SUM(IF(m1.language = 'en_GB', m1.number_added - number_removed, 0)) AS en_GB,
     SUM(IF(language = 'es_ES',members, 0)) AS es_ES,
     SUM(IF(language = 'fr_FR', members, 0)) AS fr_FR,
     SUM(IF(language = 'it_IT',members, 0)) AS it_IT,
+    SUM(IF(language = 'pl_PL',members, 0)) AS pl_PL,
     SUM(IF(language = 'en_US', members, 0)) AS en_US,
-    SUM(if(language not in ('de_DE','en_GB',  'es_ES', 'fr_FR', 'it_IT', 'en_US'), members, 0)) AS other,  
+    SUM(if(language not in ('de_DE','en_GB',  'es_ES', 'fr_FR', 'it_IT', 'en_US', 'pl_PL'), members, 0)) AS other,  
     max(stamp) as last_calculated
 FROM
     analytics_members_country_language mcl
@@ -28,9 +29,12 @@ SELECT
 
     cast(SUM(IF(language = 'es_ES', number_added - number_removed, 0)) / t_es_ES * 100 as decimal(5,2)) AS es_ES,
     cast(SUM(IF(language = 'fr_FR', number_added - number_removed, 0)) / t_fr_FR * 100 as decimal(5,2)) AS fr_FR,
-    cast(SUM(IF(language = 'it_IT', number_added - number_removed, 0)) / t_it_IT * 100 as decimal(5,2)) AS it_IT,
+    
+cast(SUM(IF(language = 'it_IT', number_added - number_removed, 0)) / t_it_IT * 100 as decimal(5,2)) AS it_IT,
+cast(SUM(IF(language = 'pl_PL', number_added - number_removed, 0)) / t_pl_PL * 100 as decimal(5,2)) AS pl_PL,
+    
     cast(SUM(IF(language = 'en_US', number_added - number_removed, 0)) / t_en_US * 100 as decimal(5,2)) AS en_US,
-    cast(SUM(if(language not in ('de_DE','en_GB',  'es_ES', 'fr_FR', 'it_IT', 'en_US'), number_added - number_removed, 0)) / t_other * 100 as decimal(5,2)) AS other,  
+    cast(SUM(if(language not in ('de_DE','en_GB',  'es_ES', 'fr_FR', 'it_IT', 'en_US', 'pl_PL'), number_added - number_removed, 0)) / t_other * 100 as decimal(5,2)) AS other,  
     max(stamp) as last_calculated
 FROM
     analytics_member_metrics_dt dt
@@ -46,8 +50,9 @@ FROM
     SUM(IF(language = 'es_ES',members, 0)) AS t_es_ES,
     SUM(IF(language = 'fr_FR', members, 0)) AS t_fr_FR,
     SUM(IF(language = 'it_IT',members, 0)) AS t_it_IT,
-    SUM(IF(language = 'en_US', members, 0)) AS t_en_US,
-    SUM(if(language not in ('de_DE','en_GB',  'es_ES', 'fr_FR', 'it_IT', 'en_US'), members, 0)) AS t_other
+   SUM(IF(language = 'pl_PL',members, 0)) AS t_pl_PL,
+   SUM(IF(language = 'en_US', members, 0)) AS t_en_US,
+    SUM(if(language not in ('de_DE','en_GB',  'es_ES', 'fr_FR', 'it_IT', 'en_US', 'pl_PL'), members, 0)) AS t_other
 FROM
     analytics_members_country_language mcl ) total 
      group by delta_t_h.id
@@ -63,8 +68,10 @@ delta_t_h.period as description,
      SUM(IF(language = 'es_ES', number_added - number_removed, 0)) AS es_ES,
     SUM(IF(language = 'fr_FR', number_added - number_removed, 0)) AS fr_FR,
     SUM(IF(language = 'it_IT', number_added - number_removed, 0)) AS it_IT,
+    SUM(IF(language = 'pl_PL', number_added - number_removed, 0)) AS pl_PL,
+    
     SUM(IF(language = 'en_US', number_added - number_removed, 0)) AS en_US,
-    SUM(if(language not in ('de_DE','en_GB',  'es_ES', 'fr_FR', 'it_IT', 'en_US'), number_added - number_removed, 0)) AS other,  
+    SUM(if(language not in ('de_DE','en_GB',  'es_ES', 'fr_FR', 'it_IT', 'en_US','pl_PL'), number_added - number_removed, 0)) AS other,  
     max(stamp) as last_calculated
 FROM
     analytics_member_metrics_dt dt
