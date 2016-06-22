@@ -1,1 +1,13 @@
-select status, date(M.date) as date, count(*) as qty, sum(amount) total, avg(amount) avg from civicrm_contribution_recur as R join civicrm_sdd_mandate M on R.id=M.entity_id and M.entity_table="civicrm_contribution_recur"  group by contribution_status_id, date(create_date) order by date desc, status desc;
+SELECT 
+    status,
+    DATE(M.date) AS date,
+    COUNT(*) AS qty,
+    SUM(amount) total,
+    CAST(AVG(amount) AS DECIMAL (5 , 2 )) AS avg
+FROM
+    civicrm_contribution_recur AS R
+        JOIN
+    civicrm_sdd_mandate M ON R.id = M.entity_id
+        AND M.entity_table = 'civicrm_contribution_recur'
+GROUP BY contribution_status_id , DATE(create_date)
+ORDER BY date DESC , status DESC;
