@@ -2,14 +2,16 @@
 
 
 <div class="row">
-<button class'btn btn-primary btn-lg'><span class="glyphicon glyphicon-download-alt"></span><span id='csv'>CSV</span></button>
+
+<table id="t" class="table table-striped table-bordered" cellspacing="0" width="100%"></table>
+
+<!--button class'btn btn-primary btn-lg'><span class="glyphicon glyphicon-download-alt"></span><span id='csv'>CSV</span></button>
 <table class="table table-striped" id="table">
-<thead><tr>
-</tr></thead>
+<thead>
+</thead>
 <tbody>
 </tbody>
-</table>
-
+</table-->
 
 <script>
 var data = {crmSQL file="$id" debug=1};
@@ -56,6 +58,34 @@ function cell(d,i) {
   return d[i];
 }
 
+function drawDataTable(dom) {
+  var columns=[];
+  d3.keys(data.values[0]).forEach(function(d){
+    var r={};
+    r.data=d;
+    r.title=d.replace(/_/g, ' ');
+    columns.push(r);
+  });
+
+  $(dom)
+  .on( 'init.dt', function () {
+    $(dom+"_filter").removeClass("dataTables_filter");
+  })
+  .DataTable({
+   dom: "<'row'<'col-md-2'l><'col-md-3'i><'col-md-4'B><'col-md-3'f>>" +
+"<'row'<'col-md-12'rt>><'row'<'col-md-12'ip>>", //'Blfrtip',
+   "pageLength": 50,
+  "lengthMenu": [ [10, 25, 50, -1], [10, 25, 50, "All"] ],
+   buttons: [ 'excel','copy','colvis'],
+    colReorder: true,
+    stateSave: true,
+    responsive: false,
+    order: [],
+    data:data.values,
+    columns:columns
+  });
+}
+
 function drawTable(dom) {
   var i=0;
 /*  var dim = ndx.dimension (function(d) {return i++;});
@@ -65,7 +95,7 @@ function drawTable(dom) {
 */
  toCsv('#csv',data.values );
  
- var thead = d3.select("thead").selectAll("th")
+ var thead = d3.select("thead").selectAll("tr")
   .data(d3.keys(data.values[0]))
   .enter().append("th").text(function(d){return d.replace(/_/g, ' ')});
   // fill the table
@@ -94,7 +124,8 @@ function drawTable(dom) {
 */
 }
 
-  drawTable("#table");
+  drawDataTable("#t");
+//  drawTable("#table");
  // dc.renderAll();
 });
 </script>

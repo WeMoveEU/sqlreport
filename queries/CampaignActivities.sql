@@ -12,10 +12,9 @@ set @share:= 54,
 @UK=1226;
 
 */
-
-
 select
-  campaign_id, c.name, custom.language_4 as language, date(activity_date_time) as date, count(*) as total,
+  campaign_id, c.name, custom.language_4 as language, date(activity_date_time) as date, 
+  sum(case when activity_type_id=32 then 1 end) as total,
   sum(case when a.status_id=2 and activity_type_id=32 then 1 end) as completed_existing_member,
   sum(case when a.status_id=1 and activity_type_id=32 then 1 end) as pending,
   sum(case when a.status_id=9 and activity_type_id=32 then 1 end) as completed_new_member,

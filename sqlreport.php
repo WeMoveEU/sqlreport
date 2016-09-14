@@ -2,6 +2,14 @@
 
 require_once 'sqlreport.civix.php';
 
+function sqlreport_civicrm_pageRun(&$page) {
+  $pageName = $page->getVar('_name');
+  if ($pageName == 'CRM_Civisualize_Page_Main') {
+    CRM_Core_Resources::singleton()
+    ->addStyleFile('eu.wemove.sqlreport', 'public/datatables.min.css')
+    ->addScriptFile('eu.wemove.sqlreport', 'public/datatables.min.js', 110, 'html-header', FALSE);
+  }
+}
 /**
  * Implementation of hook_civicrm_config
  *

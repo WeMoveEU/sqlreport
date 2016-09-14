@@ -1,0 +1,14 @@
+{"query":"
+select substring_index(substring_index(url, 'utm_campaign=', -1),'&',1) umt_campaign from civicrm_mailing_trackable_url where url like "%wemove.eu/%utm_campaign%" and mailing_id in (select m.id from civicrm_mailing m left join civicrm_mailing_abtest ab on ab.mailing_id_a= m.id or ab.mailing_id_b= m.id or ab.mailing_id_c=m.id where ab.id = %1);
+","params":{"1":{"name":"mailing_id","type":"Integer"}}}
+
+select 
+  sum(case when a.status_id=2 and activity_type_id=32 then 1 end) as completed_existing_member,
+  sum(case when a.status_id=1 and activity_type_id=32 then 1 end) as pending,
+  sum(case when a.status_id=9 and activity_type_id=32 then 1 end) as completed_new_member,
+  sum(case when a.status_id=4 and activity_type_id=32 then 1 end) as optout,
+  sum(case when activity_type_id=54 then 1 end) as share,
+source_27  as utm_media, campaign_26 as utm_campaign
+
+from civicrm_activity a join civicrm_value_action_source_4 s on a.id=s.entity_id where campaign_26="en_20160704" group by source_27;
+
