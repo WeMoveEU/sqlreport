@@ -3,6 +3,14 @@ function _civicrm_api3_sql_runupdate_spec(&$params) {
   $params['file']['api.required'] = 1;
 }
 
+/**
+ * Action for all scripts.
+ *
+ * @param $params
+ *
+ * @return array
+ * @throws \API_Exception
+ */
 function civicrm_api3_sql_runupdateall ($params) {
   $load = sys_getloadavg();
   $load = $load[0];
@@ -20,6 +28,40 @@ function civicrm_api3_sql_runupdateall ($params) {
   return civicrm_api3_create_success($results, $params);
 }
 
+/**
+ * Action contains all scripts except of the slowest update-active-members.sql.
+ *
+ * @param $params
+ *
+ * @return array
+ * @throws \API_Exception
+ */
+function civicrm_api3_sql_runupdatehourly ($params) {
+  $load = sys_getloadavg();
+  $load = $load[0];
+  if ($load > 2) {
+    throw new API_Exception ("load too high, try later $load");
+  }
+  foreach (new DirectoryIterator(dirname( __FILE__ ) .'/../../sql') as $file) {
+    if ($file->isFile() && substr ($file->getFilename(), -4, 4) == ".sql") {
+      $filename = substr($file->getFilename(), 0, -4);
+      if ($filename != 'update-active-members') {
+        $r = civicrm_api3("sql", "runupdate", array('file' => $filename));
+        $results["$filename"] = array ("file" => $filename, "result" => $r);
+      }
+    }
+  }
+  return civicrm_api3_create_success($results, $params);
+}
+
+/**
+ * Action for the slowest update-active-members.sql
+ *
+ * @param $params
+ *
+ * @return array
+ * @throws \API_Exception
+ */
 function civicrm_api3_sql_runupdateactivemembers ($params) {
   $load = sys_getloadavg();
   $load = $load[0];
@@ -32,6 +74,14 @@ function civicrm_api3_sql_runupdateactivemembers ($params) {
   return civicrm_api3_create_success($results, $params);
 }
 
+/**
+ * Action for given script (param file).
+ *
+ * @param $params
+ *
+ * @return array
+ * @throws \API_Exception
+ */
 function civicrm_api3_sql_runupdate ($params) {
   $config = CRM_Core_Config::singleton();
   //run the query
