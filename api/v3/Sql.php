@@ -20,6 +20,18 @@ function civicrm_api3_sql_runupdateall ($params) {
   return civicrm_api3_create_success($results, $params);
 }
 
+function civicrm_api3_sql_runupdateactivemembers ($params) {
+  $load = sys_getloadavg();
+  $load = $load[0];
+  if ($load > 2) {
+    throw new API_Exception ("load too high, try later $load");
+  }
+  $filename = "update-active-members";
+  $r = civicrm_api3("sql", "runupdate", array('file' => $filename));
+  $results["$filename"] = array ("file" => $filename, "result" => $r);
+  return civicrm_api3_create_success($results, $params);
+}
+
 function civicrm_api3_sql_runupdate ($params) {
   $config = CRM_Core_Config::singleton();
   //run the query
