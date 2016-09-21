@@ -85,14 +85,11 @@ FROM
     where node.nid not in(181, 157, 165, 166, 164, 167, 174, 234, 228, 229, 233, 231, 244, 210 )
     GROUP BY node.nid , data) AS results
 GROUP BY internal_name
-ORDER BY 
-mailing_a_date desc,
-RIGHT(internal_name, 2) , IF(RIGHT(internal_name, 6) = 'INT-EN', 0,1) , internal_name 
-INTO OUTFILE '/tmp/survey_data.csv'
-FIELDS TERMINATED BY ','
-ENCLOSED BY '"'
-LINES TERMINATED BY '\n' 
+ORDER BY RIGHT(internal_name, 2) , IF(RIGHT(internal_name, 6) = 'INT-EN',
+    0,
+    1) , mailing_a_date desc, internal_name 
 ;
+ 
 
 
 
