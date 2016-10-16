@@ -1,8 +1,4 @@
 -- important change necessary: do not count votes originating before the mailing went out. 
-
-
-use website;
-
 SELECT 
     nid,
     internal_name,
@@ -17,9 +13,9 @@ SELECT
     (SELECT 
             COUNT(*)
         FROM
-            webform_submitted_data data
+            website.webform_submitted_data data
                 JOIN
-            webform_submissions subm ON subm.sid = data.sid
+            website.webform_submissions subm ON subm.sid = data.sid
         WHERE
             data.nid = results.nid
                 AND data.data IN ('CS1' , 'CS2')
@@ -28,9 +24,9 @@ SELECT
                                  (SELECT 
             COUNT(*)
         FROM
-            webform_submitted_data data
+            website.webform_submitted_data data
                 JOIN
-            webform_submissions subm ON subm.sid = data.sid
+            website.webform_submissions subm ON subm.sid = data.sid
         WHERE
             data.nid = results.nid
                 AND data.data IN ('CS1' , 'CS2')
@@ -39,9 +35,9 @@ SELECT
                  (SELECT 
             COUNT(*)
         FROM
-            webform_submitted_data data
+            website.webform_submitted_data data
                 JOIN
-            webform_submissions subm ON subm.sid = data.sid
+            website.webform_submissions subm ON subm.sid = data.sid
         WHERE
             data.nid = results.nid
                 AND data.data IN ('CS1' , 'CS2')
@@ -50,15 +46,15 @@ SELECT
                                  (SELECT 
             COUNT(*)
         FROM
-            webform_submitted_data data
+            website.webform_submitted_data data
                 JOIN
-            webform_submissions subm ON subm.sid = data.sid
+            website.webform_submissions subm ON subm.sid = data.sid
         WHERE
             data.nid = results.nid
                 AND data.data IN ('CS1' , 'CS2')
                 AND FROM_UNIXTIME(subm.submitted) < DATE_ADD(results.mailing_a_date,
                 INTERVAL 48 HOUR))  AS h48_pos,
-                 now() 
+                 now() as now 
 
 FROM
     (SELECT 
@@ -72,17 +68,18 @@ FROM
             mailing_a.scheduled_date AS mailing_a_date,
             analytics_ab.recipients as recipients
     FROM
-        node
-    JOIN webform_submitted_data data ON node.nid = data.nid
+        website.node
+    JOIN website.webform_submitted_data data ON node.nid = data.nid
         AND data.data LIKE 'CS_'
-    JOIN webform_submissions subm ON subm.sid = data.sid
-    JOIN field_data_field_mailing_id mailing ON mailing.entity_id = node.nid
-    JOIN field_data_field_internal_name internal ON internal.entity_id = node.nid
+    JOIN website.webform_submissions subm ON subm.sid = data.sid
+    JOIN website.field_data_field_mailing_id mailing ON mailing.entity_id = node.nid
+    JOIN website.field_data_field_internal_name internal ON internal.entity_id = node.nid
     JOIN civi_wemove.civicrm_mailing_abtest abtest ON field_mailing_id_value = abtest.id
     JOIN civi_wemove.civicrm_mailing mailing_a ON abtest.mailing_id_a = mailing_a.id
     JOIN civi_wemove.civicrm_mailing mailing_b ON abtest.mailing_id_b = mailing_b.id
     join analytics.ab_mailings analytics_ab on analytics_ab.abtest_id = abtest.id
     where node.nid not in(181, 157, 165, 166, 164, 167, 174, 234, 228, 229, 233, 231, 244, 210 )
+--      and node.nid in (261)
     GROUP BY node.nid , data) AS results
 GROUP BY internal_name
 ORDER BY 

@@ -14,7 +14,7 @@
 </table-->
 
 <script>
-var data = {crmSQL file="$id" debug=1};
+var data = {crmSQL json="$id" debug=1 id="$id2"};
 if (data.is_error) {
   CRM.alert("error in the sql query:"+data.error_message);
 }
