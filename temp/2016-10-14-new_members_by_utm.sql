@@ -71,7 +71,7 @@ from civicrm_activity a join civicrm_campaign c on campaign_id=c.id
 join civicrm_value_speakout_integration_2 custom on entity_id=c.id
 left join civicrm_value_action_source_4 utm on a.id=utm.entity_id
 where activity_type_id in (32) and is_test=0
-and activity_date_time > "2016-09-01"
+and activity_date_time > "2016-06-01"
 -- and campaign_id=%1
 group by c.id,campaign_26,source_27,media_28
 order by c.id desc, completed_new_member desc
