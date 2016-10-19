@@ -1,9 +1,6 @@
--- new people by campaign and source_media_etc.
+{"query":
 
--- new_member, new_uk_member, new_it_member, new_fr_member: share e-mail
--- mail_share = 
-
-SELECT 
+"SELECT 
     c.name AS campaign_name,
     CONVERT( c.external_identifier , SIGNED) AS speakout_id,
     custom.language_4 AS language,
@@ -33,4 +30,10 @@ WHERE
         AND source_27 = 'facebook'
 GROUP BY campaign_id , campaign_26 , source_27 , media_28
 ORDER BY speakout_id DESC , new_member DESC;
+",
+"headers":{
+"campaign_name": "long explanation about what the nb column is and display it as the title",
+"bla":"long explanation.!!.."
+}}
+
 
