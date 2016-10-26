@@ -1,0 +1,40 @@
+{
+"temp_bycampaign":
+"select
+  c.name, custom.language_4 as language,
+  campaign_26 as campaign, source_27 as source, media_28 as media,
+  sum(case when activity_type_id=32 then 1 end) as total,
+  sum(case when a.status_id=2 and activity_type_id=32 then 1 end) as completed_existing_member,
+  sum(case when a.status_id=1 and activity_type_id=32 then 1 end) as pending,
+  sum(case when a.status_id=9 and activity_type_id=32 then 1 end) as completed_new_member,
+  sum(case when a.status_id=4 and activity_type_id=32 then 1 end) as optout,
+  sum(case when activity_type_id=54 then 1 end) as share,
+  sum(case when activity_type_id=57 then 1 end) as member_join,
+  sum(case when activity_type_id=56 then 1 end) as member_leave
+from civicrm_activity a join civicrm_campaign c on campaign_id=c.id
+join civicrm_value_speakout_integration_2 custom on entity_id=c.id
+left join civicrm_value_action_source_4 utm on a.id=utm.entity_id
+where activity_type_id in (32,54,56,57) and is_test=0
+and campaign_id=%1 
+group by campaign_26,source_27,media_28
+order by completed_new_member desc
+",
+"query":"
+select
+  c.name,
+  source_27 as source, media_28 as media,
+  sum(case when activity_type_id=32 then 1 end) as total,
+  sum(case when a.status_id=2 and activity_type_id=32 then 1 end) as completed_existing_member,
+  sum(case when a.status_id=1 and activity_type_id=32 then 1 end) as pending,
+  sum(case when a.status_id=9 and activity_type_id=32 then 1 end) as completed_new_member,
+  sum(case when a.status_id=4 and activity_type_id=32 then 1 end) as optout,
+  sum(case when activity_type_id=54 then 1 end) as share,
+  sum(case when activity_type_id=56 then 1 end) as member_leave
+from civicrm_activity a join civicrm_campaign c on campaign_id=c.id
+join civicrm_value_speakout_integration_2 custom on entity_id=c.id
+left join civicrm_value_action_source_4 utm on a.id=utm.entity_id
+where activity_type_id in (32,54,56) and is_test=0
+and campaign_id=%1 
+group by source_27,media_28
+order by completed_new_member desc
+","params":{"1":{"name":"id","type":"Integer"}}}

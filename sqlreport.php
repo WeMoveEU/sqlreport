@@ -7,7 +7,8 @@ function sqlreport_civicrm_pageRun(&$page) {
   if ($pageName == 'CRM_Civisualize_Page_Main') {
     CRM_Core_Resources::singleton()
     ->addStyleFile('eu.wemove.sqlreport', 'public/datatables.min.css')
-    ->addScriptFile('eu.wemove.sqlreport', 'public/datatables.min.js', 110, 'html-header', FALSE);
+    ->addScriptFile('eu.wemove.sqlreport', 'public/datatables.min.js', 110, 'html-header', FALSE)
+    ->addScriptFile('eu.wemove.sqlreport', 'node_modules/reductio/reductio.min.js', 110, 'html-header', FALSE);
   }
 }
 /**

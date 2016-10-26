@@ -1,5 +1,5 @@
 {"query":"
-select substring_index(substring_index(url, 'utm_campaign=', -1),'&',1) umt_campaign from civicrm_mailing_trackable_url where url like "%wemove.eu/%utm_campaign%" and mailing_id in (select m.id from civicrm_mailing m left join civicrm_mailing_abtest ab on ab.mailing_id_a= m.id or ab.mailing_id_b= m.id or ab.mailing_id_c=m.id where ab.id = %1);
+select substring_index(substring_index(url, 'utm_campaign=', -1),'&',1) umt_campaign from civicrm_mailing_trackable_url where url like 'wemove.eu/%utm_campaign' and mailing_id in (select m.id from civicrm_mailing m left join civicrm_mailing_abtest ab on ab.mailing_id_a= m.id or ab.mailing_id_b= m.id or ab.mailing_id_c=m.id where ab.id = %1);
 ","params":{"1":{"name":"mailing_id","type":"Integer"}}}
 
 select 
