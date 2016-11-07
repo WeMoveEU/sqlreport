@@ -18,6 +18,7 @@ var data = {crmSQL file="$id" debug=1};
 if (data.is_error) {
   CRM.alert("error in the sql query:"+data.error_message);
 }
+var dtable=null;
 
 {literal}
 var ndx  = crossfilter(data.values)
@@ -67,13 +68,13 @@ function drawDataTable(dom) {
     columns.push(r);
   });
 
-  $(dom)
+  var table=$(dom)
   .on( 'init.dt', function () {
     $(dom+"_filter").removeClass("dataTables_filter");
   })
   .DataTable({
    dom: "<'row'<'col-md-2'l><'col-md-3'i><'col-md-4'B><'col-md-3'f>>" +
-"<'row'<'col-md-12'rt>><'row'<'col-md-12'ip>>", //'Blfrtip',
+"<'row'<'col-md-12'rt>><'row'<'col-md-12 footer'ip>>", //'Blfrtip',
    "pageLength": 50,
   "lengthMenu": [ [10, 25, 50, -1], [10, 25, 50, "All"] ],
    buttons: [ 'excel','copy','colvis'],
@@ -81,9 +82,28 @@ function drawDataTable(dom) {
     stateSave: true,
     responsive: false,
     order: [],
+    fnFooterCallback: function(nRow, aaData, iStart, iEnd, aiDisplay) {
+      var api = this.api();
+      var size = 0;
+      aaData.forEach(function(x) {
+            size += (x['size']);
+      });
+      $('.footer').html(size);
+   },
     data:data.values,
     columns:columns
   });
+
+  table.columns( '' ).every( function () {
+    var sum = this
+        .data()
+        .reduce( function (a,b) {
+            return a + b;
+        } );
+ 
+    $( this.footer() ).html( 'Sum: '+sum );
+  });
+  return table;
 }
 
 function drawTable(dom) {
@@ -124,7 +144,7 @@ function drawTable(dom) {
 */
 }
 
-  drawDataTable("#t");
+  dtable=drawDataTable("#t");
 //  drawTable("#table");
  // dc.renderAll();
 });
