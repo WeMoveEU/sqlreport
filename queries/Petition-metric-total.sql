@@ -43,7 +43,8 @@ FROM
             speakout_id,
             language,
       SUM(IF(activity_type_id = 32 and status_id in (1, 4, 9), npeople, 0)) AS new_people_signees,
-      SUM(IF(activity_type_id = 32 and status_id = 9 and (country_id = 1226 or country_id=1107 or country_id=1076), npeople, 0)) AS added_UK,
+	SUM(IF(activity_type_id = 32 and status_id = 9 and country_id in (1226,1107,1076), npeople, 0)) AS added_UK,
+      
       SUM(IF(activity_type_id = 32 and status_id = 9, npeople, 0)) AS added,
               SUM(IF(activity_type_id = 57 , npeople, 0)) AS joined,
 --  LEAVE - SUM(IF(activity_type_id = 'Removed' AND is_opt_out = 0, npeople, 0)) AS removed,
