@@ -1,6 +1,12 @@
 {
 "query":"
-select mailing_id, name, count(*) as nb, DATE_FORMAT(avg(time_stamp), '%Y-%m-%d %h:%i:%s') avg_sent, min(start_date) start, max(end_date) end, subject 
+select mailing_id, 
+  name, 
+  count(*) as recipients, 
+  from_unixtime(avg(unix_timestamp(time_stamp))) avg_sent,
+  min(start_date) start,
+  max(end_date) end, 
+  subject 
 from civicrm_mailing_event_delivered d 
 join civicrm_mailing_event_queue q on d.event_queue_id=q.id 
 join civicrm_mailing_job j on j.id=q.job_id 
