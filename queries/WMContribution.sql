@@ -1,14 +1,17 @@
 select receive_date as date,
 SUM(if (recur=0 and instrument='1' and status=1,total,0)) as €_card,
 SUM(if (recur=0 and instrument='5' and status=1,total,0)) as €_wire,
-SUM(if (recur=0 and instrument in (6,7,8) and status in (1,2,5),total,0)) as €_sepa,
+SUM(if (recur=0 and instrument in (6,7,8) and status in (1),total,0)) as €_sepa,
 SUM(if (recur=1 and instrument='1' and status=1,total,0)) as €_recur_card,
 /*SUM(if (recur=1 and instrument='5' and status=1,total,0)) as €_recur_wire,*/
-SUM(if (recur=1 and instrument in (6,7,8) and status in (1,2,5),total,0)) as €_recur_sepa,
+SUM(if (recur=1 and instrument in (6,7,8) and status in (1),total,0)) as €_recur_sepa,
+
+SUM(if (recur=0 and instrument in (6,7,8) and status in (2,5),total,0)) as €_pending_sepa,
+SUM(if (recur=1 and instrument in (6,7,8) and status in (2,5),total,0)) as €_pending_recur_sepa,
 
 SUM(if (recur=0 and status in (1,2,5),count,0)) as qty_single,
-SUM(if (recur=1 and instrument in (1,7) and status in (1,2,5),count,1)) as qty_recur,
-SUM(if (recur=1 and instrument in (6) and status in (1,2,5),count,1)) as qty_first,
+SUM(if (recur=1 and instrument in (1,7) and status in (1),count,1)) as qty_recur,
+SUM(if (recur=1 and instrument in (6) and status in (1),count,1)) as qty_first,
 SUM(if (recur=1 and status not in (1,2,5),count,1)) as qty_failed,
 SUM(if (status in (2,5),count,1)) as qty_pending
 
