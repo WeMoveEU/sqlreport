@@ -14,6 +14,8 @@ set @completed_new=9;
 set @member_group=42;
 
 set @UK=1226;
+set @FR=1076;
+set @IT=1107;
 
 */
  
@@ -26,7 +28,7 @@ SELECT
      total_signatures,
     new_people_signees,
    added AS all_people_that_came_in,
-   added_UK UK_people_that_came,
+   added_UK UK_FR_IT_people_that_came,
 --    joined as people_that_actually_came_in_2nd_calculation,
     (added - added_UK) / (new_people_signees-added_UK) AS ratio_added,
     scheduled / (new_people_signees - added_UK) AS ratio_pending,
@@ -41,7 +43,7 @@ FROM
             speakout_id,
             language,
       SUM(IF(activity_type_id = 32 and status_id in (1, 4, 9), npeople, 0)) AS new_people_signees,
-      SUM(IF(activity_type_id = 32 and status_id = 9 and country_id = 1226, npeople, 0)) AS added_UK,
+      SUM(IF(activity_type_id = 32 and status_id = 9 and (country_id = 1226 or country_id=1107 or country_id=1076), npeople, 0)) AS added_UK,
       SUM(IF(activity_type_id = 32 and status_id = 9, npeople, 0)) AS added,
               SUM(IF(activity_type_id = 57 , npeople, 0)) AS joined,
 --  LEAVE - SUM(IF(activity_type_id = 'Removed' AND is_opt_out = 0, npeople, 0)) AS removed,
