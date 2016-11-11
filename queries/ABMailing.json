@@ -9,7 +9,7 @@ select mailing_id,
   subject 
 from civicrm_mailing_event_delivered d
 join civicrm_mailing_event_queue q on d.event_queue_id=q.id 
-join civicrm_mailing_job j on j.id=q.job_id 
+join civicrm_mailing_job j on j.id=q.job_id  and j.is_test=false
 join civicrm_mailing m on m.id=mailing_id 
 where mailing_id in 
   (select mailing_id_a as id 
@@ -21,6 +21,5 @@ where mailing_id in
    select mailing_id_c as id 
      from civicrm_mailing_abtest where id=%1
   ) 
-and d.time_stamp >= m.scheduled_date 
 group by mailing_id;
 ","params":{"1":{"name":"id","type":"Integer"}}}
