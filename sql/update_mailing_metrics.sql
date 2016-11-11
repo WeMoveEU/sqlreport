@@ -32,10 +32,16 @@ INSERT INTO data_mailing_counter
 
 --Direct activities
 --The join on mailing makes sure that it exists (the id is a "user" input)
+--Assumes that the status of shares is always the same (Completed)
 INSERT INTO data_mailing_counter
   SELECT SUBSTRING(s.source_27, 10), 
       IF(a.activity_type_id=32,
-        IF(a.status_id=9, 'new_direct_signs', 'known_direct_signs'), 
+        CASE
+          WHEN a.status_id=9 THEN 'new_direct_signs'
+          WHEN a.status_id=4 THEN 'optout_direct_signs'
+          WHEN a.status_id=2 THEN 'known_direct_signs'
+          ELSE 'pending_direct_signs'
+        END, 
         'direct_shares'), 
       b.box, 
       COUNT(DISTINCT c.contact_id) 
@@ -46,18 +52,25 @@ INSERT INTO data_mailing_counter
     JOIN civicrm_mailing_job j ON j.mailing_id=m.id
     JOIN data_timeboxes b ON TIMESTAMPDIFF(MINUTE, j.start_date, a.activity_date_time)<b.box
     WHERE (a.activity_type_id=32 OR a.activity_type_id=54)
+      AND a.status_id IN (1, 2, 4, 9)
       AND s.source_27 LIKE 'civimail-%'
       AND j.is_test=0 AND TIMESTAMPADD(DAY, 100, j.start_date) > NOW()
       AND TIMESTAMPADD(DAY, 1, a.activity_date_time) > NOW()
-    GROUP BY s.source_27, a.activity_type_id, b.box
+    GROUP BY s.source_27, a.activity_type_id, a.status_id, b.box
   ON DUPLICATE KEY UPDATE value=VALUES(value);
 
 --Viral activities
 --The join on mailing makes sure that it exists (the id is a "user" input)
+--Assumes that the status of shares is always the same (Completed)
 INSERT INTO data_mailing_counter
   SELECT SUBSTRING(source.source_27, 10), 
       IF(inf_a.activity_type_id=32, 
-        IF(inf_a.status_id=9, 'new_viral_signs', 'known_viral_signs'), 
+        CASE
+          WHEN inf_a.status_id=9 THEN 'new_viral_signs'
+          WHEN inf_a.status_id=4 THEN 'optout_viral_signs'
+          WHEN inf_a.status_id=2 THEN 'known_viral_signs'
+          ELSE 'pending_viral_signs'
+        END, 
         'viral_shares'), 
       b.box, 
       COUNT(DISTINCT inf_c.contact_id)
@@ -71,6 +84,6 @@ INSERT INTO data_mailing_counter
     JOIN data_timeboxes b ON TIMESTAMPDIFF(MINUTE, j.start_date, inf_a.activity_date_time)<b.box
     WHERE j.is_test=0 AND TIMESTAMPADD(DAY, 100, j.start_date) > NOW()
       AND TIMESTAMPADD(DAY, 1, inf_a.activity_date_time) > NOW()
-    GROUP BY source.source_27, inf_a.activity_type_id, b.box
+    GROUP BY source.source_27, inf_a.activity_type_id, inf_a.status_id, b.box
   ON DUPLICATE KEY UPDATE value=VALUES(value);
 
