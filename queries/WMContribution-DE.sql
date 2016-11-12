@@ -26,7 +26,7 @@ from civicrm_contribution c
 join civicrm_contact contact on c.contact_id=contact.id
 join civicrm_address address ON address.contact_id = contact.id
         AND address.is_primary = 1
- and address.country_id = 1082        
+ and address.country_id in (1014, 1082)        
 WHERE receive_date is not null AND ( c.is_test = 0 OR c.is_test = NULL) AND receive_date <> '0000-00-00' 
 AND financial_type_id in (1,3)
 group by YEAR(receive_date),MONTH(receive_date),payment_instrument_id,contribution_status_id 

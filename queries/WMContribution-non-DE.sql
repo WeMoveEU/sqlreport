@@ -26,7 +26,7 @@ from civicrm_contribution c
 join civicrm_contact contact on c.contact_id=contact.id
 join civicrm_address address ON address.contact_id = contact.id
         AND address.is_primary = 1
- and address.country_id != 1082        
+ and address.country_id not in (1014, 1082)        
 WHERE receive_date is not null AND ( c.is_test = 0 OR c.is_test = NULL) AND receive_date <> '0000-00-00' 
 AND financial_type_id in (1,3)
 group by YEAR(receive_date),MONTH(receive_date),payment_instrument_id,contribution_status_id 
@@ -41,11 +41,12 @@ group by receive_date order by receive_date desc;
 select * from civicrm_country
 where name in ("Germany", "United kingdom", "France", "Italy", "Spain") ;
 
-1076	France
-1082	Germany
-1107	Italy
-1198	Spain
-1226	United Kingdom
+1014	Austria	AT
+1076	France	FR
+1082	Germany	DE
+1107	Italy	IT
+1198	Spain	ES
+1226	United Kingdom	GB
 
 select name,value from civicrm_option_value where option_group_id=10;
 +-------------+-------+
