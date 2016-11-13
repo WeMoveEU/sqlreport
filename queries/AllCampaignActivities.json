@@ -1,6 +1,7 @@
 {
 "query":"
 select
+  c.id campaign_id,
   c.name, language_4 as lang,
   source_27 as source, media_28 as media,
   sum(case when activity_type_id=32 then 1 end) as total,
