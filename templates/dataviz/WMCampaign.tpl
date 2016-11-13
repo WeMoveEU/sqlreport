@@ -159,9 +159,19 @@ jQuery(function($) {
     if (d.source.substring(0,9) == "civimail-") {
       var mid=d.source.substring(9);
       d.mailing= CRM._.find(mailings.values, function(d) {return d.id==mid;});
-//      if (!d.mailing) {
-//        d.mailing = {id:mid,mailing_type:"unrelated",lang:"",name:"mailing #"+mid,recipient:'?',subject:"mailing not associated with this campaign"};
-//      }
+      if (!d.mailing) {
+        d.mailing = {id:mid
+          ,mailing_type:"unrelated"
+          ,lang:""
+          ,name:"mailing #"+mid
+          ,recipient:0
+          ,open:0
+          ,'click':0
+          ,scheduled_date:"?"
+          ,v_new_member:0
+          ,subject:"mailing not associated with this campaign"
+        };
+      }
       if (d.mailing && d.mailing.mailing_type && mailing_type[d.mailing.mailing_type]) {
         d.mailing.mailing_type = mailing_type[d.mailing.mailing_type];
       }
