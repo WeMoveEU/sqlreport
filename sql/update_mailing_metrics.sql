@@ -14,7 +14,6 @@ INSERT INTO data_mailing_counter
     JOIN civicrm_mailing_event_opened o ON o.event_queue_id=q.id
     JOIN data_timeboxes b ON TIMESTAMPDIFF(MINUTE, j.start_date, o.time_stamp)<b.box
     WHERE j.is_test=0 AND TIMESTAMPADD(DAY, 100, j.start_date) > NOW()
-      AND TIMESTAMPADD(DAY, 1, o.time_stamp) > NOW()
     GROUP BY j.mailing_id, b.box
   ON DUPLICATE KEY UPDATE value=VALUES(value);
 
@@ -26,7 +25,6 @@ INSERT INTO data_mailing_counter
     JOIN civicrm_mailing_event_trackable_url_open o ON o.event_queue_id=q.id
     JOIN data_timeboxes b ON TIMESTAMPDIFF(MINUTE, j.start_date, o.time_stamp)<b.box
     WHERE j.is_test=0 AND TIMESTAMPADD(DAY, 100, j.start_date) > NOW()
-      AND TIMESTAMPADD(DAY, 1, o.time_stamp) > NOW()
     GROUP BY j.mailing_id, b.box
   ON DUPLICATE KEY UPDATE value=VALUES(value);
 
@@ -55,7 +53,6 @@ INSERT INTO data_mailing_counter
       AND a.status_id IN (1, 2, 4, 9)
       AND s.source_27 LIKE 'civimail-%'
       AND TIMESTAMPADD(DAY, 100, j.start_date) > NOW()
-      AND TIMESTAMPADD(DAY, 1, a.activity_date_time) > NOW()
     GROUP BY s.source_27, a.activity_type_id, a.status_id, b.box
   ON DUPLICATE KEY UPDATE value=VALUES(value);
 
@@ -83,7 +80,6 @@ INSERT INTO data_mailing_counter
       ON j.mailing_id=SUBSTRING(source.utm_source_30, 10)
     JOIN data_timeboxes b ON TIMESTAMPDIFF(MINUTE, j.start_date, inf_a.activity_date_time)<b.box
     WHERE TIMESTAMPADD(DAY, 100, j.start_date) > NOW()
-      AND TIMESTAMPADD(DAY, 1, inf_a.activity_date_time) > NOW()
     GROUP BY source.source_27, inf_a.activity_type_id, inf_a.status_id, b.box
   ON DUPLICATE KEY UPDATE value=VALUES(value);
 
