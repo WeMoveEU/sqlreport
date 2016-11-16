@@ -46,7 +46,7 @@ INSERT INTO data_mailing_counter
     JOIN civicrm_activity_contact c on a.id=c.activity_id
     JOIN civicrm_value_action_source_4 s ON a.id=s.entity_id 
     JOIN (SELECT mailing_id, start_date FROM civicrm_mailing_job WHERE is_test=0 GROUP BY mailing_id) j 
-      ON j.mailing_id=SUBSTRING(source.utm_source_30, 10)
+      ON j.mailing_id=SUBSTRING(source.source_27, 10)
     JOIN data_timeboxes b ON TIMESTAMPDIFF(MINUTE, j.start_date, a.activity_date_time)<b.box
     WHERE (a.activity_type_id=32 OR a.activity_type_id=54)
       AND a.status_id IN (1, 2, 4, 9)
