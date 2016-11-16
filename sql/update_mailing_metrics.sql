@@ -2,11 +2,11 @@
 -- These queries assume that they are run at least daily
 --
 
---Recipients
+-- Recipients
 INSERT IGNORE INTO data_mailing_counter
   SELECT mailing_id, 'recipients', 0, COUNT(*) FROM civicrm_mailing_recipients GROUP BY mailing_id;
 
---Opens
+-- Opens
 INSERT INTO data_mailing_counter 
   SELECT j.mailing_id, 'opens', b.box, COUNT(DISTINCT q.id) 
     FROM civicrm_mailing_job j
@@ -17,7 +17,7 @@ INSERT INTO data_mailing_counter
     GROUP BY j.mailing_id, b.box
   ON DUPLICATE KEY UPDATE value=VALUES(value);
 
---Clicks
+-- Clicks
 INSERT INTO data_mailing_counter 
   SELECT j.mailing_id, 'clicks', b.box, COUNT(DISTINCT q.id) 
     FROM civicrm_mailing_job j
@@ -28,9 +28,8 @@ INSERT INTO data_mailing_counter
     GROUP BY j.mailing_id, b.box
   ON DUPLICATE KEY UPDATE value=VALUES(value);
 
---Direct activities
---The join on mailing makes sure that it exists (the id is a "user" input)
---Assumes that the status of shares is always the same (Completed)
+-- Direct activities
+-- Assumes that the status of shares is always the same (Completed)
 INSERT INTO data_mailing_counter
   SELECT SUBSTRING(s.source_27, 10), 
       IF(a.activity_type_id=32,
@@ -56,9 +55,8 @@ INSERT INTO data_mailing_counter
     GROUP BY s.source_27, a.activity_type_id, a.status_id, b.box
   ON DUPLICATE KEY UPDATE value=VALUES(value);
 
---Viral activities
---The join on mailing makes sure that it exists (the id is a "user" input)
---Assumes that the status of shares is always the same (Completed)
+-- Viral activities
+-- Assumes that the status of shares is always the same (Completed)
 INSERT INTO data_mailing_counter
   SELECT SUBSTRING(source.source_27, 10), 
       IF(inf_a.activity_type_id=32, 
