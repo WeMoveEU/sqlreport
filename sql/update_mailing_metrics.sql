@@ -48,13 +48,13 @@ INSERT INTO data_mailing_counter
     FROM civicrm_activity a 
     JOIN civicrm_activity_contact c on a.id=c.activity_id
     JOIN civicrm_value_action_source_4 s ON a.id=s.entity_id 
-    JOIN civicrm_mailing m ON SUBSTRING(s.source_27, 10)=m.id
-    JOIN civicrm_mailing_job j ON j.mailing_id=m.id
+    JOIN (SELECT mailing_id, start_date FROM civicrm_mailing_job WHERE is_test=0 GROUP BY mailing_id) j 
+      ON j.mailing_id=SUBSTRING(source.utm_source_30, 10)
     JOIN data_timeboxes b ON TIMESTAMPDIFF(MINUTE, j.start_date, a.activity_date_time)<b.box
     WHERE (a.activity_type_id=32 OR a.activity_type_id=54)
       AND a.status_id IN (1, 2, 4, 9)
       AND s.source_27 LIKE 'civimail-%'
-      AND j.is_test=0 AND TIMESTAMPADD(DAY, 100, j.start_date) > NOW()
+      AND TIMESTAMPADD(DAY, 100, j.start_date) > NOW()
       AND TIMESTAMPADD(DAY, 1, a.activity_date_time) > NOW()
     GROUP BY s.source_27, a.activity_type_id, a.status_id, b.box
   ON DUPLICATE KEY UPDATE value=VALUES(value);
@@ -79,10 +79,10 @@ INSERT INTO data_mailing_counter
     JOIN civicrm_value_action_source_4 infected ON infected.campaign_26=share.utm_campaign_39 AND infected.media_28=share.utm_medium_38
     JOIN civicrm_activity inf_a ON inf_a.id=infected.entity_id
     JOIN civicrm_activity_contact inf_c on inf_a.id=inf_c.activity_id
-    JOIN civicrm_mailing m ON SUBSTRING(source.source_27, 10)=m.id
-    JOIN civicrm_mailing_job j ON j.mailing_id=m.id
+    JOIN (SELECT mailing_id, start_date FROM civicrm_mailing_job WHERE is_test=0 GROUP BY mailing_id) j 
+      ON j.mailing_id=SUBSTRING(source.utm_source_30, 10)
     JOIN data_timeboxes b ON TIMESTAMPDIFF(MINUTE, j.start_date, inf_a.activity_date_time)<b.box
-    WHERE j.is_test=0 AND TIMESTAMPADD(DAY, 100, j.start_date) > NOW()
+    WHERE TIMESTAMPADD(DAY, 100, j.start_date) > NOW()
       AND TIMESTAMPADD(DAY, 1, inf_a.activity_date_time) > NOW()
     GROUP BY source.source_27, inf_a.activity_type_id, inf_a.status_id, b.box
   ON DUPLICATE KEY UPDATE value=VALUES(value);
