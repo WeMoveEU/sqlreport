@@ -1,10 +1,9 @@
--- 
--- These queries assume that they are run at least daily
---
 
 -- Recipients
-INSERT IGNORE INTO data_mailing_counter
-  SELECT mailing_id, 'recipients', 0, COUNT(*) FROM civicrm_mailing_recipients GROUP BY mailing_id;
+-- INSERT IGNORE does not work because A/B mailing recipients may not be correct until they are sent
+INSERT INTO data_mailing_counter
+  SELECT mailing_id, 'recipients', 0, COUNT(*) FROM civicrm_mailing_recipients GROUP BY mailing_id
+  ON DUPLICATE KEY UPDATE value=VALUES(value);
 
 -- Opens
 INSERT INTO data_mailing_counter 
@@ -81,5 +80,41 @@ INSERT INTO data_mailing_counter
     JOIN data_timeboxes b ON TIMESTAMPDIFF(MINUTE, j.start_date, inf_a.activity_date_time)<b.box
     WHERE TIMESTAMPADD(DAY, 100, j.start_date) > NOW()
     GROUP BY source.source_27, inf_a.activity_type_id, inf_a.status_id, b.box
+  ON DUPLICATE KEY UPDATE value=VALUES(value);
+
+-- Contribution amounts
+INSERT INTO data_mailing_counter
+  SELECT 
+      SUBSTRING(utm_source_30, 10),
+      IF (r.id IS NULL, 'oneoff_amount', 'recur_amount') AS counter,
+      b.box,
+      CAST(SUM(total_amount) AS UNSIGNED INTEGER) 
+    FROM civicrm_contribution c 
+    JOIN civicrm_value_utm_5 utm ON c.id=entity_id
+    LEFT JOIN civicrm_contribution_recur r ON r.id=c.contribution_recur_id
+    JOIN (SELECT mailing_id, MIN(start_date) AS start_date FROM civicrm_mailing_job WHERE is_test=0 GROUP BY mailing_id) j 
+      ON j.mailing_id=SUBSTRING(utm_source_30, 10)
+    JOIN data_timeboxes b 
+      ON TIMESTAMPDIFF(MINUTE, j.start_date, IF(r.id IS NULL, c.receive_date, r.create_date))<b.box
+    WHERE utm_medium_31='email' AND utm_source_30 LIKE 'civimail-%'
+    GROUP BY utm_source_30, counter, b.box
+  ON DUPLICATE KEY UPDATE value=VALUES(value);
+
+-- Number of contributions
+INSERT INTO data_mailing_counter
+  SELECT 
+      SUBSTRING(utm_source_30, 10),
+      IF (r.id IS NULL, 'oneoff_donations', 'recur_donations') AS counter,
+      b.box,
+      COUNT(*)
+    FROM civicrm_contribution c 
+    JOIN civicrm_value_utm_5 utm ON c.id=entity_id
+    LEFT JOIN civicrm_contribution_recur r ON r.id=c.contribution_recur_id
+    JOIN (SELECT mailing_id, MIN(start_date) AS start_date FROM civicrm_mailing_job WHERE is_test=0 GROUP BY mailing_id) j 
+      ON j.mailing_id=SUBSTRING(utm_source_30, 10)
+    JOIN data_timeboxes b 
+      ON TIMESTAMPDIFF(MINUTE, j.start_date, IF(r.id IS NULL, c.receive_date, r.create_date))<b.box
+    WHERE utm_medium_31='email' AND utm_source_30 LIKE 'civimail-%'
+    GROUP BY utm_source_30, counter, b.box
   ON DUPLICATE KEY UPDATE value=VALUES(value);
 
