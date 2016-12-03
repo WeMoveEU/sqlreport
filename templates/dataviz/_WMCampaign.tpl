@@ -68,7 +68,10 @@ var graphs = [];
           return d.date.substring(0,10);
           //return dateTimeFormat.parse(d.date)
         },
-				function(d){return d.utm_campaign},
+				function(d){
+          if (d.id != d.parent_id)
+            return "<i><a href='"+CRM.url("civicrm/campaign/add",{action:"update",id:d.id})+"'>FIX needed</a></i>";
+          return d.utm_campaign},
 				function(d){return '<a href="/civicrm/dataviz/WMCampaign/'+d.id+'">'+d.name+'</a>';},
 				function(d){return '<a href="'+d.url+'">Speakout</a>'},
 				function(d){return ''},

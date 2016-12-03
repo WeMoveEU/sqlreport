@@ -46,6 +46,7 @@
 			<ul class="list-group">
 				<li class="list-group-item"><span class="badge nb_signature"></span>Signatures</li>
 				<li class="list-group-item"><span class="badge nb_new_member"></span>New Members</li>
+				<li class="list-group-item"><span class="badge nb_pending"></span><span class="glyphicon glyphicon-chevron-right"></span><i>pending</i></li>
 				<li class="list-group-item"><span class="badge nb_share"></span>Shares</li>
 				<li class="list-group-item"><span class="badge nb_recipient"></span>Emails sent</li>
 				<li class="list-group-item"><span class="badge nb_open"></span><span class="glyphicon glyphicon-chevron-right"></span><i>opened</i></li>
@@ -70,14 +71,14 @@
 	</div>
 	<div class="col-md-3">
 		<div class="panel panel-default" id="media">
-			<div class="panel-heading" title="based on the utm_media parameter">Aquisition media</div>
+			<div class="panel-heading" title="New members, based on the utm_media parameter">Aquisition media</div>
 			<div class="panel-body"><graph />
 			</div>
 		</div>
 	</div>
 	<div class="col-md-3">
 		<div class="panel panel-default" id="source">
-			<div class="panel-heading" title="based on the utm_source parameter">Aquisition source</div>
+			<div class="panel-heading" title="New members, based on the utm_source parameter">Aquisition source</div>
 			<div class="panel-body"><graph />
 			</div>
 		</div>
@@ -93,6 +94,7 @@
 <th>Media</th>
 <th>Source</th>
 <th>Signatures</th>
+<th title="signatures of new members, or pending or optout">New<br>Signatures</th>
 <th>New members</th>
 <th>Pending</th>
 <th>Optout</th>
@@ -110,6 +112,8 @@
 <script>
 ////    'use strict';
 var campaign = {crmAPI action="get" entity="campaign" return="id,name,parent_id,external_identifier,custom_8,custom_11" parent_id=$id};
+if (campaign.count==0) //need to fix so it has a parent...
+  campaign.values=[{id:$id,name:"Fix #"+$id}];
 //custom_8=url custom_11=utm custom_4=language
 var activities= {crmSQL json="AllCampaignActivities" id=$id};
 var mailings= {crmSQL json="AllCampaignMailings" id=$id};
@@ -184,7 +188,7 @@ jQuery(function($) {
 
 			drawNumbers(graphs);
 			graphs.media = drawMedia('#media');
-			graphs.source = drawSource('#source','total');
+			graphs.source = drawSource('#source','completed_new_member');
 			graphs.signature= drawPie('#signature','total');
 			graphs.new_member = drawNewMember('#new_member');
 //			graphs.new_member = drawPie('#new_member','completed_new_member');
@@ -208,6 +212,7 @@ function drawNumbers (graphs){
 		function (p, v) {
 				p.new_member += +v.completed_new_member;
 				p.optout += +v.optout;
+				p.pending += +v.pending;
 				p.share+= +v.share;
 				p.signature += +v.total;
 				if (v.mailing && v.mailing.campaign_id==v.campaign_id) p.recipient += +v.mailing.recipient;
@@ -218,6 +223,7 @@ function drawNumbers (graphs){
 		function (p, v) {
 				p.optout -= +v.optout;
 				p.new_member -= +v.completed_new_member;
+				p.pending -= +v.pending;
 				p.share -= +v.share;
 				p.signature -= +v.total;
 				if (v.mailing && v.mailing.campaign_id==v.campaign_id) p.recipient -= +v.mailing.recipient;
@@ -243,6 +249,12 @@ function drawNumbers (graphs){
 	dc.numberDisplay(".nb_new_member") 
 	.valueAccessor(function(d){ return d.new_member})
 	.html({some:"%number",none:"nobody joined"})
+	.renderlet(function(chart) {renderLetDisplay(chart,20)})
+	.group(group);
+
+	dc.numberDisplay(".nb_pending") 
+	.valueAccessor(function(d){ return d.pending})
+	.html({some:"%number",none:"no signature pending"})
 	.renderlet(function(chart) {renderLetDisplay(chart,20)})
 	.group(group);
 
@@ -386,6 +398,10 @@ function drawTable(dom) {
                 return d.source},
               function(d){return d.total},
               function(d){
+                var newbies=d.completed_new_member+d.pending+d.optout;
+                return "<span title='"+newbies+"'>"+d3.format(".2%")(newbies/d.total)+"</span>"; 
+                return d.completed_new_member+d.pending+d.optout},
+              function(d){
                 if (d.mailing && d.completed_new_member) {
                  return d.completed_new_member + '<span class="label label-default" title="viral across all languages">+'+d.mailing.v_new_member+'</span>';
                 }
@@ -471,7 +487,7 @@ function drawMedia(dom) {
     } 
     return d.media;
   });
-	var group   = dim.group().reduceSum(function(d) { return d.total; });
+	var group   = dim.group().reduceSum(function(d) { return d.completed_new_member; });
 	graph
 			.width(200)
 			.height(200)
