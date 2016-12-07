@@ -27,6 +27,17 @@ INSERT INTO data_mailing_counter
     GROUP BY j.mailing_id, b.box
   ON DUPLICATE KEY UPDATE value=VALUES(value);
 
+-- Unsubscribes
+INSERT INTO data_mailing_counter 
+  SELECT j.mailing_id, 'unsubs', b.box, COUNT(DISTINCT q.id) 
+    FROM civicrm_mailing_job j
+    JOIN civicrm_mailing_event_queue q ON q.job_id=j.id
+    JOIN civicrm_mailing_event_unsubscribe o ON o.event_queue_id=q.id
+    JOIN data_timeboxes b ON TIMESTAMPDIFF(MINUTE, j.start_date, o.time_stamp)<b.box
+    WHERE j.is_test=0 AND TIMESTAMPADD(DAY, 100, j.start_date) > NOW()
+    GROUP BY j.mailing_id, b.box
+  ON DUPLICATE KEY UPDATE value=VALUES(value);
+
 -- Direct activities
 -- Assumes that the status of shares is always the same (Completed)
 -- Force order of joins for MySQL 5.5, could be removed in later versions
