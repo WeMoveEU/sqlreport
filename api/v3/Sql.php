@@ -94,6 +94,8 @@ function civicrm_api3_sql_runupdate ($params) {
     throw new API_Exception ("unknown file or empty one");
   }
   echo "running $file\n";
+
+  CRM_Core_DAO::executeQuery("SET TRANSACTION ISOLATION LEVEL READ UNCOMMITTED ;");
   CRM_Utils_File::sourceSQLFile($config->dsn, $sql, NULL, true, false);
   return civicrm_api3_create_success(array("query" => $sql), $params);
 }
