@@ -42,17 +42,6 @@ SELECT
             data.nid = results.nid
                 AND data.data IN ('CS1' , 'CS2')
                 AND FROM_UNIXTIME(subm.submitted) < DATE_ADD(results.mailing_a_date,
-                INTERVAL 19 HOUR)) AS h19_pos,
-,                 (SELECT 
-            COUNT(*)
-        FROM
-            website.webform_submitted_data data
-                JOIN
-            website.webform_submissions subm ON subm.sid = data.sid
-        WHERE
-            data.nid = results.nid
-                AND data.data IN ('CS1' , 'CS2')
-                AND FROM_UNIXTIME(subm.submitted) < DATE_ADD(results.mailing_a_date,
                 INTERVAL 24 HOUR)) AS h24_pos,
                                  (SELECT 
             COUNT(*)
@@ -89,7 +78,7 @@ FROM
     JOIN civi_wemove.civicrm_mailing mailing_a ON abtest.mailing_id_a = mailing_a.id
     JOIN civi_wemove.civicrm_mailing mailing_b ON abtest.mailing_id_b = mailing_b.id
     join analytics.ab_mailings analytics_ab on analytics_ab.abtest_id = abtest.id
-    where node.nid not in(181, 157, 165, 166, 164, 167, 174, 234, 228, 229, 233, 231, 244, 210, 411, 412, 405, 406, 407 )
+    where node.nid not in(181, 157, 165, 166, 164, 167, 174, 234, 228, 229, 233, 231, 244, 210 )
 --      and node.nid in (261)
     GROUP BY node.nid , data) AS results
 GROUP BY internal_name
