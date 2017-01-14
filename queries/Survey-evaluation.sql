@@ -43,7 +43,7 @@ SELECT
                 AND data.data IN ('CS1' , 'CS2')
                 AND FROM_UNIXTIME(subm.submitted) < DATE_ADD(results.mailing_a_date,
                 INTERVAL 19 HOUR)) AS h19_pos,
-,                 (SELECT 
+                 (SELECT 
             COUNT(*)
         FROM
             website.webform_submitted_data data
