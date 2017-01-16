@@ -26,7 +26,7 @@ SELECT
         FROM
             website.webform_submitted_data data
                 JOIN
-            website.webform_submissions subm ON subm.sid = data.sid
+            website.webform_submissions subm ON subm.sid = data.sid 
         WHERE
             data.nid = results.nid
                 AND data.data IN ('CS1' , 'CS2')
