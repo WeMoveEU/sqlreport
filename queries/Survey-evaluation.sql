@@ -89,7 +89,7 @@ FROM
     JOIN civi_wemove.civicrm_mailing mailing_a ON abtest.mailing_id_a = mailing_a.id
     JOIN civi_wemove.civicrm_mailing mailing_b ON abtest.mailing_id_b = mailing_b.id
     join analytics.ab_mailings analytics_ab on analytics_ab.abtest_id = abtest.id
-    where node.nid not in(181, 157, 165, 166, 164, 167, 174, 234, 228, 229, 233, 231, 244, 210, 411, 412, 405, 406, 407 )
+    where node.nid not in(181, 157, 165, 166, 164, 167, 174, 234, 228, 229, 233, 231, 244, 210, 411, 412, 405, 406, 407, 285 )
 --      and node.nid in (261)
     GROUP BY node.nid , data) AS results
 GROUP BY internal_name
