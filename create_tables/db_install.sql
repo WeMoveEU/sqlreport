@@ -59,29 +59,6 @@ CREATE TABLE `analytics_mailing_activity` (
   CONSTRAINT `analytics_mailing_activity_ibfk_1` FOREIGN KEY (`mailing_id`) REFERENCES `civicrm_mailing` (`id`)
 );
 
-DROP TABLE IF EXISTS `analytics_mailing_counter`;
-CREATE TABLE `analytics_mailing_counter` (
-  `mailing_id` int(10) unsigned NOT NULL,
-  `counter` varchar(32) NOT NULL,
-  `timebox` int(10) unsigned NOT NULL,
-  `value` int(10) unsigned NOT NULL,
-  `updated_at` datetime NOT NULL,
-  PRIMARY KEY (`mailing_id`,`counter`,`timebox`),
-  CONSTRAINT `analytics_mailing_counter_ibfk_1` FOREIGN KEY (`mailing_id`) REFERENCES `civicrm_mailing` (`id`)
-);
-
-DROP TABLE IF EXISTS `analytics_member_metrics`;
-CREATE TABLE `analytics_member_metrics` (
-  `id` int(11) NOT NULL AUTO_INCREMENT,
-  `added_date` date DEFAULT NULL,
-  `language` varchar(5) DEFAULT NULL,
-  `country_id` int(11) DEFAULT NULL,
-  `number_added` int(11) DEFAULT NULL,
-  `number_removed` int(11) DEFAULT NULL,
-  `stamp` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-  PRIMARY KEY (`id`)
-);
-
 DROP TABLE IF EXISTS `analytics_member_metrics_dt`;
 CREATE TABLE `analytics_member_metrics_dt` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
@@ -155,13 +132,6 @@ CREATE TABLE `analytics_petitions_total` (
   PRIMARY KEY (`id`)
 );
 
-DROP TABLE IF EXISTS `analytics_timeboxes`;
-CREATE TABLE `analytics_timeboxes` (
-  `box` int(10) unsigned NOT NULL,
-  PRIMARY KEY (`box`)
-);
-INSERT INTO `analytics_timeboxes` VALUES (300), (720), (1440), (2880), (144000);
-
 DROP TABLE IF EXISTS `data_mailing_counter`;
 CREATE TABLE `data_mailing_counter` (
   `mailing_id` int(10) unsigned NOT NULL DEFAULT '0',
@@ -179,3 +149,4 @@ CREATE TABLE `data_timeboxes` (
   PRIMARY KEY (`box`)
 );
 INSERT INTO `data_timeboxes` VALUES (120), (300), (720), (1440), (2880), (144000);
+
