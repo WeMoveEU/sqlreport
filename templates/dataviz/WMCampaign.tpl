@@ -111,7 +111,7 @@
 
 <script>
 ////    'use strict';
-var campaign = {crmAPI action="get" entity="campaign" return="id,name,parent_id,external_identifier,custom_8,custom_11" parent_id=$id};
+var campaign = {crmAPI action="get" entity="campaign" return="id,name,parent_id,external_identifier,custom_4,custom_8,custom_11" parent_id=$id};
 if (campaign.count==0) //need to fix so it has a parent...
   campaign.values=[{id:$id,name:"Fix #"+$id}];
 //custom_8=url custom_11=utm custom_4=language

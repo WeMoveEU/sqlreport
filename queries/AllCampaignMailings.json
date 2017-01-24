@@ -1,20 +1,3 @@
 {
-"query":"
-select 
-  m.id,m.name,
-  m.campaign_id,
-  cd.language_4 as lang,
-  mailing_type,
-  subject, scheduled_date,
-  r.value recipient,o.value open,click.value click,
-  coalesce(new_vsigns.value, 0) as v_new_member 
-from civicrm_mailing m 
-join civicrm_campaign c on campaign_id=c.id 
-join civicrm_value_speakout_integration_2 cd on entity_id=c.id  
-LEFT JOIN data_mailing_counter r ON r.mailing_id=m.id AND r.counter='recipients' AND r.timebox=0
-LEFT JOIN data_mailing_counter o ON o.mailing_id=m.id AND o.counter='opens' AND o.timebox=144000
-LEFT JOIN data_mailing_counter new_vsigns ON new_vsigns.mailing_id=m.id AND new_vsigns.counter='new_viral_signs' AND new_vsigns.timebox=144000
-LEFT JOIN data_mailing_counter click ON click.mailing_id=m.id AND click.counter='clicks' AND click.timebox=144000
-where c.parent_id=%1
-","params":{"1":{"name":"id","type":"Integer"}}
+"query":"select   m.id,m.name,  m.campaign_id,  cd.language_4 as lang,  mailing_type,  subject, scheduled_date,  r.value recipient,o.value open,click.value click,  coalesce(new_vsigns.value, 0) as v_new_member from civicrm_mailing m join civicrm_campaign c on campaign_id=c.id join civicrm_value_speakout_integration_2 cd on entity_id=c.id LEFT JOIN data_mailing_counter r ON r.mailing_id=m.id AND r.counter='recipients' AND r.timebox=0 LEFT JOIN data_mailing_counter o ON o.mailing_id=m.id AND o.counter='opens' AND o.timebox=144000 LEFT JOIN data_mailing_counter new_vsigns ON new_vsigns.mailing_id=m.id AND new_vsigns.counter='new_viral_signs' AND new_vsigns.timebox=144000 LEFT JOIN data_mailing_counter click ON click.mailing_id=m.id AND click.counter='clicks' AND click.timebox=144000 where c.parent_id=%1","params":{"1":{"name":"id","type":"Integer"}}
 }
