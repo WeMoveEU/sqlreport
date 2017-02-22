@@ -149,7 +149,7 @@ jQuery(function($) {
         html += "<li class='dropdown lang-dropdown' ><a href='' class='dropdown-toggle' data-toggle='dropdown' role='button' aria-haspopup='true' aria-expanded='false'>"+d.custom_4.slice(-2)+"<span class='caret'></span></a><ul class='dropdown-menu'>";
         l = d.custom_4;
       }
-      html += "<li class='campaign' data-index='"+i+"'><a href='#' title='"+d.name+"'><span class='badge'></span>"+ d.name.slice(0,-3) + "</a></li>";
+      html += "<li class='campaign' data-index='"+i+"'><a href='#camp_"+d.id+"' title='"+d.name+"'><span class='badge'></span>"+ d.name.slice(0,-3) + "</a></li>";
     });
   }
   html +="</ul>";
@@ -158,9 +158,16 @@ jQuery(function($) {
   $('#campaign-nav .nav-subcampaign').on('click',"a", function () {
     
     var i=$(this).parent().data("index");
-    $(this).closest("dropdown").addClass("active");
-    if (!i) return;
-    graphs.signature.dimension().filter(campaign.values[i].name);      
+    $(this).closest(".dropdown").addClass("active");
+    graphs.signature.filterAll();
+    if (!i) {
+      $(this).parent().find("li").each(function(){
+         graphs.signature.filter(campaign.values[$(this).data("index")].name);
+      });
+      
+    } else {
+      graphs.signature.filter(campaign.values[i].name);      
+    }
     dc.redrawAll();    
   }) 
 });
