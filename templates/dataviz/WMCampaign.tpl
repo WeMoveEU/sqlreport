@@ -19,7 +19,7 @@
 
     <div class="collapse navbar-collapse" id="campaign-navbar">
       <ul class="nav navbar-nav nav-subcampaign">
-        <li class="dropdown lang-dropdown" data-index="[index]">
+        <li class="dropdown lang-dropdown campaign" data-index="[index]">
           <a href="#" title="[name]" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false"><span class="badge"></span>[lang]<span class="caret"></span></a>
           <ul class="dropdown-menu">
             <li>CiviCRM</li>
@@ -111,7 +111,7 @@
 
 <script>
 ////    'use strict';
-var campaign = {crmAPI action="get" entity="campaign" return="id,name,parent_id,external_identifier,custom_4,custom_8,custom_11" parent_id=$id};
+var campaign = {crmAPI action="get" entity="campaign" option_limit=1000 return="id,name,parent_id,external_identifier,custom_4,custom_8,custom_11" parent_id=$id};
 if (campaign.count==0) //need to fix so it has a parent...
   campaign.values=[{id:$id,name:"Fix #"+$id}];
 //custom_8=url custom_11=utm custom_4=language
@@ -129,22 +129,39 @@ jQuery(function($) {
   $(".navbar-brand").html(campaign.values[0].name.slice(0,-3));
   var dd=$("#campaign-navbar .nav-subcampaign").html();
   var html="";
-  $.each( campaign.values, function( i, d ){
-    html += dd.replace("[lang]",d.custom_4.slice(-2))
+  if (campaign.count <= 10) {
+    $.each( campaign.values, function( i, d ){
+      html += dd.replace("[lang]",d.custom_4.slice(-2))
               .replace("[index]",i)
               .replace("[name]",d.name)
               .replace(/\[id\]/g, d.id)
               .replace(/\[external_id\]/g, d.external_identifier);
-  });
+    });
+  } else {
+    var l = "";
+    campaign.values.sort(function(x, y){
+      return d3.ascending(x.custom_4, y.custom_4);
+    });
+   
+    $.each( campaign.values, function( i, d ){
+      if (d.custom_4 != l) { // new language
+        if (l) html += "</ul></li>";
+        html += "<li class='dropdown lang-dropdown' ><a href='' class='dropdown-toggle' data-toggle='dropdown' role='button' aria-haspopup='true' aria-expanded='false'>"+d.custom_4.slice(-2)+"<span class='caret'></span></a><ul class='dropdown-menu'>";
+        l = d.custom_4;
+      }
+      html += "<li class='campaign' data-index='"+i+"'><a href='#' title='"+d.name+"'><span class='badge'></span>"+ d.name.slice(0,-3) + "</a></li>";
+    });
+  }
+  html +="</ul>";
   $("#campaign-navbar ul.nav-subcampaign").html(html);
-  $('#campaign-nav .nav-subcampaign').on('click',".dropdown-toggle", function () {
+
+  $('#campaign-nav .nav-subcampaign').on('click',"a", function () {
     
-    var i=$(this).parent().addClass("active").data("index");
+    var i=$(this).parent().data("index");
+    $(this).closest("dropdown").addClass("active");
+    if (!i) return;
     graphs.signature.dimension().filter(campaign.values[i].name);      
     dc.redrawAll();    
-  }) 
-  $('#campaign-nav').on('click',".dropdown-menu a", function () {
-    var i=$(this).closest(".dropdown-menu").data("index");
   }) 
 });
 
