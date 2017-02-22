@@ -140,16 +140,17 @@ jQuery(function($) {
   } else {
     var l = "";
     campaign.values.sort(function(x, y){
-      return d3.ascending(x.custom_4, y.custom_4);
+      return d3.ascending(x.custom_4, y.custom_4)
     });
    
+
     $.each( campaign.values, function( i, d ){
       if (d.custom_4 != l) { // new language
         if (l) html += "</ul></li>";
-        html += "<li class='dropdown lang-dropdown' ><a href='' class='dropdown-toggle' data-toggle='dropdown' role='button' aria-haspopup='true' aria-expanded='false'>"+d.custom_4.slice(-2)+"<span class='caret'></span></a><ul class='dropdown-menu'>";
+        html += "<li class='dropdown lang-dropdown' ><a href='' class='dropdown-toggle' data-toggle='dropdown' role='button' aria-haspopup='true' aria-expanded='false'>"+d.custom_4.slice(-2)+"<span class='caret'></span></a><ul class='dropdown-menu' style='width:300px;'>";
         l = d.custom_4;
       }
-      html += "<li class='campaign' data-index='"+i+"'><a href='#camp_"+d.id+"' title='"+d.name+"'><span class='badge'></span>"+ d.name.slice(0,-3) + "</a></li>";
+      html += "<li class='campaign' data-index='"+i+"'><a href='#camp_"+d.id+"' title='"+d.name+"'><span class='badge pull-right'></span>"+ d.name.slice(0,-3) + "</a></li>";
     });
   }
   html +="</ul>";
@@ -419,6 +420,7 @@ function drawTable(dom) {
                 if (d.mailing) {
                     return '<a href="/civicrm/mailing/report?mid='+d.mailing.id+'" title="'+d.mailing.subject+'" data-toogle="tooltip">'+d.mailing.name.substring(0,18)+'</a>';
                 }
+                if (d.media = "widget") return d.source + " " + d.name;
                 return d.source},
               function(d){return d.total},
               function(d){
@@ -458,7 +460,7 @@ function drawPie(dom,attribute) {
 		.colors(d3.scale.category10())
 		.renderlet(function(chart){
 			 chart.data().forEach(function(d, i) {
-				 d3.selectAll("#campaign-nav a.dropdown-toggle[title='"+d.key+"']").select(".badge").html(d.value);
+				 d3.selectAll("#campaign-nav a[title='"+d.key+"']").select(".badge").html(d.value);
 			 });
 		})
 		.group(group);
