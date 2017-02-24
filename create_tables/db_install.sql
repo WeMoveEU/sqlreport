@@ -150,3 +150,16 @@ CREATE TABLE `data_timeboxes` (
 );
 INSERT INTO `data_timeboxes` VALUES (120), (300), (720), (1440), (2880), (144000);
 
+DROP TABLE IF EXISTS analytics_mailing_counter_datetime;
+CREATE TABLE `analytics_mailing_counter_datetime` (
+  `mailing_id` int(10) unsigned NOT NULL,
+  `counter` varchar(32) NOT NULL,
+  `value` DATETIME NULL,
+  `updated_at` datetime NOT NULL,
+  PRIMARY KEY (`mailing_id`, `counter`),
+  CONSTRAINT `analytics_mailing_counter_datetime_ibfk_1` FOREIGN KEY (`mailing_id`) REFERENCES `civicrm_mailing` (`id`)
+);
+
+CREATE TABLE analytics_temp_mailing (
+  id INT UNSIGNED PRIMARY KEY
+);
