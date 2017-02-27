@@ -1,4 +1,22 @@
 
+
+-- update renormalized ab mailings tables
+INSERT IGNORE INTO data_mailing_ab
+  SELECT
+    ab.mailing_id_a, m.mailing_type, ab.id, 'a'
+  FROM civicrm_mailing_abtest ab JOIN civicrm_mailing m ON m.id = ab.mailing_id_a;
+
+INSERT IGNORE INTO data_mailing_ab
+  SELECT
+    ab.mailing_id_b, m.mailing_type, ab.id, 'b'
+  FROM civicrm_mailing_abtest ab JOIN civicrm_mailing m ON m.id = ab.mailing_id_b;
+
+INSERT IGNORE INTO data_mailing_ab
+  SELECT
+    ab.mailing_id_c, m.mailing_type, ab.id, 'c'
+  FROM civicrm_mailing_abtest ab JOIN civicrm_mailing m ON m.id = ab.mailing_id_c;
+
+
 -- analytics_temp_mailing contains mailings which should be updated
 TRUNCATE analytics_temp_mailing;
 
