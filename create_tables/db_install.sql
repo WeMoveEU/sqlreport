@@ -163,3 +163,55 @@ CREATE TABLE `analytics_mailing_counter_datetime` (
 CREATE TABLE analytics_temp_mailing (
   id INT UNSIGNED PRIMARY KEY
 );
+
+START TRANSACTION ;
+DELIMITER #
+DROP FUNCTION IF EXISTS analyticsMailjetMedianTimeStamp;
+CREATE FUNCTION analyticsMailjetMedianTimeStamp(mid INT) RETURNS DATETIME
+  BEGIN
+    RETURN (SELECT t1.mailjet_time_stamp AS median_val
+    FROM (
+           SELECT @rownum := @rownum + 1 AS `row_number`, ed.mailjet_time_stamp
+           FROM civicrm_mailing_event_delivered ed
+             JOIN civicrm_mailing_event_queue eq ON eq.id = ed.event_queue_id
+             JOIN civicrm_mailing_job mj ON mj.id = eq.job_id AND mj.is_test = 0
+             , (SELECT @rownum := 0) r
+           WHERE mj.mailing_id = mid
+           ORDER BY ed.mailjet_time_stamp
+         ) AS t1,
+      (
+        SELECT count(*) AS total_rows
+        FROM civicrm_mailing_event_delivered ed
+          JOIN civicrm_mailing_event_queue eq ON eq.id = ed.event_queue_id
+          JOIN civicrm_mailing_job mj ON mj.id = eq.job_id AND mj.is_test = 0
+        WHERE mj.mailing_id = mid
+      ) AS t2
+    WHERE 1
+        AND t1.row_number IN (floor((total_rows + 1) / 2)));
+  END#
+
+DROP FUNCTION IF EXISTS analyticsMedianOriginalTimeStamp;
+CREATE FUNCTION analyticsMedianOriginalTimeStamp(mid INT) RETURNS DATETIME
+  BEGIN
+    RETURN (SELECT t1.time_stamp AS median_val
+    FROM (
+           SELECT @rownum := @rownum + 1 AS `row_number`, ed.time_stamp
+           FROM civicrm_mailing_event_delivered ed
+             JOIN civicrm_mailing_event_queue eq ON eq.id = ed.event_queue_id
+             JOIN civicrm_mailing_job mj ON mj.id = eq.job_id AND mj.is_test = 0
+             , (SELECT @rownum := 0) r
+           WHERE mj.mailing_id = mid
+           ORDER BY ed.time_stamp
+         ) AS t1,
+      (
+        SELECT count(*) AS total_rows
+        FROM civicrm_mailing_event_delivered ed
+          JOIN civicrm_mailing_event_queue eq ON eq.id = ed.event_queue_id
+          JOIN civicrm_mailing_job mj ON mj.id = eq.job_id AND mj.is_test = 0
+        WHERE mj.mailing_id = mid
+      ) AS t2
+    WHERE 1
+        AND t1.row_number IN (floor((total_rows + 1) / 2)));
+  END#
+DELIMITER ;
+COMMIT ;
