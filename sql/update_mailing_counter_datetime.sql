@@ -49,7 +49,7 @@ INSERT IGNORE INTO analytics_temp_mailing
     JOIN civicrm_mailing_job mj ON mj.mailing_id = cd.mailing_id AND mj.is_test = 0
     JOIN civicrm_mailing_event_queue eq ON eq.job_id = mj.id
     JOIN civicrm_mailing_event_delivered ed ON ed.event_queue_id = eq.id
-  WHERE cd.counter = 'max_mailjet' AND ed.time_stamp > cd.updated_at AND ed.original_time_stamp > '1970-01-01';
+  WHERE cd.counter = 'max_mailjet' AND ed.time_stamp > cd.updated_at AND ed.mailjet_time_stamp > '1970-01-01';
 
 
 -- step 3. remove counters those which should be updated
@@ -65,7 +65,7 @@ INSERT IGNORE INTO analytics_mailing_counter_datetime
 
 -- step 4.2. insert median mailjet
 INSERT IGNORE INTO analytics_mailing_counter_datetime
-  SELECT m.id, 'median_mailjet', analyticsMedianTimeStamp(m.id), NOW()
+  SELECT m.id, 'median_mailjet', analyticsMailjetMedianTimeStamp(m.id), NOW()
   FROM civicrm_mailing m
     JOIN analytics_temp_mailing tm ON tm.id = m.id
   WHERE m.is_completed = 1;
@@ -77,7 +77,7 @@ INSERT IGNORE INTO analytics_mailing_counter_datetime
   SELECT id, 'max_mailjet', max_time_stamp, NOW()
   FROM  (SELECT m.id, max(ed.time_stamp) max_time_stamp
   FROM civicrm_mailing_event_delivered ed
-    JOIN civicrm_mailing_event_queue eq ON eq.id = ed.event_queue_id AND ed.original_time_stamp > '1970-01-01'
+    JOIN civicrm_mailing_event_queue eq ON eq.id = ed.event_queue_id AND ed.mailjet_time_stamp > '1970-01-01'
     JOIN civicrm_mailing_job mj ON mj.id = eq.job_id AND mj.is_test = 0
     JOIN civicrm_mailing m ON m.id = mj.mailing_id
     JOIN analytics_temp_mailing tm ON tm.id = m.id
