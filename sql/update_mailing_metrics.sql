@@ -5,6 +5,25 @@ INSERT INTO data_mailing_counter
   SELECT mailing_id, 'recipients', 0, COUNT(*), NOW() FROM civicrm_mailing_recipients GROUP BY mailing_id
   ON DUPLICATE KEY UPDATE value=VALUES(value), last_updated=NOW();
 
+-- Delivered by CiviCRM
+INSERT INTO data_mailing_counter
+  SELECT mj.mailing_id, 'delivered_original', 0, COUNT(ed.id), NOW()
+  FROM civicrm_mailing_event_delivered ed
+    JOIN civicrm_mailing_event_queue eq ON eq.id = ed.event_queue_id
+    JOIN civicrm_mailing_job mj ON mj.id = eq.job_id AND mj.is_test = 0
+  GROUP BY mj.mailing_id
+ON DUPLICATE KEY UPDATE value = VALUES(value), last_updated = NOW();
+
+-- Delivered by Mailjet
+INSERT INTO data_mailing_counter
+  SELECT mj.mailing_id, 'delivered_mailjet', 0, COUNT(ed.id), NOW()
+  FROM civicrm_mailing_event_delivered ed
+    JOIN civicrm_mailing_event_queue eq ON eq.id = ed.event_queue_id
+    JOIN civicrm_mailing_job mj ON mj.id = eq.job_id AND mj.is_test = 0
+  WHERE ed.mailjet_time_stamp > '1970-01-01'
+  GROUP BY mj.mailing_id
+ON DUPLICATE KEY UPDATE value = VALUES(value), last_updated = NOW();
+
 -- Opens
 INSERT INTO data_mailing_counter 
   SELECT j.mailing_id, 'opens', b.box, COUNT(DISTINCT q.id), NOW()
