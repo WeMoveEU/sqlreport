@@ -263,6 +263,8 @@ function drawNumbers (graphs){
 		 ref = ref || graphs.nb_recipient.value() || 1;
 		 factor= factor || 1;
 		 d3.selectAll(chart.anchor()).style("background-color", color(factor*chart.value()/ref) )
+		 .classed("tip",true)
+		 .attr("data-original-title", d3.format(".2%")(chart.value()/ref))
 		 .attr("title", d3.format(".2%")(chart.value()/ref));
 	}
 	graphs.nb_signature=dc.numberDisplay(".nb_signature") 
@@ -319,9 +321,12 @@ function drawNumbers (graphs){
 	dc.numberDisplay(".nb_open") 
 	.valueAccessor(function(d){ return d.open/d.recipient})
 	 .formatNumber(d3.format(".0%"))
-	.renderlet(function(chart) {renderLetDisplay(chart,3,1)})
+	.on("renderlet.display",function(chart) {renderLetDisplay(chart,3,1)})
 	.html({some:"%number",none:"nobody opened"})
-	.group(group);
+	.group(group)
+        .on("renderlet.tootltip", function(){
+          jQuery("#overview .tip").tooltip('fixTitle');
+        })
 
 
 }
@@ -412,24 +417,29 @@ function drawTable(dom) {
                 return d.lang.slice(-2)},
               function(d){
                 if (d.mailing) {
-                  return d3.format(".2s")(d.mailing.recipient) + ' <abbr title="'+d.mailing.mailing_type+'">'+d.media+'</abbr>';
+                  return d3.format(".2s")(d.mailing.recipient) + ' <abbr class="tip" title="'+d.mailing.mailing_type+'">'+d.media+'</abbr>';
                 }
-                return d.media
+                return d.media;
               },
               function(d){
                 if (d.mailing) {
-                    return '<a href="/civicrm/mailing/report?mid='+d.mailing.id+'" title="'+d.mailing.subject+'" data-toogle="tooltip">'+d.mailing.name.substring(0,18)+'</a>';
+                    return '<a href="/civicrm/mailing/report?mid='+d.mailing.id+'" title="'+d.mailing.subject+'" class="tip">'+d.mailing.name.substring(0,18)+'</a>';
                 }
-                if (d.media = "widget") return d.source + " " + d.name;
+                if (d.media == "widget") return d.source + " " + d.name;
                 return d.source},
-              function(d){return d.total},
+              function(d){
+                if (d.mailing && d.mailing.recipient) {
+                    return "<span class='tip' title='"+ d3.format(".2%")(+d.total/+d.mailing.recipient) + " recipient signed'>"+d.total+'</span>';
+                }
+                return d.total
+              },
               function(d){
                 var newbies=d.completed_new_member+d.pending+d.optout;
-                return "<span title='"+newbies+"'>"+d3.format(".2%")(newbies/d.total)+"</span>"; 
+                return "<span class='tip' title='"+newbies+"'>"+d3.format(".2%")(newbies/d.total)+"</span>"; 
                 return d.completed_new_member+d.pending+d.optout},
               function(d){
                 if (d.mailing && d.completed_new_member) {
-                 return d.completed_new_member + '<span class="label label-default" title="viral across all languages">+'+d.mailing.v_new_member+'</span>';
+                 return d.completed_new_member + '<span class="label label-default" class="tip" title="viral across all languages">+'+d.mailing.v_new_member+'</span>';
                 }
                 return d.completed_new_member;
               },
@@ -438,6 +448,9 @@ function drawTable(dom) {
               function(d){return d.share},
               function(d){return d.leave},
              ])
+    .on("renderlet.tootltip", function(){
+       jQuery(dom + " .tip").tooltip();
+    })
     ;
   return graph;
 }
