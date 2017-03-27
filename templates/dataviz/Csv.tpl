@@ -77,7 +77,7 @@ function drawDataTable(dom) {
 "<'row'<'col-md-12'rt>><'row'<'col-md-12 footer'ip>>", //'Blfrtip',
    "pageLength": 50,
   "lengthMenu": [ [10, 25, 50, -1], [10, 25, 50, "All"] ],
-   buttons: [ 'excel','copy','colvis'],
+   buttons: [ 'excel','copy','colvis','csv'],
     colReorder: true,
     stateSave: true,
     responsive: false,
