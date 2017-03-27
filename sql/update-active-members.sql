@@ -2,6 +2,8 @@
 -- -- 28 survey
 -- -- 32 petition
 
+use wemove_47;
+
 
 insert into analytics_calculation_times
 ( calculation ) 
