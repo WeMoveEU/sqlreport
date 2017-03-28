@@ -1,0 +1,5 @@
+{
+"merge_columns":"awk 'BEGIN{OFS=\",\"}{if(NR%2==1){val=$0;}else{print val,$0}}' inputFile",
+"query":
+"select distinct first_name, IF(last_name is not null or last_name !='', LEFT(last_name,1),'(witheld)') as initial, postal_code, cty.name as country from civicrm_activity a join civicrm_campaign camp on campaign_id=camp.id and activity_type_id=32 join civicrm_activity_contact ac on a.id=ac.activity_id and record_type_id=2 join civicrm_contact c on c.id=ac.contact_id join civicrm_address ad on ad.contact_id=c.id and is_primary=1 join civicrm_country cty on cty.id=country_id where camp.parent_id=%1 order by last_name","params":{"1":{"name":"id","type":"Integer"}}}
+
