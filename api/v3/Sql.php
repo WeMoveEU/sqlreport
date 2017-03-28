@@ -21,6 +21,8 @@ function civicrm_api3_sql_runupdateall ($params) {
   foreach (new DirectoryIterator(dirname( __FILE__ ) .'/../../sql') as $file) {
     if ($file->isFile() && substr ($file->getFilename(),-4,4) == ".sql") {
       $filename = substr($file->getFilename(), 0, -4);
+      $load = sys_getloadavg();
+      $load = $load[0];
       $logId = addLog($filename, $load);
       $r = civicrm_api3("sql", "runupdate", array('file' => $filename));
       updateLog($logId);
@@ -48,6 +50,8 @@ function civicrm_api3_sql_runupdatehourly ($params) {
     if ($file->isFile() && substr ($file->getFilename(), -4, 4) == ".sql") {
       $filename = substr($file->getFilename(), 0, -4);
       if ($filename != 'update-active-members') {
+        $load = sys_getloadavg();
+        $load = $load[0];
         $logId = addLog($filename, $load);
         $r = civicrm_api3("sql", "runupdate", array('file' => $filename));
         updateLog($logId);
