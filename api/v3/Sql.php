@@ -21,7 +21,9 @@ function civicrm_api3_sql_runupdateall ($params) {
   foreach (new DirectoryIterator(dirname( __FILE__ ) .'/../../sql') as $file) {
     if ($file->isFile() && substr ($file->getFilename(),-4,4) == ".sql") {
       $filename = substr($file->getFilename(), 0, -4);
+      $logId = addLog($filename, $load);
       $r = civicrm_api3("sql", "runupdate", array('file' => $filename));
+      updateLog($logId);
       $results["$filename"] = array ("file" => $filename, "result" => $r);
     }
   }
@@ -46,7 +48,9 @@ function civicrm_api3_sql_runupdatehourly ($params) {
     if ($file->isFile() && substr ($file->getFilename(), -4, 4) == ".sql") {
       $filename = substr($file->getFilename(), 0, -4);
       if ($filename != 'update-active-members') {
+        $logId = addLog($filename, $load);
         $r = civicrm_api3("sql", "runupdate", array('file' => $filename));
+        updateLog($logId);
         $results["$filename"] = array ("file" => $filename, "result" => $r);
       }
     }
@@ -69,7 +73,9 @@ function civicrm_api3_sql_runupdateactivemembers ($params) {
     throw new API_Exception ("load too high, try later $load");
   }
   $filename = "update-active-members";
+  $logId = addLog($filename, $load);
   $r = civicrm_api3("sql", "runupdate", array('file' => $filename));
+  updateLog($logId);
   $results["$filename"] = array ("file" => $filename, "result" => $r);
   return civicrm_api3_create_success($results, $params);
 }
@@ -98,4 +104,27 @@ function civicrm_api3_sql_runupdate ($params) {
   CRM_Core_DAO::executeQuery("SET TRANSACTION ISOLATION LEVEL READ UNCOMMITTED ;");
   CRM_Utils_File::sourceSQLFile($config->dsn, $sql, NULL, true, false);
   return civicrm_api3_create_success(array("query" => $sql), $params);
+}
+
+
+function addLog($script, $sysload) {
+  $query = "INSERT INTO analytics_log (script, start, sysload)
+            VALUES (%1, NOW(), %2)";
+  $params = array(
+    1 => array($script, 'String'),
+    2 => array($sysload, 'Float'),
+  );
+  CRM_Core_DAO::executeQuery($query, $params);
+  return CRM_Core_DAO::singleValueQuery('SELECT LAST_INSERT_ID()');
+}
+
+function updateLog($id) {
+  $query = "UPDATE analytics_log
+            SET stop = NOW(), duration = TIMESTAMPDIFF(SECOND, start, NOW())
+            WHERE id = %1";
+  $params = array(
+    1 => array($id, 'Integer'),
+  );
+  $dao = CRM_Core_DAO::executeQuery($query, $params);
+  return $dao->affectedRows();
 }

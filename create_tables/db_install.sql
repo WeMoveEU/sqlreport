@@ -215,3 +215,13 @@ CREATE FUNCTION analyticsMedianOriginalTimeStamp(mid INT) RETURNS DATETIME
   END#
 DELIMITER ;
 COMMIT ;
+
+
+CREATE TABLE analytics_log(
+  id INT UNSIGNED PRIMARY KEY AUTO_INCREMENT,
+  script VARCHAR(255) NOT NULL COMMENT 'Script name executed by api',
+  start DATETIME NOT NULL COMMENT 'Start execution',
+  stop DATETIME NULL COMMENT 'Stop execution. If it remains null then it means that script was interrupted.',
+  duration FLOAT NULL COMMENT 'Duration of execution',
+  sysload FLOAT NULL COMMENT 'System load before starting the script'
+);
