@@ -1,3 +1,7 @@
+use wemove_47;
+SET SESSION sql_mode=(SELECT REPLACE(@@sql_mode,'ONLY_FULL_GROUP_BY',''));
+
+select count(*) from analytics_active_3m;
 
 
 SELECT 
@@ -9,6 +13,8 @@ SELECT
     SUM(IF(language = 'fr_FR', active, 0)) AS fr_FR,
     SUM(IF(language = 'it_IT', active, 0)) AS it_IT,
     SUM(IF(language = 'en_US', active, 0)) AS en_US,
+    sum(if(language = 'pl_PL', active, 0)) as pl_PL,
+    sum(if(language = 'ro_RO', active, 0)) as ro_RO,
     stamp as calculated_on
 FROM
 analytics_active_3m
