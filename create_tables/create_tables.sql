@@ -166,6 +166,7 @@ CREATE TABLE analytics_active_3m (
     language VARCHAR(5),
     active INT,
     stamp timestamp,
+    country_id int,
     PRIMARY KEY (id)
 );
 
@@ -177,6 +178,7 @@ CREATE TABLE analytics_active_1m (
     language VARCHAR(5),
     active INT,
     stamp timestamp,
+    country_id int,
     PRIMARY KEY (id)
 );
 

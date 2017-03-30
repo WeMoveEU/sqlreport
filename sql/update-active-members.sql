@@ -15,9 +15,9 @@ truncate table analytics_active_3m;
 
 
 insert into analytics_active_3m
-(kpidate, language, active)
+(kpidate, language, active, country_id)
 SELECT 
-    kpidate, language, COUNT(t.contact_id) AS active
+    kpidate, language, COUNT(t.contact_id) AS active, country_id
 FROM
     (SELECT 
         gc.contact_id,
@@ -42,7 +42,10 @@ FROM
     civicrm_email email ON email.contact_id = t.contact_id
         AND email.is_primary IS TRUE
         AND email.on_hold = 0
-GROUP BY kpidate , language;
+        	LEFT JOIN
+    civicrm_address address ON address.contact_id = t.contact_id
+        AND address.is_primary = 1
+GROUP BY kpidate , language, country_id;
 
 
 truncate table analytics_active_1m;
