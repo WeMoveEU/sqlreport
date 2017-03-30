@@ -2,7 +2,7 @@ use wemove_47;
 SET SESSION sql_mode=(SELECT REPLACE(@@sql_mode,'ONLY_FULL_GROUP_BY',''));
 
 
-
+-- number of new recurring donation mandates per month
 SELECT 
     DATE_FORMAT(date, '%Y-%m') AS month, COUNT(*) as new_recur, SUM(amount)
 FROM
@@ -47,6 +47,8 @@ ORDER BY month DESC
 ; 
  
   
+  
+-- number of lost recurring donation mandates per month
 SELECT 
     DATE_FORMAT(cancel_date, '%Y-%m') AS month, COUNT(*) as cancelled_recur, SUM(amount)
 FROM
@@ -91,6 +93,8 @@ GROUP BY month
 ORDER BY month DESC
 ; 
  
+
+-- number of new recurring donation mandates per month and list
  
  select month, 
  
@@ -166,7 +170,10 @@ order by month desc
 ; 
  
    
-   
+
+-- number of lost recurring donation mandates per month and list
+-- incidentally, the last line shows the existing donation mandates
+
    select month, 
  
      SUM(new_recur) AS total_lost,

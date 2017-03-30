@@ -1,3 +1,7 @@
+use wemove_47;
+SET SESSION sql_mode=(SELECT REPLACE(@@sql_mode,'ONLY_FULL_GROUP_BY',''));
+
+
 SELECT 
     kpidate, language, COUNT(t.contact_id) AS active, country_id
 FROM
