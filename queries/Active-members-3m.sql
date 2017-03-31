@@ -1,14 +1,16 @@
-use wemove_47;
-SET SESSION sql_mode=(SELECT REPLACE(@@sql_mode,'ONLY_FULL_GROUP_BY',''));
+-- use wemove_47;
+-- SET SESSION sql_mode=(SELECT REPLACE(@@sql_mode,'ONLY_FULL_GROUP_BY',''));
 
-select count(*) from analytics_active_3m;
+-- select count(*) from analytics_active_3m;
 
 
 SELECT 
     kpidate AS date,
     SUM(active) AS total_3m,
+sum(if(language = 'en_GB' and (country_id != 1226 or country_id is NULL), active,0)) as en_INT,
     SUM(IF(language = 'de_DE', active, 0)) AS de_DE,
-    SUM(IF(language = 'en_GB', active, 0)) AS en_GB,
+	SUM(IF(language = 'en_GB' and country_id = 1226, active, 0)) AS UK,
+
     SUM(IF(language = 'es_ES', active, 0)) AS es_ES,
     SUM(IF(language = 'fr_FR', active, 0)) AS fr_FR,
     SUM(IF(language = 'it_IT', active, 0)) AS it_IT,
