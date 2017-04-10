@@ -153,32 +153,3 @@ stamp timestamp,
 primary key(id)
 );
 
-
-
-
-drop table if exists analytics_active_3m;
-drop table if exists analytics_active_1m;
-
-
-CREATE TABLE analytics_active_3m (
-    id INT NOT NULL AUTO_INCREMENT,
-    kpidate DATE,
-    language VARCHAR(5),
-    active INT,
-    stamp timestamp,
-    country_id int,
-    PRIMARY KEY (id)
-);
-
-
-
-CREATE TABLE analytics_active_1m (
-    id INT NOT NULL AUTO_INCREMENT,
-    kpidate DATE,
-    language VARCHAR(5),
-    active INT,
-    stamp timestamp,
-    country_id int,
-    PRIMARY KEY (id)
-);
-

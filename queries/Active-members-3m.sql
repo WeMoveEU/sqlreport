@@ -7,10 +7,9 @@
 SELECT 
     kpidate AS date,
     SUM(active) AS total_3m,
-sum(if(language = 'en_GB' and (country_id != 1226 or country_id is NULL), active,0)) as en_INT,
+    SUM(IF(language = 'en_GB' AND country_id != 1226, active, 0)) AS en_INT,
     SUM(IF(language = 'de_DE', active, 0)) AS de_DE,
-	SUM(IF(language = 'en_GB' and country_id = 1226, active, 0)) AS UK,
-
+    SUM(IF(language = 'en_GB' AND country_id = 1226, active, 0)) AS UK,
     SUM(IF(language = 'es_ES', active, 0)) AS es_ES,
     SUM(IF(language = 'fr_FR', active, 0)) AS fr_FR,
     SUM(IF(language = 'it_IT', active, 0)) AS it_IT,

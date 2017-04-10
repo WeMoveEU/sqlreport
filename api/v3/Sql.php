@@ -17,70 +17,16 @@ function civicrm_api3_sql_runupdateall ($params) {
   if ($load > 2) {
     throw new API_Exception ("load too high, try later $load");
   }
-  $config = CRM_Core_Config::singleton();
   foreach (new DirectoryIterator(dirname( __FILE__ ) .'/../../sql') as $file) {
     if ($file->isFile() && substr ($file->getFilename(),-4,4) == ".sql") {
       $filename = substr($file->getFilename(), 0, -4);
       $load = sys_getloadavg();
-      $load = $load[0];
-      $logId = addLog($filename, $load);
+      $logId = addLog($filename, $load[0]);
       $r = civicrm_api3("sql", "runupdate", array('file' => $filename));
       updateLog($logId);
       $results["$filename"] = array ("file" => $filename, "result" => $r);
     }
   }
-  return civicrm_api3_create_success($results, $params);
-}
-
-/**
- * Action contains all scripts except of the slowest update-active-members.sql.
- *
- * @param $params
- *
- * @return array
- * @throws \API_Exception
- */
-function civicrm_api3_sql_runupdatehourly ($params) {
-  $load = sys_getloadavg();
-  $load = $load[0];
-  if ($load > 2) {
-    throw new API_Exception ("load too high, try later $load");
-  }
-  foreach (new DirectoryIterator(dirname( __FILE__ ) .'/../../sql') as $file) {
-    if ($file->isFile() && substr ($file->getFilename(), -4, 4) == ".sql") {
-      $filename = substr($file->getFilename(), 0, -4);
-      if ($filename != 'update-active-members') {
-        $load = sys_getloadavg();
-        $load = $load[0];
-        $logId = addLog($filename, $load);
-        $r = civicrm_api3("sql", "runupdate", array('file' => $filename));
-        updateLog($logId);
-        $results["$filename"] = array ("file" => $filename, "result" => $r);
-      }
-    }
-  }
-  return civicrm_api3_create_success($results, $params);
-}
-
-/**
- * Action for the slowest update-active-members.sql
- *
- * @param $params
- *
- * @return array
- * @throws \API_Exception
- */
-function civicrm_api3_sql_runupdateactivemembers ($params) {
-  $load = sys_getloadavg();
-  $load = $load[0];
-  if ($load > 2) {
-    throw new API_Exception ("load too high, try later $load");
-  }
-  $filename = "update-active-members";
-  $logId = addLog($filename, $load);
-  $r = civicrm_api3("sql", "runupdate", array('file' => $filename));
-  updateLog($logId);
-  $results["$filename"] = array ("file" => $filename, "result" => $r);
   return civicrm_api3_create_success($results, $params);
 }
 

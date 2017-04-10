@@ -1,21 +1,21 @@
 DROP TABLE IF EXISTS `analytics_active_1m`;
 CREATE TABLE `analytics_active_1m` (
-  `id` int(11) NOT NULL AUTO_INCREMENT,
-  `kpidate` date DEFAULT NULL,
-  `language` varchar(5) DEFAULT NULL,
-  `active` int(11) DEFAULT NULL,
-  `stamp` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-  PRIMARY KEY (`id`)
+  `kpidate` DATE NOT NULL,
+  `language` VARCHAR(5) NOT NULL,
+  `country_id` INT NOT NULL,
+  `active` INT,
+  `stamp` TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  PRIMARY KEY (`kpidate`, `language`, `country_id`)
 );
 
 DROP TABLE IF EXISTS `analytics_active_3m`;
 CREATE TABLE `analytics_active_3m` (
-  `id` int(11) NOT NULL AUTO_INCREMENT,
-  `kpidate` date DEFAULT NULL,
-  `language` varchar(5) DEFAULT NULL,
-  `active` int(11) DEFAULT NULL,
-  `stamp` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-  PRIMARY KEY (`id`)
+  `kpidate` DATE NOT NULL,
+  `language` VARCHAR(5) NOT NULL,
+  `country_id` INT NOT NULL,
+  `active` INT,
+  `stamp` TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  PRIMARY KEY (`kpidate`, `language`, `country_id`)
 );
 
 DROP TABLE IF EXISTS `analytics_calculation_times`;
