@@ -1,0 +1,9 @@
+<?xml version="1.0"?>
+<menu>
+  <item>
+    <path>civicrm/delivery</path>
+    <page_callback>CRM_Sqlreport_Page_Delivery</page_callback>
+    <title>Delivery</title>
+    <access_arguments>access CiviCRM</access_arguments>
+  </item>
+</menu>
