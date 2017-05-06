@@ -15,7 +15,7 @@ FROM
         contact.id,
             MAX(DATE(hist.date)) AS added_date,
             contact.preferred_language as preferred_language,
-            address.country_id as country_id
+            MIN(address.country_id) as country_id
     FROM
         civicrm_contact AS contact 
 /*    JOIN civicrm_group_contact gc ON contact.id = gc.contact_id
