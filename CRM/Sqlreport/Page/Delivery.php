@@ -14,19 +14,22 @@ class CRM_Sqlreport_Page_Delivery extends CRM_Core_Page {
     }
 
     $request = explode('/',$request);
-    $id = 0;
     if (CRM_Utils_Array::value(2, $request)) {
-      $id += $request[2];
+      $id = (int) $request[2];
     }
     require_once 'CRM/Core/Smarty/plugins/function.crmSQL.php';
     $smarty->register_function("crmSQL", "smarty_function_crmSQL");
+    if ($id == 0) {
+      parent::run();
+      return;
+    }
 
     $r = smarty_function_crmSQL(array("json"=>"Delivery", "id"=>$id));
 
     $filename = "delivery_".$id;
 
-//    header("Content-type: text/csv");
-//    header("Content-Disposition: attachment; filename={$filename}.csv");
+    header("Content-type: text/csv");
+    header("Content-Disposition: attachment; filename={$filename}.csv");
     header("Pragma: no-cache");
     header("Expires: 0");
     $csv= fopen("php://output", 'w');
@@ -36,7 +39,7 @@ class CRM_Sqlreport_Page_Delivery extends CRM_Core_Page {
       fputcsv($csv,array_merge(array_values($r["values"][$i]),array_values($r["values"][$i+1])));
     }
     fclose($csv);
-die ("");
+    CRM_Utils_System::civiExit();
   }
 
 }
