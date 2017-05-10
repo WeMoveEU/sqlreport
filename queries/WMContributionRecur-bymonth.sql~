@@ -1,7 +1,5 @@
 SELECT
   cr.month,
-  nr.new_recur-lr.cancelled_recur as net_recurring_donors,
-  nr.new_amount-lr.cancelled_amount as net_recurring_amount,
   nr.new_recur, nr.new_amount,
   lr.cancelled_recur, lr.cancelled_amount,
   nrl.nrc_total, nrl.nrc_en_INT, nrl.nrc_de_DE, nrl.nrc_UK, nrl.nrc_es_ES, nrl.nrc_fr_FR, nrl.nrc_it_IT, nrl.nrc_pl_PL,
