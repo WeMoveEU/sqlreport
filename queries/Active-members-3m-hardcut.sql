@@ -18,7 +18,7 @@ SELECT
     sum(if(language = 'ro_RO', active, 0)) as ro_RO,
     stamp as calculated_on
 FROM
-analytics_active_2m_decay_4m
+analytics_active_3m
 GROUP BY kpidate
 ORDER BY kpidate DESC;
 

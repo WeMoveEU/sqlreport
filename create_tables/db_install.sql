@@ -18,6 +18,16 @@ CREATE TABLE `analytics_active_3m` (
   PRIMARY KEY (`kpidate`, `language`, `country_id`)
 );
 
+DROP TABLE IF EXISTS `analytics_active_2m_decay_4m`;
+CREATE TABLE `analytics_active_2m_decay_4m` (
+  `kpidate` DATE NOT NULL,
+  `language` VARCHAR(5) NOT NULL,
+  `country_id` INT NOT NULL,
+  `active` INT,
+  `stamp` TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  PRIMARY KEY (`kpidate`, `language`, `country_id`)
+);
+
 DROP TABLE IF EXISTS `analytics_calculation_times`;
 CREATE TABLE `analytics_calculation_times` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
