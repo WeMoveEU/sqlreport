@@ -6,6 +6,7 @@ GRANT USAGE, SELECT ON drupal_47.* TO analytics@localhost;
 
 GRANT ALL ON wemove_47.ab_mailings TO analytics@localhost;
 GRANT ALL ON wemove_47.analytics_active_1m TO analytics@localhost;
+GRANT ALL ON wemove_47.analytics_active_2m_decay_4m TO analytics@localhost;
 GRANT ALL ON wemove_47.analytics_active_3m TO analytics@localhost;
 GRANT ALL ON wemove_47.analytics_calculation_times TO analytics@localhost;
 GRANT ALL ON wemove_47.analytics_delta_t_h TO analytics@localhost;

@@ -69,7 +69,7 @@ INSERT IGNORE INTO analytics_active_1m (kpidate, language, country_id, active)
 SET @fourmonthsago = DATE_ADD(@yesterday, INTERVAL - 4 MONTH);
 SET @twomonths = DATEDIFF(@yesterday, @fourmonthsago) / 2;
 
-INSERT INTO analytics_active_2m_decay_4m (kpidate, language, country_id, active)
+INSERT IGNORE INTO analytics_active_2m_decay_4m (kpidate, language, country_id, active)
   SELECT 
       @yesterday, language, IF(ISNULL(country_id), 0, country_id), SUM(t.active_value) AS active
   FROM
