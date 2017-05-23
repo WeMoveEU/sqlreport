@@ -170,7 +170,7 @@ FROM (
 UNION
 
 SELECT
-  IF(relative = 'yes', "last week (%)", "last week"),
+  IF(relative = 'yes', "week before (%)", "week before"),
   IF(relative = 'yes', CAST((lastweek.total - weekbefore.total) / weekbefore.total * 100 AS DECIMAL(5, 2)), lastweek.total - weekbefore.total),
   IF(relative = 'yes', CAST((lastweek.en_INT - weekbefore.en_INT) / weekbefore.total * 100 AS DECIMAL(5, 2)), lastweek.en_INT - weekbefore.en_INT),
   IF(relative = 'yes', CAST((lastweek.de_DE - weekbefore.de_DE) / weekbefore.total * 100 AS DECIMAL(5, 2)), lastweek.de_DE - weekbefore.de_DE),
@@ -214,6 +214,108 @@ FROM (
     FROM analytics_active_2m_decay_4m
     WHERE kpidate = DATE_SUB(CURRENT_DATE(), INTERVAL 15 DAY)
   ) weekbefore
+  JOIN (
+    SELECT 'yes' AS relative UNION SELECT 'no' AS relative
+  ) growth
+
+UNION
+
+SELECT
+  IF(relative = 'yes', "last month (%)", "last month"),
+  IF(relative = 'yes', CAST((yesterday.total - lastmonth.total) / lastmonth.total * 100 AS DECIMAL(5, 2)), yesterday.total - lastmonth.total),
+  IF(relative = 'yes', CAST((yesterday.en_INT - lastmonth.en_INT) / lastmonth.total * 100 AS DECIMAL(5, 2)), yesterday.en_INT - lastmonth.en_INT),
+  IF(relative = 'yes', CAST((yesterday.de_DE - lastmonth.de_DE) / lastmonth.total * 100 AS DECIMAL(5, 2)), yesterday.de_DE - lastmonth.de_DE),
+  IF(relative = 'yes', CAST((yesterday.UK - lastmonth.UK) / lastmonth.total * 100 AS DECIMAL(5, 2)), yesterday.UK - lastmonth.UK),
+  IF(relative = 'yes', CAST((yesterday.es_ES - lastmonth.es_ES) / lastmonth.total * 100 AS DECIMAL(5, 2)), yesterday.es_ES - lastmonth.es_ES),
+  IF(relative = 'yes', CAST((yesterday.fr_FR - lastmonth.fr_FR) / lastmonth.total * 100 AS DECIMAL(5, 2)), yesterday.fr_FR - lastmonth.fr_FR),
+  IF(relative = 'yes', CAST((yesterday.it_IT - lastmonth.it_IT) / lastmonth.total * 100 AS DECIMAL(5, 2)), yesterday.it_IT - lastmonth.it_IT),
+  IF(relative = 'yes', CAST((yesterday.pl_PL - lastmonth.pl_PL) / lastmonth.total * 100 AS DECIMAL(5, 2)), yesterday.pl_PL - lastmonth.pl_PL),
+  IF(relative = 'yes', CAST((yesterday.en_US - lastmonth.en_US) / lastmonth.total * 100 AS DECIMAL(5, 2)), yesterday.en_US - lastmonth.en_US),
+  IF(relative = 'yes', CAST((yesterday.other - lastmonth.other) / lastmonth.total * 100 AS DECIMAL(5, 2)), yesterday.other - lastmonth.other),
+  lastmonth.calculated
+FROM (
+    SELECT
+      SUM(active) AS total,
+      SUM(if(language = 'en_GB' and (country_id != 1226 or country_id is NULL), active, 0)) as en_INT,
+      SUM(IF(language = 'de_DE', active, 0)) AS de_DE,
+      SUM(IF(language = 'en_GB' and country_id = 1226, active, 0)) AS UK,
+      SUM(IF(language = 'es_ES', active, 0)) AS es_ES,
+      SUM(IF(language = 'fr_FR', active, 0)) AS fr_FR,
+      SUM(IF(language = 'it_IT', active, 0)) AS it_IT,
+      SUM(IF(language = 'pl_PL', active, 0)) AS pl_PL,
+      SUM(IF(language = 'en_US', active, 0)) AS en_US,
+      SUM(if(language not in ('de_DE', 'en_GB', 'es_ES', 'fr_FR', 'it_IT', 'en_US', 'pl_PL'), active, 0)) AS other,  
+      MAX(stamp) as calculated
+    FROM analytics_active_2m_decay_4m
+    WHERE kpidate = DATE_SUB(CURRENT_DATE(), INTERVAL 1 DAY)
+  ) yesterday
+  JOIN (
+    SELECT
+      SUM(active) AS total,
+      SUM(if(language = 'en_GB' and (country_id != 1226 or country_id is NULL), active, 0)) as en_INT,
+      SUM(IF(language = 'de_DE', active, 0)) AS de_DE,
+      SUM(IF(language = 'en_GB' and country_id = 1226, active, 0)) AS UK,
+      SUM(IF(language = 'es_ES', active, 0)) AS es_ES,
+      SUM(IF(language = 'fr_FR', active, 0)) AS fr_FR,
+      SUM(IF(language = 'it_IT', active, 0)) AS it_IT,
+      SUM(IF(language = 'pl_PL', active, 0)) AS pl_PL,
+      SUM(IF(language = 'en_US', active, 0)) AS en_US,
+      SUM(if(language not in ('de_DE', 'en_GB', 'es_ES', 'fr_FR', 'it_IT', 'en_US', 'pl_PL'), active, 0)) AS other,  
+      MAX(stamp) as calculated
+    FROM analytics_active_2m_decay_4m
+    WHERE kpidate = DATE_SUB(CURRENT_DATE(), INTERVAL 31 DAY)
+  ) lastmonth
+  JOIN (
+    SELECT 'yes' AS relative UNION SELECT 'no' AS relative
+  ) growth
+
+UNION
+
+SELECT
+  IF(relative = 'yes', "month before (%)", "month before"),
+  IF(relative = 'yes', CAST((lastmonth.total - monthbefore.total) / monthbefore.total * 100 AS DECIMAL(5, 2)), lastmonth.total - monthbefore.total),
+  IF(relative = 'yes', CAST((lastmonth.en_INT - monthbefore.en_INT) / monthbefore.total * 100 AS DECIMAL(5, 2)), lastmonth.en_INT - monthbefore.en_INT),
+  IF(relative = 'yes', CAST((lastmonth.de_DE - monthbefore.de_DE) / monthbefore.total * 100 AS DECIMAL(5, 2)), lastmonth.de_DE - monthbefore.de_DE),
+  IF(relative = 'yes', CAST((lastmonth.UK - monthbefore.UK) / monthbefore.total * 100 AS DECIMAL(5, 2)), lastmonth.UK - monthbefore.UK),
+  IF(relative = 'yes', CAST((lastmonth.es_ES - monthbefore.es_ES) / monthbefore.total * 100 AS DECIMAL(5, 2)), lastmonth.es_ES - monthbefore.es_ES),
+  IF(relative = 'yes', CAST((lastmonth.fr_FR - monthbefore.fr_FR) / monthbefore.total * 100 AS DECIMAL(5, 2)), lastmonth.fr_FR - monthbefore.fr_FR),
+  IF(relative = 'yes', CAST((lastmonth.it_IT - monthbefore.it_IT) / monthbefore.total * 100 AS DECIMAL(5, 2)), lastmonth.it_IT - monthbefore.it_IT),
+  IF(relative = 'yes', CAST((lastmonth.pl_PL - monthbefore.pl_PL) / monthbefore.total * 100 AS DECIMAL(5, 2)), lastmonth.pl_PL - monthbefore.pl_PL),
+  IF(relative = 'yes', CAST((lastmonth.en_US - monthbefore.en_US) / monthbefore.total * 100 AS DECIMAL(5, 2)), lastmonth.en_US - monthbefore.en_US),
+  IF(relative = 'yes', CAST((lastmonth.other - monthbefore.other) / monthbefore.total * 100 AS DECIMAL(5, 2)), lastmonth.other - monthbefore.other),
+  monthbefore.calculated
+FROM (
+    SELECT
+      SUM(active) AS total,
+      SUM(if(language = 'en_GB' and (country_id != 1226 or country_id is NULL), active, 0)) as en_INT,
+      SUM(IF(language = 'de_DE', active, 0)) AS de_DE,
+      SUM(IF(language = 'en_GB' and country_id = 1226, active, 0)) AS UK,
+      SUM(IF(language = 'es_ES', active, 0)) AS es_ES,
+      SUM(IF(language = 'fr_FR', active, 0)) AS fr_FR,
+      SUM(IF(language = 'it_IT', active, 0)) AS it_IT,
+      SUM(IF(language = 'pl_PL', active, 0)) AS pl_PL,
+      SUM(IF(language = 'en_US', active, 0)) AS en_US,
+      SUM(if(language not in ('de_DE', 'en_GB', 'es_ES', 'fr_FR', 'it_IT', 'en_US', 'pl_PL'), active, 0)) AS other,  
+      MAX(stamp) as calculated
+    FROM analytics_active_2m_decay_4m
+    WHERE kpidate = DATE_SUB(CURRENT_DATE(), INTERVAL 31 DAY)
+  ) lastmonth
+  JOIN (
+    SELECT
+      SUM(active) AS total,
+      SUM(if(language = 'en_GB' and (country_id != 1226 or country_id is NULL), active, 0)) as en_INT,
+      SUM(IF(language = 'de_DE', active, 0)) AS de_DE,
+      SUM(IF(language = 'en_GB' and country_id = 1226, active, 0)) AS UK,
+      SUM(IF(language = 'es_ES', active, 0)) AS es_ES,
+      SUM(IF(language = 'fr_FR', active, 0)) AS fr_FR,
+      SUM(IF(language = 'it_IT', active, 0)) AS it_IT,
+      SUM(IF(language = 'pl_PL', active, 0)) AS pl_PL,
+      SUM(IF(language = 'en_US', active, 0)) AS en_US,
+      SUM(if(language not in ('de_DE', 'en_GB', 'es_ES', 'fr_FR', 'it_IT', 'en_US', 'pl_PL'), active, 0)) AS other,  
+      MAX(stamp) as calculated
+    FROM analytics_active_2m_decay_4m
+    WHERE kpidate = DATE_SUB(CURRENT_DATE(), INTERVAL 61 DAY)
+  ) monthbefore
   JOIN (
     SELECT 'yes' AS relative UNION SELECT 'no' AS relative
   ) growth
