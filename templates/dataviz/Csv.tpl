@@ -50,6 +50,33 @@ function cell(d,i) {
   return d[i];
 }
 
+function sum(data) {
+  var result = data.reduce(function(a,b) {
+      return a + b;
+  });
+
+  if (!isNaN(result)) {
+    if (parseInt(result) != result) {
+      result = parseFloat(result).toFixed(2);
+    }
+  }
+  return result;
+}
+
+function updateFooters(tfoot, data, start, end, filteredRows) {
+  var $tfoot = $('tfoot .partial th', this);
+  var filterRows = function (val, index, api) {
+    return filteredRows.indexOf(index) >= 0;
+  }
+
+  this.api().columns('.with-stats').every(function(colIndex) {
+    var total = sum(this.data().filter(filterRows));
+    if (!isNaN(total)) {
+      $tfoot.eq(colIndex).text('Filtered sum: ' + total);
+    }
+  });
+}
+
 function drawDataTable(dom) {
   var columns=[];
   d3.keys(data.values[0]).forEach(function(d){
@@ -74,27 +101,29 @@ function drawDataTable(dom) {
     responsive: false,
     order: [],
     data:data.values,
-    columns:columns
+    columns:columns,
+    footerCallback: updateFooters
   });
 
-  $(dom).append('<tfoot></tfoot>');
-  $tfoot = $('tfoot', dom);
+  $(dom).append('<tfoot><tr class="global"><th></th></tr><tr class="partial"></tr></tfoot>');
+  $thead = $('thead th', dom);
+  $global = $('tfoot .global', dom);
+  $partial = $('tfoot .partial', dom);
   table.columns().every( function(colIndex) {
-    $tfoot.append('<th></th>');
+    $global.append('<th></th>');
+    $partial.append('<th></th>');
     var first = this.data()[0];
     if (!isNaN(first)) {
-      var sum = this.data().reduce( function(a,b) {
-          return a + b;
-      });
- 
-      if (!isNaN(sum)) {
-        if (parseInt(sum) != sum) {
-          sum = parseFloat(sum).toFixed(2);
-        }
-        $('th', $tfoot).eq(colIndex).html( "Global sum: " + sum );
+      var total = sum(this.data());
+      if (!isNaN(total)) {
+        $thead.eq(colIndex).addClass('with-stats');
+        $('th', $global).eq(colIndex).html('Global sum: ' + total);
       }
     }
   });
+  //Force recompute of partial sums
+  table.draw();
+
   return table;
 }
 
