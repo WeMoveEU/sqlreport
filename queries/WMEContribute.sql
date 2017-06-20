@@ -17,5 +17,5 @@ join civicrm_option_value on option_group_id=10 and value=payment_instrument_id
 join civicrm_contact c on c.id=contact_id left join civicrm_value_utm_5 on entity_id=cont.id 
 left join civicrm_address a on a.contact_id=c.id and a.is_primary=1 
 join civicrm_country on a.country_id=civicrm_country.id 
-where financial_type_id=1 and payment_instrument_id !=7
+where financial_type_id=1 and payment_instrument_id !=7 and cont.is_test=0
 order by receive_date desc;

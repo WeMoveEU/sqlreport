@@ -185,7 +185,7 @@ jQuery(function($) {
   var mailing_type = {winner:"Final mailing",experiment:"AB Test",standalone:"civimail",unrelated:"other civimail"};
 
   activities.values.forEach(function(d) {
-    if (d.source.substring(0,9) == "civimail-") {
+    if (d.source.substring(0,9) == "civimail-" && d.media) {
       var mid=d.source.substring(9);
       d.mailing= CRM._.find(mailings.values, function(d) {return d.id==mid;});
       if (!d.mailing) {

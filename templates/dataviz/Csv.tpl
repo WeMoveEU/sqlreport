@@ -1,17 +1,8 @@
 {crmTitle string="$id"}
 
-
 <div class="row">
 
 <table id="t" class="table table-striped table-bordered" cellspacing="0" width="100%"></table>
-
-<!--button class'btn btn-primary btn-lg'><span class="glyphicon glyphicon-download-alt"></span><span id='csv'>CSV</span></button>
-<table class="table table-striped" id="table">
-<thead>
-</thead>
-<tbody>
-</tbody>
-</table-->
 
 <script>
 var data = {crmSQL file="$id" debug=1};
@@ -59,6 +50,33 @@ function cell(d,i) {
   return d[i];
 }
 
+function sum(data) {
+  var result = data.reduce(function(a,b) {
+      return a + b;
+  });
+
+  if (!isNaN(result)) {
+    if (parseInt(result) != result) {
+      result = parseFloat(result).toFixed(2);
+    }
+  }
+  return result;
+}
+
+function updateFooters(tfoot, data, start, end, filteredRows) {
+  var $tfoot = $('tfoot .partial th', this);
+  var filterRows = function (val, index, api) {
+    return filteredRows.indexOf(index) >= 0;
+  }
+
+  this.api().columns('.with-stats').every(function(colIndex) {
+    var total = sum(this.data().filter(filterRows));
+    if (!isNaN(total)) {
+      $tfoot.eq(colIndex).text('Filtered sum: ' + total);
+    }
+  });
+}
+
 function drawDataTable(dom) {
   var columns=[];
   d3.keys(data.values[0]).forEach(function(d){
@@ -82,71 +100,34 @@ function drawDataTable(dom) {
     stateSave: true,
     responsive: false,
     order: [],
-    fnFooterCallback: function(nRow, aaData, iStart, iEnd, aiDisplay) {
-      var api = this.api();
-      var size = 0;
-      aaData.forEach(function(x) {
-            size += (x['size']);
-      });
-      $('.footer').html(size);
-   },
     data:data.values,
-    columns:columns
+    columns:columns,
+    footerCallback: updateFooters
   });
 
-  table.columns( '' ).every( function () {
-    var sum = this
-        .data()
-        .reduce( function (a,b) {
-            return a + b;
-        } );
- 
-    $( this.footer() ).html( 'Sum: '+sum );
+  $(dom).append('<tfoot><tr class="global"><th></th></tr><tr class="partial"></tr></tfoot>');
+  $thead = $('thead th', dom);
+  $global = $('tfoot .global', dom);
+  $partial = $('tfoot .partial', dom);
+  table.columns().every( function(colIndex) {
+    $global.append('<th></th>');
+    $partial.append('<th></th>');
+    var first = this.data()[0];
+    if (!isNaN(first)) {
+      var total = sum(this.data());
+      if (!isNaN(total)) {
+        $thead.eq(colIndex).addClass('with-stats');
+        $('th', $global).eq(colIndex).html('Global sum: ' + total);
+      }
+    }
   });
+  //Force recompute of partial sums
+  table.draw();
+
   return table;
 }
 
-function drawTable(dom) {
-  var i=0;
-/*  var dim = ndx.dimension (function(d) {return i++;});
-  i=0;
-  toCsv('#csv',dim.top(Infinity) );
-
-*/
- toCsv('#csv',data.values );
- 
- var thead = d3.select("thead").selectAll("tr")
-  .data(d3.keys(data.values[0]))
-  .enter().append("th").text(function(d){return d.replace(/_/g, ' ')});
-  // fill the table
-  // create rows
-  var tr = d3.select("tbody").selectAll("tr")
-  .data(data.values).enter().append("tr")
-  // cells
-  var td = tr.selectAll("td")
-    .data(function(d){return d3.values(d)})
-    .enter().append("td")
-    .text(function(d) {return d})
-/*
-  var graph = dc.dataTable(dom)
-    .dimension(dim)
-    .group(function(d){ return ""; })
-    .size(9999)
-    .order(d3.descending)
-    .columns(
-	[
-	    function (d) {return cell(d,"date");},
-	    function (d) {return cell(d,"total");},
-	]
-    );
-
-  return graph;
-*/
-}
-
   dtable=drawDataTable("#t");
-//  drawTable("#table");
- // dc.renderAll();
 });
 </script>
 
