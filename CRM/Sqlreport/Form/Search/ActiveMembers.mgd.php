@@ -12,7 +12,7 @@ return array (
     array (
       'version' => 3,
       'label' => 'ActiveMembers',
-      'description' => 'ActiveMembers (eu.wemove.speakcivi)',
+      'description' => 'ActiveMembers (eu.wemove.sqlreport)',
       'class_name' => 'CRM_Sqlreport_Form_Search_ActiveMembers',
     ),
   ),
