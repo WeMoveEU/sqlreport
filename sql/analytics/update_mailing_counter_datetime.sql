@@ -24,6 +24,9 @@ TRUNCATE analytics_temp_mailing;
 DELETE FROM analytics_mailing_counter_datetime
 WHERE `value` IS NULL;
 
+-- step 0.1 remove of the past month
+DELETE FROM analytics_mailing_counter_datetime
+WHERE DATE_ADD(NOW(), INTERVAL -1 MONTH) >= updated_at;
 
 
 -- step 1. insert those which don't have counters
