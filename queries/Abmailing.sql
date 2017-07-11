@@ -1,5 +1,5 @@
 SELECT
-  (SELECT mailing_abtest_id FROM data_mailing_ab WHERE id = m.id) AS abtest_id,
+  IFNULL((SELECT mailing_abtest_id FROM data_mailing_ab WHERE id = m.id), m.id) AS abtest_id,
   id, IFNULL((SELECT concat(mailing_abtest_type, ':', mailing_type) FROM data_mailing_ab WHERE id = m.id), 'standalone') AS type,
   (SELECT min(start_date)
   FROM civicrm_mailing_job
@@ -8,9 +8,9 @@ SELECT
   FROM civicrm_mailing_job
   WHERE status = 'Complete' AND is_test = 0 AND mailing_id = m.id) end_date,
   co.value median_original,
-  (SELECT value
+  IFNULL((SELECT value
   FROM data_mailing_counter mc
-  WHERE mc.mailing_id = m.id AND mc.counter = 'delivered_mailjet' AND mc.timebox = 0) delivered_mailjet,
+  WHERE mc.mailing_id = m.id AND mc.counter = 'delivered_mailjet' AND mc.timebox = 0), 0) delivered_mailjet,
   cm.value median_mailjet,
   cm2.value max_mailjet
 FROM civicrm_mailing m
