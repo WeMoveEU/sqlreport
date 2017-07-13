@@ -181,13 +181,13 @@ CREATE FUNCTION analyticsMailjetMedianTimeStamp(mid INT) RETURNS DATETIME
   BEGIN
     RETURN (SELECT t1.mailjet_time_stamp AS median_val
     FROM (
-           SELECT @rownum := @rownum + 1 AS `row_number`, ed.mailjet_time_stamp
+           SELECT @rownum := @rownum + 1 AS row_number, t.mailjet_time_stamp
+           FROM (SELECT ed.mailjet_time_stamp
            FROM civicrm_mailing_event_delivered ed
              JOIN civicrm_mailing_event_queue eq ON eq.id = ed.event_queue_id
              JOIN civicrm_mailing_job mj ON mj.id = eq.job_id AND mj.is_test = 0
-             , (SELECT @rownum := 0) r
            WHERE mj.mailing_id = mid
-           ORDER BY ed.mailjet_time_stamp
+           ORDER BY ed.mailjet_time_stamp) t, (SELECT @rownum := 0) r
          ) AS t1,
       (
         SELECT count(*) AS total_rows
@@ -205,13 +205,13 @@ CREATE FUNCTION analyticsMedianOriginalTimeStamp(mid INT) RETURNS DATETIME
   BEGIN
     RETURN (SELECT t1.time_stamp AS median_val
     FROM (
-           SELECT @rownum := @rownum + 1 AS `row_number`, ed.time_stamp
+           SELECT @rownum := @rownum + 1 AS row_number, t.time_stamp
+           FROM (SELECT ed.time_stamp
            FROM civicrm_mailing_event_delivered ed
              JOIN civicrm_mailing_event_queue eq ON eq.id = ed.event_queue_id
              JOIN civicrm_mailing_job mj ON mj.id = eq.job_id AND mj.is_test = 0
-             , (SELECT @rownum := 0) r
            WHERE mj.mailing_id = mid
-           ORDER BY ed.time_stamp
+           ORDER BY ed.time_stamp) t,  (SELECT @rownum := 0) r
          ) AS t1,
       (
         SELECT count(*) AS total_rows
