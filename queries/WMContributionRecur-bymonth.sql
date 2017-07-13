@@ -3,7 +3,7 @@ SELECT
   nr.new_recur-lr.cancelled_recur as net_recurring_donors,
   nr.new_amount-lr.cancelled_amount as net_recurring_amount,
   nr.new_recur, nr.new_amount,
-  lr.cancelled_recur, lr.cancelled_amount,
+  lr.cancelled_recur, lr.cancelled_amount, lr.cancelled_completed_recur, lr.cancelled_completed2_recur,
   nrl.nrc_total, nrl.nrc_en_INT, nrl.nrc_de_DE, nrl.nrc_UK, nrl.nrc_es_ES, nrl.nrc_fr_FR, nrl.nrc_it_IT, nrl.nrc_pl_PL,
   nrl.nrc_en_US, nrl.nrc_other, nrl.nrm_total, nrl.nrm_en_INT, nrl.nrm_de_DE, nrl.nrm_UK, nrl.nrm_es_ES, nrl.nrm_fr_FR,
   nrl.nrm_it_IT, nrl.nrm_pl_PL, nrl.nrm_en_US, nrl.nrm_other,
@@ -21,24 +21,16 @@ FROM
   LEFT JOIN 
   (
     SELECT
-      (DATE_FORMAT(date, '%Y-%m')) AS month, COUNT(*) AS new_recur, SUM(amount) new_amount
+      (DATE_FORMAT(create_date, '%Y-%m')) AS month, COUNT(*) AS new_recur, SUM(amount) new_amount
     FROM (
       SELECT
         R.id,
-        create_date AS date,
+        create_date,
         amount
       FROM civicrm_contribution_recur AS R
       JOIN civicrm_contact co ON R.contact_id = co.id
       JOIN civicrm_payment_processor pp ON payment_processor_id = pp.id
-      LEFT JOIN civicrm_option_value status ON option_group_id = 11
-          AND contribution_status_id = status.value
-      LEFT JOIN civicrm_sdd_mandate M ON R.id = M.entity_id
-          AND M.entity_table = 'civicrm_contribution_recur'
       LEFT JOIN civicrm_contribution c ON contribution_recur_id = R.id
-      LEFT JOIN civicrm_value_utm_5 utm ON c.id = utm.entity_id
-      LEFT JOIN civicrm_address a ON a.contact_id = c.contact_id
-          AND is_primary = 1
-      LEFT JOIN civicrm_country ctry ON a.country_id = ctry.id
       WHERE R.is_test=0 AND c.is_test=0
       GROUP BY R.id
     ) AS recurtab
@@ -47,25 +39,20 @@ FROM
   LEFT JOIN 
   (
     SELECT
-      DATE_FORMAT(cancel_date, '%Y-%m') AS month, COUNT(*) AS cancelled_recur, SUM(amount) cancelled_amount
+      DATE_FORMAT(cancel_date, '%Y-%m') AS month, COUNT(*) AS cancelled_recur, SUM(amount) cancelled_amount, 
+      SUM(nb_complete > 0) AS cancelled_completed_recur,
+      SUM(nb_complete > 1) AS cancelled_completed2_recur
     FROM (
       SELECT
         R.id,
         R.cancel_date,
-        amount
+        amount,
+        SUM(c.contribution_status_id = 1) AS nb_complete
       FROM
         civicrm_contribution_recur AS R
         JOIN civicrm_contact co ON R.contact_id = co.id
         JOIN civicrm_payment_processor pp ON payment_processor_id = pp.id
-        LEFT JOIN civicrm_option_value status ON option_group_id = 11
-          AND contribution_status_id = status.value
-        LEFT JOIN civicrm_sdd_mandate M ON R.id = M.entity_id
-          AND M.entity_table = 'civicrm_contribution_recur'
         LEFT JOIN civicrm_contribution c ON contribution_recur_id = R.id
-        LEFT JOIN civicrm_value_utm_5 utm ON c.id = utm.entity_id
-        LEFT JOIN civicrm_address a ON a.contact_id = c.contact_id
-          AND is_primary = 1
-        LEFT JOIN civicrm_country ctry ON a.country_id = ctry.id
       WHERE R.is_test=0 AND c.is_test=0
       GROUP BY R.id
     ) AS recurtab
@@ -109,11 +96,8 @@ FROM
           civicrm_contribution_recur AS R
           JOIN civicrm_contact co ON R.contact_id = co.id
           JOIN civicrm_payment_processor pp ON payment_processor_id = pp.id
-          LEFT JOIN civicrm_option_value status ON option_group_id = 11 AND contribution_status_id = status.value
-          LEFT JOIN civicrm_sdd_mandate M ON R.id = M.entity_id AND M.entity_table = 'civicrm_contribution_recur'
           LEFT JOIN civicrm_contribution c ON contribution_recur_id = R.id
-          LEFT JOIN civicrm_value_utm_5 utm ON c.id = utm.entity_id
-          LEFT JOIN civicrm_address a ON a.contact_id = c.contact_id AND is_primary = 1
+          LEFT JOIN civicrm_address a ON a.contact_id = R.contact_id AND is_primary = 1
           LEFT JOIN civicrm_country ctry ON a.country_id = ctry.id
         WHERE R.is_test=0 AND c.is_test=0
         ) AS recurtab
@@ -159,13 +143,8 @@ FROM
           civicrm_contribution_recur AS R
           JOIN civicrm_contact co ON R.contact_id = co.id
           JOIN civicrm_payment_processor pp ON payment_processor_id = pp.id
-          LEFT JOIN civicrm_option_value status ON option_group_id = 11
-            AND contribution_status_id = status.value
-          LEFT JOIN civicrm_sdd_mandate M ON R.id = M.entity_id
-            AND M.entity_table = 'civicrm_contribution_recur'
           LEFT JOIN civicrm_contribution c ON contribution_recur_id = R.id
-          LEFT JOIN civicrm_value_utm_5 utm ON c.id = utm.entity_id
-          LEFT JOIN civicrm_address a ON a.contact_id = c.contact_id
+          LEFT JOIN civicrm_address a ON a.contact_id = R.contact_id
             AND is_primary = 1
           LEFT JOIN civicrm_country ctry ON a.country_id = ctry.id
         WHERE R.is_test=0 AND c.is_test=0
