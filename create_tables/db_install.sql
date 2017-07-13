@@ -174,6 +174,7 @@ CREATE TABLE analytics_temp_mailing (
   id INT UNSIGNED PRIMARY KEY
 );
 
+-- todo remember to grant execute after re-create functions, see analytics_grants.sql file
 START TRANSACTION ;
 DELIMITER #
 DROP FUNCTION IF EXISTS analyticsMailjetMedianTimeStamp;

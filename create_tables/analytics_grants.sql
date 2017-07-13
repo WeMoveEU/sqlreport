@@ -23,9 +23,5 @@ GRANT ALL ON wemove_47.analytics_temp_mailing TO analytics@localhost;
 GRANT ALL ON wemove_47.data_mailing_ab TO analytics@localhost;
 GRANT ALL ON wemove_47.data_mailing_counter TO analytics@localhost;
 
-GRANT EXECUTE ON FUNCTION wemove_47.analyticsMedianOriginalTimeStamp TO analytics@localhost;
-GRANT EXECUTE ON FUNCTION wemove_47.analyticsMailjetMedianTimeStamp TO analytics@localhost;
--- The security type is definer, and the definer is wemove_47
-GRANT EXECUTE ON FUNCTION wemove_47.analyticsMedianOriginalTimeStamp TO wemove_47@localhost;
-GRANT EXECUTE ON FUNCTION wemove_47.analyticsMailjetMedianTimeStamp TO wemove_47@localhost;
-
+GRANT EXECUTE ON FUNCTION wemove_47.analyticsMedianOriginalTimeStamp TO 'analytics'@'pirandello.wemove.eu';
+GRANT EXECUTE ON FUNCTION wemove_47.analyticsMailjetMedianTimeStamp TO 'analytics'@'pirandello.wemove.eu';
