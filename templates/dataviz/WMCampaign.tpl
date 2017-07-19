@@ -46,7 +46,8 @@
 			<ul class="list-group">
 				<li class="list-group-item"><span class="badge nb_signature"></span>Signatures</li>
 				<li class="list-group-item"><span class="badge nb_new_member"></span>New Members</li>
-				<li class="list-group-item"><span class="badge nb_pending"></span><span class="glyphicon glyphicon-chevron-right"></span><i>pending</i></li>
+			<li class="list-group-item"><span class="badge nb_pending"></span><span class="glyphicon glyphicon-chevron-right"></span><i>pending</i></li>
+			<li class="list-group-item"><span class="badge nb_bounced" title="signatures from invalid emails"></span><span class="glyphicon glyphicon-chevron-right"></span><strike>bounced</strike></li>
 				<li class="list-group-item"><span class="badge nb_share"></span>Shares</li>
 				<li class="list-group-item"><span class="badge nb_recipient"></span>Emails sent</li>
 				<li class="list-group-item"><span class="badge nb_open"></span><span class="glyphicon glyphicon-chevron-right"></span><i>opened</i></li>
@@ -236,6 +237,7 @@ function drawNumbers (graphs){
   var group = ndx.groupAll().reduce(
 		function (p, v) {
 				p.new_member += +v.completed_new_member;
+				p.bounced += +v.bounced;
 				p.optout += +v.optout;
 				p.pending += +v.pending;
 				p.share+= +v.share;
@@ -248,6 +250,7 @@ function drawNumbers (graphs){
 		function (p, v) {
 				p.optout -= +v.optout;
 				p.new_member -= +v.completed_new_member;
+				p.bounced -= +v.bounced;
 				p.pending -= +v.pending;
 				p.share -= +v.share;
 				p.signature -= +v.total;
@@ -256,7 +259,7 @@ function drawNumbers (graphs){
 				if (v.mailing && v.mailing.campaign_id==v.campaign_id) p.click -= +v.mailing.click;
 				return p;
 		},
-		function () { return {share:0,new_member:0,optout:0,pending:0,signature:0,recipient:0,click:0,open:0}; }
+		function () { return {share:0,new_member:0,optout:0,pending:0,signature:0,recipient:0,click:0,open:0,bounced:0}; }
 	);
 
 	function renderLetDisplay(chart,factor, ref) {
@@ -283,6 +286,12 @@ function drawNumbers (graphs){
 	.valueAccessor(function(d){ return d.pending})
 	.html({some:"%number",none:"no signature pending"})
 	.renderlet(function(chart) {renderLetDisplay(chart,20)})
+	.group(group);
+
+	dc.numberDisplay(".nb_bounced") 
+	.valueAccessor(function(d){ return d.bounced})
+	.html({some:"%number",none:"all good"})
+	.renderlet(function(chart) {renderLetDisplay(chart,-5)})
 	.group(group);
 
 	graphs.nb_recipient= dc.numberDisplay(".nb_recipient") 
@@ -341,6 +350,7 @@ function drawNewMember (dom) {
 				p.pending+= +v.pending;
 				p.signature += +v.total;
         if (!p.name)
+				p.bounced += +v.bounced;
   				p.name = v.name;
 /*				if (v.mailing && v.mailing.campaign_id==v.campaign_id) p.recipient += +v.mailing.recipient;
 				if (v.mailing && v.mailing.campaign_id==v.campaign_id) p.open += +v.mailing.open;
@@ -350,6 +360,7 @@ function drawNewMember (dom) {
 		},
 		function (p, v) {
 				p.optout -= +v.optout;
+				p.bounced-= +v.bounced;
 				p.new_member -= +v.completed_new_member;
 				p.share -= +v.share;
 				p.pending-= +v.pending;
@@ -361,7 +372,7 @@ function drawNewMember (dom) {
 */
 				return p;
 		},
-		function () { return {name:"",share:0,new_member:0,optout:0,pending:0,signature:0,recipient:0,click:0,open:0}; }
+		function () { return {name:"",share:0,new_member:0,optout:0,pending:0,signature:0,recipient:0,click:0,open:0,bounced:0}; }
 	);
 
 
@@ -391,6 +402,7 @@ function drawNewMember (dom) {
   
 	graph.stack(group, 'pending', sel_stack('pending'));
  	graph.stack(group, 'optout', sel_stack('optout'));
+ 	graph.stack(group, 'bounced', sel_stack('bounced'));
 
   return graph;
 
