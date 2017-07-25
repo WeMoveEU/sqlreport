@@ -61,14 +61,6 @@ CREATE TABLE `analytics_kpidates` (
   PRIMARY KEY (`id`)
 );
 
-DROP TABLE IF EXISTS `analytics_mailing_activity`;
-CREATE TABLE `analytics_mailing_activity` (
-  `mailing_id` int(10) unsigned NOT NULL,
-  `created_at` datetime NOT NULL,
-  KEY `mailing_id` (`mailing_id`),
-  CONSTRAINT `analytics_mailing_activity_ibfk_1` FOREIGN KEY (`mailing_id`) REFERENCES `civicrm_mailing` (`id`)
-);
-
 DROP TABLE IF EXISTS `analytics_member_metrics_dt`;
 CREATE TABLE `analytics_member_metrics_dt` (
   `id` int(11) NOT NULL AUTO_INCREMENT,

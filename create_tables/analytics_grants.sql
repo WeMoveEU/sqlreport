@@ -11,7 +11,6 @@ GRANT ALL ON wemove_47.analytics_active_3m TO analytics@localhost;
 GRANT ALL ON wemove_47.analytics_calculation_times TO analytics@localhost;
 GRANT ALL ON wemove_47.analytics_delta_t_h TO analytics@localhost;
 GRANT ALL ON wemove_47.analytics_kpidates TO analytics@localhost;
-GRANT ALL ON wemove_47.analytics_mailing_activity TO analytics@localhost;
 GRANT ALL ON wemove_47.analytics_mailing_counter_datetime TO analytics@localhost;
 GRANT ALL ON wemove_47.analytics_member_metrics TO analytics@localhost;
 GRANT ALL ON wemove_47.analytics_member_metrics_dt TO analytics@localhost;
