@@ -279,7 +279,7 @@ function drawNumbers (graphs){
 	dc.numberDisplay(".nb_new_member") 
 	.valueAccessor(function(d){ return d.new_member})
 	.html({some:"%number",none:"nobody joined"})
-	.renderlet(function(chart) {renderLetDisplay(chart,20)})
+	.renderlet(function(chart) {renderLetDisplay(chart,20, graphs.nb_signature.data())})
 	.group(group);
 
 	dc.numberDisplay(".nb_pending") 
@@ -291,7 +291,7 @@ function drawNumbers (graphs){
 	dc.numberDisplay(".nb_bounced") 
 	.valueAccessor(function(d){ return d.bounced})
 	.html({some:"%number",none:"all good"})
-	.renderlet(function(chart) {renderLetDisplay(chart,-5)})
+	.renderlet(function(chart) {renderLetDisplay(chart,-5, graphs.nb_signature.data())})
 	.group(group);
 
 	graphs.nb_recipient= dc.numberDisplay(".nb_recipient") 
@@ -313,7 +313,7 @@ function drawNumbers (graphs){
 	dc.numberDisplay(".nb_share") 
 	.valueAccessor(function(d){ return d.share})
 	.html({some:"%number",none:"nobody shared"})
-	.renderlet(function(chart) {renderLetDisplay(chart,20)})
+	.renderlet(function(chart) {renderLetDisplay(chart,20, graphs.nb_signature.data())})
 	.group(group);
 	dc.numberDisplay(".nb_leave") 
 	.valueAccessor(function(d){ return d.leave})
@@ -360,7 +360,7 @@ function drawNewMember (dom) {
 		},
 		function (p, v) {
 				p.optout -= +v.optout;
-				p.bounced-= +v.bounced;
+				p.bounced -= +v.bounced;
 				p.new_member -= +v.completed_new_member;
 				p.share -= +v.share;
 				p.pending-= +v.pending;
