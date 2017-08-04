@@ -47,3 +47,46 @@ UPDATE analytics_goals_dates g2
   GROUP BY g.begin, g.end) t ON g2.begin = t.begin AND g2.end = t.end
 SET g2.actual = t.growth
 WHERE g2.metric = 'recurring_donations' AND g2.scope = 'organization';
+
+-- Member growth per languages
+UPDATE analytics_goals_dates g2
+  JOIN (SELECT
+    pre.language, pre.begin, round((sum_post - sum_pre) / sum_pre * 100, 0) growth
+  FROM
+    (SELECT
+      m.language, g.`begin`, SUM(m.number_added) - SUM(m.number_removed) sum_pre
+    FROM analytics_member_metrics m
+      JOIN analytics_goals_dates g ON m.language = g.scope
+    WHERE g.metric = 'member_growth' AND m.added_date < g.`begin`
+    GROUP BY m.language, g.`begin`) pre
+    JOIN
+    (SELECT
+      m.language, g.`begin`, SUM(m.number_added) - SUM(m.number_removed) sum_post
+    FROM analytics_member_metrics m
+      JOIN analytics_goals_dates g ON m.language = g.scope
+    WHERE g.metric = 'member_growth' AND m.added_date < g.`end`
+    GROUP BY m.language, g.`begin`) post
+      ON post.language = pre.language AND post.begin = pre.begin) t
+    ON g2.scope = t.language AND g2.begin = t.begin
+SET g2.actual = t.growth
+WHERE g2.metric = 'member_growth';
+
+-- Member growth per organization
+UPDATE analytics_goals_dates g2
+  JOIN (SELECT
+    pre.begin, round((sum_post - sum_pre) / sum_pre * 100, 0) growth
+  FROM
+    (SELECT
+      g.`begin`, SUM(m.number_added) - SUM(m.number_removed) sum_pre
+    FROM analytics_member_metrics m, analytics_goals_dates g
+    WHERE g.metric = 'member_growth' AND g.scope = 'organization' AND m.added_date < g.`begin`
+    GROUP BY g.`begin`) pre
+    JOIN
+    (SELECT
+      g.`begin`, SUM(m.number_added) - SUM(m.number_removed) sum_post
+    FROM analytics_member_metrics m, analytics_goals_dates g
+    WHERE g.metric = 'member_growth' AND g.scope = 'organization' AND m.added_date < g.`end`
+    GROUP BY g.`begin`) post ON post.begin = pre.begin) t
+    ON g2.begin = t.begin
+SET g2.actual = t.growth
+WHERE g2.metric = 'member_growth' AND g2.scope = 'organization';
