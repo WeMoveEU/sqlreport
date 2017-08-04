@@ -1,5 +1,4 @@
--- Active member growth
-
+-- Active member growth per language
 UPDATE 
   analytics_goals_dates goal
   JOIN (
@@ -22,6 +21,30 @@ UPDATE
   SET goal.actual=val.growth
   WHERE goal.metric='active_member_growth';
 
+-- Active member growth per organization
+UPDATE
+  analytics_goals_dates goal
+  JOIN (
+    SELECT
+      `begin`, `end`, ROUND(100 * (SUM(e.active) - SUM(b.active)) / SUM(b.active)) AS growth
+    FROM analytics_goals_dates
+      JOIN (
+        SELECT
+          kpidate, SUM(active) AS active
+        FROM analytics_active_3m
+        GROUP BY kpidate
+      ) b ON b.kpidate = `begin`
+      JOIN (
+        SELECT
+          kpidate, SUM(active) AS active
+        FROM analytics_active_3m
+        GROUP BY kpidate
+      ) e ON e.kpidate = `end`
+    WHERE metric = 'active_member_growth'
+    GROUP BY `begin`, `end`
+ ) val ON val.begin = goal.begin AND val.end = goal.end
+SET goal.actual = val.growth
+WHERE goal.metric = 'active_member_growth' AND goal.scope = 'organization';
 
 -- Recurring donations per languages
 UPDATE analytics_goals_dates g2
