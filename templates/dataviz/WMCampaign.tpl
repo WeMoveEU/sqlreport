@@ -349,13 +349,13 @@ function drawNewMember (dom) {
 				p.optout += +v.optout;
 				p.pending+= +v.pending;
 				p.signature += +v.total;
-        if (!p.name)
 				p.bounced += +v.bounced;
+        if (!p.name)
   				p.name = v.name;
-/*				if (v.mailing && v.mailing.campaign_id==v.campaign_id) p.recipient += +v.mailing.recipient;
+				if (v.mailing && v.mailing.campaign_id==v.campaign_id) p.recipient += +v.mailing.recipient;
 				if (v.mailing && v.mailing.campaign_id==v.campaign_id) p.open += +v.mailing.open;
 				if (v.mailing && v.mailing.campaign_id==v.campaign_id) p.click += +v.mailing.click;
-*/
+
 				return p;
 		},
 		function (p, v) {
@@ -365,11 +365,9 @@ function drawNewMember (dom) {
 				p.share -= +v.share;
 				p.pending-= +v.pending;
 				p.signature -= +v.total;
-/*
 				if (v.mailing && v.mailing.campaign_id==v.campaign_id) p.recipient -= +v.mailing.recipient;
 				if (v.mailing && v.mailing.campaign_id==v.campaign_id) p.open -= +v.mailing.open;
 				if (v.mailing && v.mailing.campaign_id==v.campaign_id) p.click -= +v.mailing.click;
-*/
 				return p;
 		},
 		function () { return {name:"",share:0,new_member:0,optout:0,pending:0,signature:0,recipient:0,click:0,open:0,bounced:0}; }
@@ -393,11 +391,21 @@ function drawNewMember (dom) {
 		.brushOn(false)
 		.clipPadding(10)
 		.title(function(d) {
-			return this.layer +' ' + d.value['name'] + ' : ' + d.value[this.layer];
+			//return this.layer +' ' + d.value['name'] + ' : ' + d.value[this.layer];
+			var t= "<h4>"+d.value[this.layer]  + " " + this.layer+ '</h4><li>' 
+                           + d3.format(".1%")(d.value[this.layer]/d.value.signature) + " of the signatures</li>";
+                        if (d.value.recipient)
+                           t += "<li>"+ d3.format(".1%")(d.value[this.layer]/d.value.recipient) + " of the recipients</li>";
+                        return t;
 		})
 		.dimension(dim)
 		.group(group, "new_member", sel_stack('new_member'))
 		.renderLabel(true)
+    .on("renderlet.tootltip", function(){
+       var $=jQuery;
+       $(dom +" .bar title").each(function(){$(this).parent().attr("title",$(this).text())}).remove();
+       $(dom +" .bar").tooltip({container: 'body',html:true, placement:"auto right"});
+    })
     .elasticY(true);
   
 	graph.stack(group, 'pending', sel_stack('pending'));
