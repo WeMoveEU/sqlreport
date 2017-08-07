@@ -44,8 +44,8 @@
 	<div class="col-md-3">
 		<div id="overview">
 			<ul class="list-group">
-				<li class="list-group-item"><span class="badge nb_signature"></span>Signatures</li>
-				<li class="list-group-item"><span class="badge nb_new_member"></span>New Members</li>
+				<li class="list-group-item"><span class="badge nb_signature"></span><a href="#focus=signature" class="btn btn-default btn-xs" id="focus_signature">Signatures</a></li>
+				<li class="list-group-item"><span class="badge nb_new_member"></span><a href="#focus=growth" id="focus_growth" class="btn btn-default btn-xs active">New Members</a></li>
 			<li class="list-group-item"><span class="badge nb_pending"></span><span class="glyphicon glyphicon-chevron-right"></span><i>pending</i></li>
 			<li class="list-group-item"><span class="badge nb_bounced" title="signatures from invalid emails"></span><span class="glyphicon glyphicon-chevron-right"></span><strike>bounced</strike></li>
 				<li class="list-group-item" title="2nd signature or 1st signature since at least a month of inactivity"><span class="badge nb_activated"></span>Activated Members</li>
@@ -68,11 +68,14 @@
 		<div class="panel panel-default" id="new_member">
 			<div class="panel-heading" title="new members, pending and optout">
 <div class="btn-group" role="tablist">
-<button type="button" class="dropdown btn btn-default dropdown-toggle"  id="barmenu" data-toggle="dropdown" role="button"  aria-haspopup="true">Growth<span class="caret"></span></button>
+<button type="button" class="dropdown btn btn-default dropdown-toggle"  id="barmenu" data-toggle="dropdown" role="button"  aria-haspopup="true"><span class="name">Growth</span><span class="caret"></span></button>
   <ul class="dropdown-menu" id="bary">
     <li role="presentation" class="active"><a href="#absolute" data-y="" aria-controls="map" role="tab" data-toggle="tab">Absolute</a></li>
     <li role="presentation"><a href="#signature" data-y="signature" aria-controls="pie" role="tab" data-toggle="tab">% signatures</a></li>
     <li role="presentation"><a href="#recipient" data-y="recipient" aria-controls="list" role="tab" data-toggle="tab">% recipients</a></li>
+    <li role="presentation"><a href="#recipient" data-y="open" aria-controls="list" role="tab" data-toggle="tab">% opened</a></li>
+    <li role="presentation"><a href="#recipient" data-y="click" aria-controls="list" role="tab" data-toggle="tab">% clicks</a></li>
+    <li role="presentation"><a href="#recipient" data-y="share" aria-controls="list" role="tab" data-toggle="tab">% shares</a></li>
   </ul>
   </div>
 </div>
@@ -131,6 +134,7 @@ var mailings= {crmSQL json="AllCampaignMailings" id=$id};
 {literal}
 var ndx = crossfilter(activities.values);
 var graphs = [];
+var focus="growth";
 var color = d3.scale.linear().range(["red", "green"]).domain([0,1]).interpolate(d3.interpolateHcl).clamp(true);
 
 jQuery(function($) {
@@ -142,7 +146,25 @@ jQuery(function($) {
   $("#bary a").click(function(){
     $("#bary li").removeClass("active");
     var y=$(this).data("y");
-    graphs.new_member.stacks(y);
+    graphs.new_member.stacks(y, focus);
+    graphs.new_member.redraw();
+  });
+  $("#focus_signature").click(function(){
+    focus="signature";
+    $("#overview a.btn").removeClass("active");
+    $(this).addClass("active");
+    $("text.barLabel").remove();
+    graphs.new_member.stacks(null,"signature");
+    graphs.new_member.redraw();
+    graphs.source.redraw();
+    graphs.media.redraw();
+  });
+  $("#focus_growth").click(function(){
+    focus="growth";
+    $("#overview a.btn").removeClass("active");
+    $(this).addClass("active");
+    $("text.barLabel").remove();
+    graphs.new_member.stacks(null,"growth");
     graphs.new_member.redraw();
   });
   var dd=$("#campaign-navbar .nav-subcampaign").html();
@@ -231,7 +253,7 @@ jQuery(function($) {
 
 			drawNumbers(graphs);
 			graphs.media = drawMedia('#media');
-			graphs.source = drawSource('#source','completed_new_member');
+			graphs.source = drawSource('#source');
 			graphs.signature= drawPie('#signature','total');
 			graphs.new_member = drawNewMember('#new_member');
 //			graphs.new_member = drawPie('#new_member','completed_new_member');
@@ -375,6 +397,7 @@ function drawNewMember (dom) {
 				p.activated += +v.activated;
 				p.optout += +v.optout;
 				p.pending+= +v.pending;
+				p.share += +v.share;
 				p.signature += +v.total;
 				p.bounced += +v.bounced;
         if (!p.name)
@@ -391,6 +414,7 @@ function drawNewMember (dom) {
 				p.new_member -= +v.completed_new_member;
 				p.existing -= +v.completed_existing_member;
 				p.activated -= +v.activated;
+				p.optout -= +v.optout;
 				p.share -= +v.share;
 				p.pending-= +v.pending;
 				p.signature -= +v.total;
@@ -399,7 +423,7 @@ function drawNewMember (dom) {
 				if (v.mailing && v.mailing.campaign_id==v.campaign_id) p.click -= +v.mailing.click;
 				return p;
 		},
-		function () { return {name:"",share:0,new_member:0,optout:0,pending:0,signature:0,recipient:0,click:0,open:0,bounced:0, activated:0, existing:0}; }
+		function () { return {name:"",share:0,new_member:0,optout:0,pending:0,signature:0,recipient:0,click:0,open:0,bounced:0, activated:0, existing:0,none:0}; }
 	);
 
 
@@ -415,7 +439,7 @@ function drawNewMember (dom) {
 	  };
   }
 
-  function stacks (ref) {
+  function stacks (ref,type) {
     if (ref) {
       var s=stackRelative;
       graph.yAxis().tickFormat(d3.format('.0%'));
@@ -429,8 +453,13 @@ function drawNewMember (dom) {
 	  graph.stack(group, 'pending', s('pending',ref));
    	graph.stack(group, 'optout', s('optout',ref));
    	graph.stack(group, 'bounced', s('bounced',ref));
-// 	graph.stack(group, 'existing', sel_stack('existing',ref));
-// 	graph.stack(group, 'activated', sel_stack('activated',ref));
+    if (type == "signature") {
+    	graph.stack(group, 'existing', s('existing',ref));
+    	graph.stack(group, 'activated', s('activated',ref));
+    } else {
+    	graph.stack(group, 'existing', s('none',ref));
+    	graph.stack(group, 'activated', s('none',ref));
+    }
 
   }
 
@@ -554,14 +583,14 @@ function drawPie(dom,attribute) {
    return graph;
 }
 
-function drawSource(dom,attribute) {
+function drawSource(dom) {
 	var dim = ndx.dimension(function(d) {
      if (d.mailing) {
        return "civimail " +d.mailing.name + "["+ d3.format(".2s")(d.mailing.recipient)+"]";
      }
     return d.source || "?";
   });
-	var group   = dim.group().reduceSum(function(d) { return d[attribute]; });
+	var group   = dim.group().reduceSum(function(d) { console.log(focus);return focus == "signature" ? d.signature : d.completed_new_member; });
 
   var graph = dc.rowChart(dom+ " graph")
 		.width(220)
@@ -569,7 +598,7 @@ function drawSource(dom,attribute) {
     .fixedBarHeight(17)
     .colorCalculator(function(d){return '#941b80';})
 		.dimension(dim)
-    .ordering(function(d){return d[attribute];})
+    .ordering(function(d){return focus == "signature" ? d.signature : d.completed_new_member;})
     .cap(9)
     .gap(0)
     .label(function(d) {
@@ -599,7 +628,7 @@ function drawMedia(dom) {
     } 
     return d.media;
   });
-	var group   = dim.group().reduceSum(function(d) { return d.completed_new_member; });
+	var group   = dim.group().reduceSum(function(d) { return focus == "signature" ? d.signature : d.completed_new_member; });
 	graph
 			.width(200)
 			.height(200)
