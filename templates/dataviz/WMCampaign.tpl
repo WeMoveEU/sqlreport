@@ -46,6 +46,7 @@
 			<ul class="list-group">
 				<li class="list-group-item"><span class="badge nb_signature"></span>Signatures</li>
 				<li class="list-group-item"><span class="badge nb_new_member"></span>New Members</li>
+				<li class="list-group-item" title="2nd signature or 1st signature since at least a month of inactivity"><span class="badge nb_activated"></span>Activated Members</li>
 			<li class="list-group-item"><span class="badge nb_pending"></span><span class="glyphicon glyphicon-chevron-right"></span><i>pending</i></li>
 			<li class="list-group-item"><span class="badge nb_bounced" title="signatures from invalid emails"></span><span class="glyphicon glyphicon-chevron-right"></span><strike>bounced</strike></li>
 				<li class="list-group-item"><span class="badge nb_share"></span>Shares</li>
@@ -237,6 +238,7 @@ function drawNumbers (graphs){
   var group = ndx.groupAll().reduce(
 		function (p, v) {
 				p.new_member += +v.completed_new_member;
+				p.activated += +v.activated;
 				p.bounced += +v.bounced;
 				p.optout += +v.optout;
 				p.pending += +v.pending;
@@ -250,6 +252,7 @@ function drawNumbers (graphs){
 		function (p, v) {
 				p.optout -= +v.optout;
 				p.new_member -= +v.completed_new_member;
+				p.activated -= +v.activated;
 				p.bounced -= +v.bounced;
 				p.pending -= +v.pending;
 				p.share -= +v.share;
@@ -259,7 +262,7 @@ function drawNumbers (graphs){
 				if (v.mailing && v.mailing.campaign_id==v.campaign_id) p.click -= +v.mailing.click;
 				return p;
 		},
-		function () { return {share:0,new_member:0,optout:0,pending:0,signature:0,recipient:0,click:0,open:0,bounced:0}; }
+		function () { return {share:0,new_member:0,optout:0,pending:0,signature:0,recipient:0,click:0,open:0,bounced:0, activated:0}; }
 	);
 
 	function renderLetDisplay(chart,factor, ref) {
@@ -285,7 +288,13 @@ function drawNumbers (graphs){
 	dc.numberDisplay(".nb_pending") 
 	.valueAccessor(function(d){ return d.pending})
 	.html({some:"%number",none:"no signature pending"})
-	.renderlet(function(chart) {renderLetDisplay(chart,20)})
+	.renderlet(function(chart) {renderLetDisplay(chart,20, graphs.nb_signature.data())})
+	.group(group);
+
+	dc.numberDisplay(".nb_activated") 
+	.valueAccessor(function(d){ return d.activated})
+	.html({some:"%number",none:"no member activated"})
+	.renderlet(function(chart) {renderLetDisplay(chart,20, graphs.nb_signature.data())})
 	.group(group);
 
 	dc.numberDisplay(".nb_bounced") 
