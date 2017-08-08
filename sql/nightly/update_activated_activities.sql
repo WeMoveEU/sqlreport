@@ -1,7 +1,6 @@
 -- Set to "Completed Activated (id:10)" the status of activities
 -- that are completed and [re-]activated the member
--- Activity types looked at: phone call, email, event registration, contribution, 
---     petition signature, created petition, share, tweet
+-- Activity types looked at: contribution, survey, petition signature
 
 SELECT @stamp := NULL, @contact := NULL, @active_once := 0, @active_threshold := 90; 
 UPDATE
