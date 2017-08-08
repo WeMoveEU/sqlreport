@@ -146,8 +146,7 @@ jQuery(function($) {
   $("#bary a").click(function(){
     $("#bary li").removeClass("active");
     var y=$(this).data("y");
-    graphs.new_member.stacks(y, focus);
-    graphs.new_member.redraw();
+    graphs.new_member.stacks(y, focus).redraw();
   });
   $("#focus_signature").click(function(){
     focus="signature";
@@ -163,6 +162,7 @@ jQuery(function($) {
     $("#overview a.btn").removeClass("active");
     $(this).addClass("active");
     $("text.barLabel").remove();
+    graphs.new_member.stacks(null,"growth").redraw();
     graphs.media.group(graphs.media.dimension().group().reduceSum(function(d){return d.completed_new_member})).redraw();
     graphs.source.group(graphs.source.dimension().group().reduceSum(function(d){return d.completed_new_member})).redraw();
   });
@@ -395,7 +395,7 @@ function drawNewMember (dom) {
 				p.existing += +v.completed_existing_member;
 				p.activated += +v.activated;
 				p.optout += +v.optout;
-				p.pending+= +v.pending;
+				p.pending += +v.pending;
 				p.share += +v.share;
 				p.signature += +v.total;
 				p.bounced += +v.bounced;
@@ -415,7 +415,7 @@ function drawNewMember (dom) {
 				p.activated -= +v.activated;
 				p.optout -= +v.optout;
 				p.share -= +v.share;
-				p.pending-= +v.pending;
+				p.pending -= +v.pending;
 				p.signature -= +v.total;
 				if (v.mailing && v.mailing.campaign_id==v.campaign_id) p.recipient -= +v.mailing.recipient;
 				if (v.mailing && v.mailing.campaign_id==v.campaign_id) p.open -= +v.mailing.open;
@@ -459,7 +459,7 @@ function drawNewMember (dom) {
     	graph.stack(group, 'activated', s('none',ref));
     	graph.stack(group, 'existing', s('none',ref));
     }
-
+    return graph;
   }
 
   var graph = dc.barChart(dom)
