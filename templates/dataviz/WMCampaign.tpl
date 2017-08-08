@@ -85,7 +85,7 @@
 	</div>
 	<div class="col-md-3">
 		<div class="panel panel-default" id="media">
-			<div class="panel-heading" title="New members, based on the utm_media parameter">Aquisition media</div>
+			<div class="panel-heading" title="New members, based on the utm_media parameter">Media</div>
 			<div class="panel-body"><graph />
 			</div>
 		</div>
@@ -154,18 +154,17 @@ jQuery(function($) {
     $("#overview a.btn").removeClass("active");
     $(this).addClass("active");
     $("text.barLabel").remove();
-    graphs.new_member.stacks(null,"signature");
-    graphs.new_member.redraw();
-    graphs.source.redraw();
-    graphs.media.redraw();
+    graphs.new_member.stacks(null,"signature").redraw();
+    graphs.media.group(graphs.media.dimension().group().reduceSum(function(d){return d.total})).redraw();
+    graphs.source.group(graphs.source.dimension().group().reduceSum(function(d){return d.total})).redraw();
   });
   $("#focus_growth").click(function(){
     focus="growth";
     $("#overview a.btn").removeClass("active");
     $(this).addClass("active");
     $("text.barLabel").remove();
-    graphs.new_member.stacks(null,"growth");
-    graphs.new_member.redraw();
+    graphs.media.group(graphs.media.dimension().group().reduceSum(function(d){return d.completed_new_member})).redraw();
+    graphs.source.group(graphs.source.dimension().group().reduceSum(function(d){return d.completed_new_member})).redraw();
   });
   var dd=$("#campaign-navbar .nav-subcampaign").html();
   var html="";
@@ -590,7 +589,7 @@ function drawSource(dom) {
      }
     return d.source || "?";
   });
-	var group   = dim.group().reduceSum(function(d) { console.log(focus);return focus == "signature" ? d.signature : d.completed_new_member; });
+	var group   = dim.group().reduceSum(function(d) { return focus == "signature" ? d.total : d.completed_new_member; });
 
   var graph = dc.rowChart(dom+ " graph")
 		.width(220)
@@ -628,7 +627,7 @@ function drawMedia(dom) {
     } 
     return d.media;
   });
-	var group   = dim.group().reduceSum(function(d) { return focus == "signature" ? d.signature : d.completed_new_member; });
+	var group   = dim.group().reduceSum(function(d) { return focus == "signature" ? d.total: d.completed_new_member; });
 	graph
 			.width(200)
 			.height(200)
