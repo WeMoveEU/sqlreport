@@ -66,9 +66,9 @@
 	</div>
 	<div class="col-md-3">
 		<div class="panel panel-default" id="new_member">
-			<div class="panel-heading" title="new members, pending and optout">
+			<div class="panel-heading" title="Signatures per language (of the campaign, not of signatories)">
 <div class="btn-group" role="tablist">
-<button type="button" class="dropdown btn btn-default dropdown-toggle"  id="barmenu" data-toggle="dropdown" role="button"  aria-haspopup="true"><span class="name">Growth</span><span class="caret"></span></button>
+<button type="button" class="dropdown btn btn-default dropdown-toggle"  id="barmenu" data-toggle="dropdown" role="button"  aria-haspopup="true"><span class="name">Language</span><span class="caret"></span></button>
   <ul class="dropdown-menu" id="bary">
     <li role="presentation" class="active"><a href="#absolute" data-y="" aria-controls="map" role="tab" data-toggle="tab">Absolute</a></li>
     <li role="presentation"><a href="#signature" data-y="signature" aria-controls="pie" role="tab" data-toggle="tab">% signatures</a></li>
@@ -454,11 +454,11 @@ function drawNewMember (dom) {
    	graph.stack(group, 'optout', s('optout',ref));
    	graph.stack(group, 'bounced', s('bounced',ref));
     if (type == "signature") {
-    	graph.stack(group, 'existing', s('existing',ref));
     	graph.stack(group, 'activated', s('activated',ref));
-    } else {
-    	graph.stack(group, 'existing', s('none',ref));
+    	graph.stack(group, 'existing', s('existing',ref));
+    } else { // don't display them
     	graph.stack(group, 'activated', s('none',ref));
+    	graph.stack(group, 'existing', s('none',ref));
     }
 
   }
