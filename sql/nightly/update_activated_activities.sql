@@ -1,7 +1,6 @@
 -- Set to "Completed Activated (id:10)" the status of activities
 -- that are completed and [re-]activated the member
--- Activity types looked at: phone call, email, event registration, contribution, 
---     petition signature, created petition, share, tweet
+-- Activity types looked at: contribution, survey, petition signature
 
 SELECT @stamp := NULL, @contact := NULL, @active_once := 0, @active_threshold := 90; 
 UPDATE
@@ -11,8 +10,9 @@ UPDATE
       a.id AS id,
       a.status_id AS status_id,
       @creation_days := TIMESTAMPDIFF(DAY, c.created_date, a.activity_date_time),
-      @days := IF(@contact = ac.contact_id, TIMESTAMPDIFF(DAY, @stamp, a.activity_date_time), -1),
-      @activated := (NOT @active_once AND @creation_days > 0) OR (@days > @active_threshold) AS activated,
+      @inactive_days := IF(@contact = ac.contact_id, TIMESTAMPDIFF(DAY, @stamp, a.activity_date_time), -1),
+      @activated := (NOT @active_once AND @creation_days > 0) OR (@inactive_days > @active_threshold) AS activated,
+      IF(NOT @active_once AND @creation_days > 0, @creation_days, @inactive_days) AS days,
       @active_once := IF(@contact = ac.contact_id, @activated OR @active_once, 0),
       @contact := ac.contact_id,
       @stamp := a.activity_date_time
@@ -24,5 +24,5 @@ UPDATE
     ORDER BY ac.contact_id ASC, a.activity_date_time ASC
   ) aa
   ON act.id=aa.id
-  SET act.status_id=10
+  SET act.status_id=10, act.duration=aa.days
   WHERE aa.status_id=2 AND aa.activated=1;
