@@ -17,7 +17,11 @@ function civicrm_api3_sql_runupdateall ($params) {
   if ($load > 2) {
     throw new API_Exception ("load too high, try later $load");
   }
-  foreach (new DirectoryIterator(dirname( __FILE__ ) .'/../../sql') as $file) {
+  $directory = dirname( __FILE__ ) .'/../../sql';
+  if (isset($params['subdir'])) {
+    $directory .= '/' . $params['subdir'];
+  }
+  foreach (new DirectoryIterator($directory) as $file) {
     if ($file->isFile() && substr ($file->getFilename(),-4,4) == ".sql") {
       $filename = substr($file->getFilename(), 0, -4);
       $load = sys_getloadavg();
