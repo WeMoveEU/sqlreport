@@ -26,7 +26,8 @@ function civicrm_api3_sql_runupdateall ($params) {
       $filename = substr($file->getFilename(), 0, -4);
       $load = sys_getloadavg();
       $logId = addLog($filename, $load[0]);
-      $r = civicrm_api3("sql", "runupdate", array('file' => $filename));
+      $params['file'] = $filename;
+      $r = civicrm_api3("sql", "runupdate", $params);
       updateLog($logId);
       $results["$filename"] = array ("file" => $filename, "result" => $r);
     }
@@ -49,7 +50,14 @@ function civicrm_api3_sql_runupdate ($params) {
   if (false !== strpos($file, '..')) {
     die ("SECURITY FATAL: the file can't contain '..'. Please report the issue on the forum at civicrm.org");
   }
-  $sql = file_get_contents(dirname( __FILE__ ) . '/../../sql/' . $file . '.sql', true);
+  $directory = dirname( __FILE__ ) .'/../../sql';
+  if (isset($params['subdir'])) {
+    if (false !== strpos($params['subdir'], '..')) {
+      die ("SECURITY FATAL: the file can't contain '..'. Please report the issue on the forum at civicrm.org");
+    }
+    $directory .= '/' . $params['subdir'];
+  }
+  $sql = file_get_contents($directory . '/' . $file . '.sql', true);
   if (!$sql) {
     throw new API_Exception ("unknown file or empty one");
   }
