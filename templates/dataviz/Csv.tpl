@@ -113,6 +113,9 @@ function drawDataTable(dom) {
     $global.append('<th></th>');
     $partial.append('<th></th>');
     var first = this.data()[0];
+    var name=$(this.header()).text();
+    if (name.slice(-2) == "id")
+      return; // id columns don't have a footer
     if (!isNaN(first)) {
       var total = sum(this.data());
       if (!isNaN(total)) {
