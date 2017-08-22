@@ -4,7 +4,10 @@ SELECT @timeslot := 10;
 -- Recipients
 -- INSERT IGNORE does not work because A/B mailing recipients may not be correct until they are sent
 INSERT INTO data_mailing_counter
-  SELECT mailing_id, 'recipients', 0, COUNT(*), NOW() FROM civicrm_mailing_recipients GROUP BY mailing_id
+  SELECT mailing_id, 'recipients', 0, COUNT(*), NOW() 
+    FROM civicrm_mailing_recipients r JOIN civicrm_mailing m ON r.mailing_id=m.id
+    WHERE m.scheduled_id IS NOT NULL
+    GROUP BY mailing_id
   ON DUPLICATE KEY UPDATE value=VALUES(value), last_updated=NOW();
 
 -- Delivered by Mailjet
