@@ -1,0 +1,1 @@
+update civicrm_contribution c left join civicrm_value_utm_5 on entity_id=c.id and campaign_id is null join civicrm_mailing m on utm_source_30 like "civimail-%" and m.id = substring(utm_source_30,10) set c.campaign_id=m.campaign_id; 
