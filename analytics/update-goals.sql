@@ -1,3 +1,39 @@
+-- Active member count per language
+UPDATE 
+  analytics_goals_dates goal
+  JOIN (
+    SELECT
+      scope, `end`, SUM(e.active) AS nb
+    FROM analytics_goals_dates
+    JOIN (
+      SELECT kpidate, language, SUM(active) AS active
+      FROM analytics_active_3m
+      GROUP BY kpidate, language
+    ) e ON e.language=scope AND e.kpidate=`end`
+    WHERE metric = 'active_member_growth'
+    GROUP BY scope, `end`
+  ) val ON val.scope=goal.scope AND val.end=goal.end
+  SET goal.actual=val.nb
+  WHERE goal.metric='active_member_count';
+
+-- Active member count per organization
+UPDATE 
+  analytics_goals_dates goal
+  JOIN (
+    SELECT
+      scope, `end`, SUM(e.active) AS nb
+    FROM analytics_goals_dates
+    JOIN (
+      SELECT kpidate, SUM(active) AS active
+      FROM analytics_active_3m
+      GROUP BY kpidate, language
+    ) e ON scope='organization' AND e.kpidate=`end`
+    WHERE metric = 'active_member_growth'
+    GROUP BY scope, `end`
+  ) val ON val.scope=goal.scope AND val.end=goal.end
+  SET goal.actual=val.nb
+  WHERE goal.metric='active_member_count';
+
 -- Active member growth per language
 UPDATE 
   analytics_goals_dates goal
@@ -71,26 +107,56 @@ UPDATE analytics_goals_dates g2
 SET g2.actual = t.growth
 WHERE g2.metric = 'recurring_donations' AND g2.scope = 'organization';
 
--- Member growth per languages
+-- Member count per language
 UPDATE analytics_goals_dates g2
-  JOIN (SELECT
-    pre.language, pre.begin, round((sum_post - sum_pre) / sum_pre * 100, 0) growth
-  FROM
-    (SELECT
-      m.language, g.`begin`, SUM(m.number_added) - SUM(m.number_removed) sum_pre
+  JOIN (
+    SELECT
+      m.language, g.`end`, SUM(m.number_added) - SUM(m.number_removed) AS nb_members
     FROM analytics_member_metrics m
-      JOIN analytics_goals_dates g ON m.language = g.scope
-    WHERE g.metric = 'member_growth' AND m.added_date < g.`begin`
-    GROUP BY m.language, g.`begin`) pre
+    JOIN analytics_goals_dates g ON m.language = g.scope AND m.added_date <= g.`end`
+    WHERE g.metric = 'member_count'
+    GROUP BY m.language, g.`end`
+  ) t
+  ON g2.scope = t.language AND g2.end = t.end
+SET g2.actual = t.nb_members
+WHERE g2.metric = 'member_count';
+
+-- Member count per organization
+UPDATE analytics_goals_dates g2
+  JOIN (
+    SELECT
+      g.scope, g.`end`, SUM(m.number_added) - SUM(m.number_removed) AS nb_members
+    FROM analytics_member_metrics m
+    JOIN analytics_goals_dates g ON g.scope='organization' AND m.added_date <= g.`end`
+    WHERE g.metric = 'member_count'
+    GROUP BY g.`end`
+  ) t
+  ON g2.scope = 'organization' AND g2.end = t.end
+SET g2.actual = t.nb_members
+WHERE g2.metric = 'member_count';
+
+-- Member growth per organization
+UPDATE analytics_goals_dates g2
+  JOIN (
+    SELECT
+      pre.language, pre.begin, round((sum_post - sum_pre) / sum_pre * 100, 0) growth
+    FROM
+      (SELECT
+        m.language, g.`begin`, SUM(m.number_added) - SUM(m.number_removed) sum_pre
+      FROM analytics_member_metrics m
+        JOIN analytics_goals_dates g ON m.language = g.scope
+      WHERE g.metric = 'member_growth' AND m.added_date < g.`begin`
+      GROUP BY m.language, g.`begin`) pre
     JOIN
-    (SELECT
-      m.language, g.`begin`, SUM(m.number_added) - SUM(m.number_removed) sum_post
-    FROM analytics_member_metrics m
-      JOIN analytics_goals_dates g ON m.language = g.scope
-    WHERE g.metric = 'member_growth' AND m.added_date < g.`end`
-    GROUP BY m.language, g.`begin`) post
-      ON post.language = pre.language AND post.begin = pre.begin) t
-    ON g2.scope = t.language AND g2.begin = t.begin
+      (SELECT
+        m.language, g.`begin`, SUM(m.number_added) - SUM(m.number_removed) sum_post
+      FROM analytics_member_metrics m
+        JOIN analytics_goals_dates g ON m.language = g.scope
+      WHERE g.metric = 'member_growth' AND m.added_date < g.`end`
+      GROUP BY m.language, g.`begin`) post
+    ON post.language = pre.language AND post.begin = pre.begin
+  ) t
+  ON g2.scope = t.language AND g2.begin = t.begin
 SET g2.actual = t.growth
 WHERE g2.metric = 'member_growth';
 
