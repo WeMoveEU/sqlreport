@@ -52,7 +52,7 @@ function cell(d,i) {
 
 function sum(data) {
   var result = data.reduce(function(a,b) {
-      return b ? a + b : a;
+      return b ? +a + +b : +a;
   });
 
   if (!isNaN(result)) {
