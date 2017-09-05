@@ -83,27 +83,29 @@ SET goal.actual = val.growth
 WHERE goal.metric = 'active_member_growth' AND goal.scope = 'organization';
 
 -- Recurring donations per languages
-UPDATE analytics_goals_dates g2
-  JOIN (SELECT
-    g.scope, g.begin, g.end, sum(cr.total_amount) growth
-  FROM civicrm_contribution cr
-    JOIN analytics_goals_dates g
-      ON g.metric = 'recurring_donations' AND (cr.receive_date >= g.begin AND cr.receive_date <= g.end)
-    JOIN civicrm_contact c ON c.id = cr.contact_id AND c.preferred_language COLLATE utf8_unicode_ci = g.scope
-  WHERE cr.contribution_recur_id IS NOT NULL AND contribution_status_id = 1 AND is_test = 0
-  GROUP BY g.scope, g.begin, g.end) t ON g2.scope = t.scope AND g2.begin = t.begin AND g2.end = t.end
-SET g2.actual = t.growth
-WHERE g2.metric = 'recurring_donations';
+-- UPDATE analytics_goals_dates g2
+--   JOIN (SELECT
+--     g.scope, g.begin, g.end, sum(cr.total_amount) growth
+--   FROM civicrm_contribution cr
+--     JOIN analytics_goals_dates g
+--       ON g.metric = 'recurring_donations' AND (cr.receive_date >= g.begin AND cr.receive_date <= g.end)
+--     JOIN civicrm_contact c ON c.id = cr.contact_id AND c.preferred_language COLLATE utf8_unicode_ci = g.scope
+--   WHERE cr.contribution_recur_id IS NOT NULL AND contribution_status_id = 1 AND is_test = 0
+--   GROUP BY g.scope, g.begin, g.end) t ON g2.scope = t.scope AND g2.begin = t.begin AND g2.end = t.end
+-- SET g2.actual = t.growth
+-- WHERE g2.metric = 'recurring_donations';
 
 -- Recurring donations per organization
 UPDATE analytics_goals_dates g2
-  JOIN (SELECT
-    g.begin, g.end, sum(cr.total_amount) growth
-  FROM civicrm_contribution cr
+  JOIN (
+    SELECT
+      g.begin, g.end, sum(cr.total_amount) growth
+    FROM civicrm_contribution cr
     JOIN analytics_goals_dates g
-      ON g.metric = 'recurring_donations' AND (cr.receive_date >= g.begin AND cr.receive_date <= g.end)
-  WHERE g.scope = 'organization' AND cr.contribution_recur_id IS NOT NULL AND contribution_status_id = 1 AND is_test = 0
-  GROUP BY g.begin, g.end) t ON g2.begin = t.begin AND g2.end = t.end
+        ON g.metric = 'recurring_donations' AND (cr.receive_date >= g.begin AND cr.receive_date <= g.end)
+    WHERE g.scope = 'organization' AND cr.contribution_recur_id IS NOT NULL AND contribution_status_id = 1 AND is_test = 0
+    GROUP BY g.begin, g.end
+  ) t ON g2.begin = t.begin AND g2.end = t.end
 SET g2.actual = t.growth
 WHERE g2.metric = 'recurring_donations' AND g2.scope = 'organization';
 
