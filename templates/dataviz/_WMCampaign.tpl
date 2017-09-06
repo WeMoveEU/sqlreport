@@ -58,7 +58,7 @@ var graphs = [];
 		var graph=dc.dataTable(dom)
 			.dimension(dim)
 			.group(function(d) {
-					return '<h2>'+types.values[d.type_id]+'</h2>';
+					return '<h2 id="'+types.values[d.type_id]+'">'+types.values[d.type_id]+'</h2>';
 			})
 			.sortBy(function (d) { return d.date })
 			.order(d3.descending)
@@ -70,10 +70,12 @@ var graphs = [];
         },
 				function(d){
           if (d.id != d.parent_id)
-            return "<i><a href='"+CRM.url("civicrm/campaign/add",{action:"update",id:d.id})+"'>FIX needed</a></i>";
-          return d.utm_campaign},
+            return "<i><a href='"+CRM.url("civicrm/campaign/add",{action:"update",id:d.id})+"FIX needed</a></i>";
+          var name= d.utm_campaign.trim() ||"??";
+          return "<a href='"+CRM.url("civicrm/campaign/add",{action:"update",id:d.id})+"'>"+name+"</a>";
+          },
 				function(d){return '<a href="/civicrm/dataviz/WMCampaign/'+d.id+'">'+d.name+'</a>';},
-				function(d){return '<a href="'+d.url+'">Speakout</a>'},
+				function(d){return '<a href="'+d.url+'" title="'+d.external_identifier+'">Speakout</a>'},
 				function(d){return ''},
 				function(d){return ''},
 			 ]);
