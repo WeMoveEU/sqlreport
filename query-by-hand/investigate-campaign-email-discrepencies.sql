@@ -1,3 +1,7 @@
+--
+-- use replica server!
+--
+
 DROP TABLE IF EXISTS tmp_incorrect_campaign_in_mailings;
 CREATE TABLE `tmp_incorrect_campaign_in_mailings` (
   `mailing_campaign_id` int(10) unsigned DEFAULT NULL COMMENT 'The campaign for which this mailing has been initiated.',
@@ -12,6 +16,7 @@ CREATE TABLE `tmp_incorrect_campaign_in_mailings` (
   KEY tmp_incorrect_campaign_in_mailings_mailing_id (mailing_id)
 );
 
+TRUNCATE TABLE tmp_incorrect_campaign_in_mailings;
 INSERT INTO tmp_incorrect_campaign_in_mailings
   SELECT
     m.campaign_id mailing_campaign_id, t.campaign_id activity_campaign_id, c.name activity_campaign_name,
@@ -19,7 +24,7 @@ INSERT INTO tmp_incorrect_campaign_in_mailings
   FROM (SELECT
     a.campaign_id, v.source_27, count(a.id) signatures
   FROM civicrm_value_action_source_4 v
-    JOIN civicrm_activity a ON a.id = v.entity_id
+    JOIN civicrm_activity a ON a.id = v.entity_id AND a.status_id != 1
   WHERE v.source_27 LIKE 'civimail-%'
   GROUP BY a.campaign_id, v.source_27) t
     JOIN civicrm_mailing m ON concat('civimail-', m.id) = t.source_27
@@ -42,7 +47,7 @@ SELECT CONCAT('UPDATE civicrm_mailing SET campaign_id = ', activity_campaign_id,
 FROM tmp_incorrect_campaign_in_mailings
 WHERE (mailing_campaign_id != activity_campaign_id OR mailing_campaign_id IS NULL) AND signatures > 100;
 
--- (to run on replica): update query
+-- (to run on replica, be careful): update query
 UPDATE civicrm_mailing m
   JOIN (SELECT * FROM tmp_incorrect_campaign_in_mailings
   WHERE (mailing_campaign_id != activity_campaign_id OR mailing_campaign_id IS NULL) AND signatures > 100) t
