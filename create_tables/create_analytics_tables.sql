@@ -76,3 +76,14 @@ INSERT INTO analytics_goals_dates (scope, metric, begin, end, goal) VALUES
 
 -- Surveys that should be excluded from analytics
 CREATE TABLE analytics_excluded_surveys (nid INT UNSIGNED NOT NULL PRIMARY KEY);
+
+-- Denormalize ab mailings
+CREATE TABLE `data_mailing_ab` (
+  `id` int(10) unsigned NOT NULL COMMENT 'Id of mailing',
+  `mailing_type` varchar(32) DEFAULT NULL COMMENT 'standalone, experiment or winner',
+  `mailing_abtest_id` int(10) unsigned DEFAULT NULL COMMENT 'Id of mailing_abtest',
+  `mailing_abtest_type` char(1) DEFAULT NULL COMMENT 'a, b or c',
+  `category` varchar(32) DEFAULT NULL COMMENT 'launch,reminder,kicker,fundraiser,report_back...',
+  PRIMARY KEY (`id`),
+  KEY `data_mailing_ab_mailing_abtest_id_inx` (`mailing_abtest_id`)
+);
