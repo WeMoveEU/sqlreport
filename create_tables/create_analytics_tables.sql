@@ -72,3 +72,7 @@ INSERT INTO analytics_goals_dates (scope, metric, begin, end, goal) VALUES
   ('organization', 'new_active_members', '2017-04-01', '2017-06-30', 60000),
   ('organization', 'new_active_members', '2017-07-01', '2017-09-30', 110000),
   ('organization', 'new_active_members', '2017-10-01', '2017-12-31', 40000);
+
+
+-- Surveys that should be excluded from analytics
+CREATE TABLE analytics_excluded_surveys (nid INT UNSIGNED NOT NULL PRIMARY KEY);
