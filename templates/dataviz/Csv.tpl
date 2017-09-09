@@ -95,7 +95,12 @@ function drawDataTable(dom) {
 "<'row'<'col-md-12'rt>><'row'<'col-md-12 footer'ip>>", //'Blfrtip',
    "pageLength": 50,
   "lengthMenu": [ [10, 25, 50, -1], [10, 25, 50, "All"] ],
-   buttons: [ 'excel','copy','colvis','csv'],
+   buttons: [ 'excel','copy','colvis',$.extend( true, {}, {exportOptions: {
+                format: {
+                  header:function ( name, row, column, node ) {return name.replace(/ /g, "_").toLowerCase();}}},
+                extend: 'csvHtml5',
+                title: document.title.replace(/| /g, "").replace(/ +/g, "_").toLowerCase()
+            } )],
     colReorder: true,
     stateSave: true,
     responsive: false,
