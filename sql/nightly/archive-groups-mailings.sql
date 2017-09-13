@@ -24,4 +24,4 @@ SET is_archived=1
 WHERE scheduled_date < DATE_ADD(NOW(), INTERVAL -3 MONTH);
 
 DELETE FROM civicrm_mailing
-WHERE scheduled_id IS NULL AND created_date < DATE_ADD(NOW(), INTERVAL -3 MONTH);
+WHERE scheduled_id IS NULL AND created_date < DATE_ADD(NOW(), INTERVAL -6 MONTH);

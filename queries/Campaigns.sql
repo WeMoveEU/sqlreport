@@ -18,15 +18,15 @@ select
   (select sum(npeople) from speakeasy_petition_metrics m where activity="click_42" and m.parent_id=c.id group by parent_id) click_42,
   (select sum(npeople) from speakeasy_petition_metrics m where activity="share" and m.parent_id=c.id group by parent_id) share,
   (select sum(npeople) from speakeasy_petition_metrics m where activity="effective_share" and m.parent_id=c.id group by parent_id) effective_share,
-  (select sum(npeople) from speakeasy_petition_metrics m where m.activity="Petition" and m.parent_id=c.id group by parent_id) signature,
-  (select sum(abs(npeople)) from speakeasy_petition_metrics m where m.activity="Petition" and status in ('1','4','5','9') and m.parent_id=c.id group by parent_id) new_signature,
-  (select sum(abs(npeople)) from speakeasy_petition_metrics m where m.activity="Petition" and status='9' and m.parent_id=c.id group by parent_id) new_member,
+  (select sum(npeople) from speakeasy_petition_metrics m where m.activity="petition" and m.parent_id=c.id group by parent_id) signature,
+  (select sum(abs(npeople)) from speakeasy_petition_metrics m where m.activity="petition" and status in ('1','4','5','9') and m.parent_id=c.id group by parent_id) new_signature,
+  (select sum(abs(npeople)) from speakeasy_petition_metrics m where m.activity="petition" and status='9' and m.parent_id=c.id group by parent_id) new_member,
   (select sum(npeople) from speakeasy_petition_metrics m where activity="new_member_mail" and m.parent_id=c.id group by parent_id) new_member_mail,
   (select sum(npeople) from speakeasy_petition_metrics m where activity="new_member_share" and m.parent_id=c.id group by parent_id) new_member_share,
-  (select sum(npeople) from speakeasy_petition_metrics m where m.activity="Petition" and status='10' and m.parent_id=c.id group by parent_id) activated
+  (select sum(npeople) from speakeasy_petition_metrics m where m.activity="petition" and status='10' and m.parent_id=c.id group by parent_id) activated
 
-/*left join speakeasy_petition_metrics new on new.activity="Petition" and new.status='9' and new.parent_id=c.id
- left join speakeasy_petition_metrics activated on activated.activity="Petition" and activated.status='10' and activated.parent_id=c.id*/
+/*left join speakeasy_petition_metrics new on new.activity="petition" and new.status='9' and new.parent_id=c.id
+ left join speakeasy_petition_metrics activated on activated.activity="petition" and activated.status='10' and activated.parent_id=c.id*/
 from civicrm_campaign c
 join civicrm_value_speakout_integration_2 custom on entity_id=c.id
 

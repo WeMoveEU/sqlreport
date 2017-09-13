@@ -1,4 +1,4 @@
-
+-- alter table data_mailing_ab add column category varchar(32) DEFAULT NULL COMMENT 'launch,reminder,kicker,fundraiser,report_back...';
 -- Query to set the privileges of the analytics user;
 
 GRANT USAGE, SELECT ON wemove_47.* TO analytics@localhost;
@@ -22,6 +22,7 @@ GRANT ALL ON wemove_47.analytics_petitions_total TO analytics@localhost;
 GRANT ALL ON wemove_47.analytics_temp_mailing TO analytics@localhost;
 GRANT ALL ON wemove_47.data_mailing_ab TO analytics@localhost;
 GRANT ALL ON wemove_47.data_mailing_counter TO analytics@localhost;
+GRANT ALL ON wemove_47.speakeasy_petition_metrics TO analytics@localhost;
 
 GRANT EXECUTE ON FUNCTION wemove_47.analyticsMedianOriginalTimeStamp TO 'analytics'@'pirandello.wemove.eu';
 GRANT EXECUTE ON FUNCTION wemove_47.analyticsMailjetMedianTimeStamp TO 'analytics'@'pirandello.wemove.eu';

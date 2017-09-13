@@ -15,8 +15,13 @@
 <th>Name</th>
 <th>Parent Campaign</th>
 <th>Action</th>
-<th>New signatures</th>
-<th>New members</th>
+<th title='nb of unique recipients of our mailings'>Targeted</th>
+<th title='nb of unique clicks of our mailings'>Click</th>
+<th>Signature</th>
+<th>New member</th>
+<th>Activated</th>
+<th>Share</th>
+<th>Donations</th>
 </tr></thead>
 <tbody>
 </tbody>
@@ -41,7 +46,7 @@ var graphs = [];
 		 alert(campaigns.error_message);
 	}
 	var instrumentLabel = {};
-	var numberFormat = d3.format(".2f");
+	var numberformat = function(d) { return d? d3.format(".2s")(d) : ""};
 	var dateFormat = d3.time.format("%Y-%m-%d");
 	var dateTimeFormat= d3.time.format("%Y-%m-%d %H:%M:%S");
 
@@ -72,13 +77,21 @@ var graphs = [];
           if (d.id != d.parent_id)
             return "<i><a href='"+CRM.url("civicrm/campaign/add",{action:"update",id:d.id})+"FIX needed</a></i>";
           var name= d.utm_campaign.trim() ||"??";
-          return "<a href='"+CRM.url("civicrm/campaign/add",{action:"update",id:d.id})+"'>"+name+"</a>";
+          return "<a href='"+CRM.url("civicrm/campaign/add",{action:"update",id:d.id})+"'> "+name+"</a>";
           },
 				function(d){return '<a href="/civicrm/dataviz/WMCampaign/'+d.id+'">'+d.name+'</a>';},
 				function(d){return '<a href="'+d.url+'" title="'+d.external_identifier+'">Speakout</a>'},
-				function(d){return ''},
-				function(d){return ''},
-			 ]);
+				function(d){return '<span class="tip" title="mails sent:'+numberformat(d.recipient)+"<br>avg:"+ numberformat(d.recipient/d.unique_recipient)+'">'+numberformat(d.unique_recipient)+'</span>'},
+				function(d){return '<span class="tip" title="mails sent:'+numberformat(d.recipient)+"<br>seeder <i>more than 1 click</i>:"+ numberformat(d.click_1)+"<br>superseeder <i>more than 42 clicks</i>:"+ numberformat(d.click_42)+'">'+numberformat(d.signature)+'</span>'},
+				function(d){return '<span class="tip" title="new signature:'+numberformat(d.new_signature)+'">'+numberformat(d.signature)+'</span>'},
+				function(d){return '<span class="tip" title="with > 1 new signature:'+numberformat(d.effective_share)+'">'+numberformat(d.share)+'</span>'},
+				function(d){return '<span class="tip" title="from speakout share:'+numberformat(d.new_member_share)+"<br>from mail fwd:"+ numberformat(d.new_member_mail)+'">'+numberformat(d.new_member)+'</span>'},
+				function(d){return numberformat(d.activated)},
+				function(d){return '<span class="tip" title="new members created:'+numberformat(d.new_member_share)+"<br>effective share (at least one member created):"+ numberformat(d.effective_share)+'">'+numberformat(d.share)+'</span>'},
+				function(d){return '<a class="tip" href="/civicrm/dataviz/WM_contribution_campaign#campaign='+d.id+'" title="nb donations:'+( +d.donation + +d.donation_pending)+'<br>amount still pending:'+d.donation_pending_amount+'">'+numberformat(+d.donation_amount+ +d.donation_pending_amount)+'</a>'},
+			 ])
+            .on("renderlet.tootltip", function(){
+              jQuery("table .tip").tooltip({html:true})});
 		return graph;
 	}
 })(cj);
@@ -88,5 +101,11 @@ var graphs = [];
 </script>
 <style>
 .row .dc-chart .pie-slice {fill:white;}
+.tip {cursor: help;}
+
+.tooltip-inner {
+    max-width: 350px;
+    width: 350px; 
+}
 </style>
 {/literal}

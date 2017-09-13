@@ -14,19 +14,19 @@ select
   (select sum(npeople) from speakeasy_petition_metrics m where activity="donation_pending_amount" and m.campaign_id=c.id group by c.id) donation_pending_amount,
   (select sum(npeople) from speakeasy_petition_metrics m where activity="share" and m.campaign_id=c.id group by c.id) share,
   (select sum(npeople) from speakeasy_petition_metrics m where activity="effective_share" and m.campaign_id=c.id group by c.id) effective_share,
-  (select sum(npeople) from speakeasy_petition_metrics m where m.activity="Petition" and m.campaign_id=c.id group by c.id) signature,
-  (select sum(npeople) from speakeasy_petition_metrics m where m.activity="Petition" and status='9' and m.campaign_id=c.id group by c.id) new_member,
-  (select sum(npeople) from speakeasy_petition_metrics m where m.activity="Petition" and status='10' and m.campaign_id=c.id group by c.id) activated,
+  (select sum(npeople) from speakeasy_petition_metrics m where m.activity="petition" and m.campaign_id=c.id group by c.id) signature,
+  (select sum(npeople) from speakeasy_petition_metrics m where m.activity="petition" and status='9' and m.campaign_id=c.id group by c.id) new_member,
+  (select sum(npeople) from speakeasy_petition_metrics m where m.activity="petition" and status='10' and m.campaign_id=c.id group by c.id) activated,
 
   (select sum(npeople) from speakeasy_petition_metrics m where activity="unique_clicks" and m.campaign_id=c.id group by c.id) click,
   (select sum(npeople) from speakeasy_petition_metrics m where activity="unique_opened" and m.campaign_id=c.id group by c.id) open,
   (select sum(npeople) from speakeasy_petition_metrics m where activity="click_1" and m.campaign_id=c.id group by c.id) click_1,
   (select sum(npeople) from speakeasy_petition_metrics m where activity="click_42" and m.campaign_id=c.id group by c.id) click_42,
-  (select sum(abs(npeople)) from speakeasy_petition_metrics m where m.activity="Petition" and status in ('1','4','5','9') and m.campaign_id=c.id group by c.id) new_signature,
+  (select sum(abs(npeople)) from speakeasy_petition_metrics m where m.activity="petition" and status in ('1','4','5','9') and m.campaign_id=c.id group by c.id) new_signature,
   (select sum(npeople) from speakeasy_petition_metrics m where activity="new_member_mail" and m.campaign_id=c.id group by c.id) new_member_mail,
   (select sum(npeople) from speakeasy_petition_metrics m where activity="new_member_share" and m.campaign_id=c.id group by c.id) new_member_share
-/*left join speakeasy_petition_metrics new on new.activity="Petition" and new.status='9' and new.c.id=c.id
- left join speakeasy_petition_metrics activated on activated.activity="Petition" and activated.status='10' and activated.c.id=c.id*/
+/*left join speakeasy_petition_metrics new on new.activity="petition" and new.status='9' and new.c.id=c.id
+ left join speakeasy_petition_metrics activated on activated.activity="petition" and activated.status='10' and activated.c.id=c.id*/
 from civicrm_campaign c
 join civicrm_value_speakout_integration_2 custom on entity_id=c.id
 
