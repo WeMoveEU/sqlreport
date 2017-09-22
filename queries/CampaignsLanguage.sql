@@ -24,7 +24,8 @@ select
   (select sum(npeople) from speakeasy_petition_metrics m where activity="click_42" and m.campaign_id=c.id group by c.id) click_42,
   (select sum(abs(npeople)) from speakeasy_petition_metrics m where m.activity="petition" and status in ('1','4','5','9') and m.campaign_id=c.id group by c.id) new_signature,
   (select sum(npeople) from speakeasy_petition_metrics m where activity="new_member_mail" and m.campaign_id=c.id group by c.id) new_member_mail,
-  (select sum(npeople) from speakeasy_petition_metrics m where activity="new_member_share" and m.campaign_id=c.id group by c.id) new_member_share
+  (select sum(npeople) from speakeasy_petition_metrics m where activity="new_member_share" and m.campaign_id=c.id group by c.id) new_member_share,
+  (select min(last_updated) from speakeasy_petition_metrics m where m.campaign_id=c.id group by c.id) oldest_data
 /*left join speakeasy_petition_metrics new on new.activity="petition" and new.status='9' and new.c.id=c.id
  left join speakeasy_petition_metrics activated on activated.activity="petition" and activated.status='10' and activated.c.id=c.id*/
 from civicrm_campaign c
