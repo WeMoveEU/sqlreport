@@ -24,6 +24,7 @@ select
   (select sum(npeople) from speakeasy_petition_metrics m where activity="new_member_mail" and m.parent_id=c.id group by parent_id) new_member_mail,
   (select sum(npeople) from speakeasy_petition_metrics m where activity="new_member_share" and m.parent_id=c.id group by parent_id) new_member_share,
   (select sum(npeople) from speakeasy_petition_metrics m where m.activity="petition" and status='10' and m.parent_id=c.id group by parent_id) activated,
+  (select sum(npeople) from speakeasy_petition_metrics m where activity="unsub" and m.parent_id=c.id group by parent_id) unsubscribed,
   (select min(last_updated) from speakeasy_petition_metrics m where m.parent_id=c.id group by parent_id) oldest_data
 
 /*left join speakeasy_petition_metrics new on new.activity="petition" and new.status='9' and new.parent_id=c.id
