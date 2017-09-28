@@ -87,3 +87,9 @@ CREATE TABLE `data_mailing_ab` (
   PRIMARY KEY (`id`),
   KEY `data_mailing_ab_mailing_abtest_id_inx` (`mailing_abtest_id`)
 );
+
+-- View IN DRUPAL DATABASE to limit the number of surveys seen by Metabase
+CREATE VIEW v_analytics_latest_survey_names AS
+  SELECT entity_id AS nid, field_internal_name_value AS name 
+    FROM field_data_field_internal_name 
+    ORDER BY entity_id DESC LIMIT 250;
