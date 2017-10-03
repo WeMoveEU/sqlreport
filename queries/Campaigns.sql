@@ -12,6 +12,8 @@ select
   (select sum(npeople) from speakeasy_petition_metrics m where activity="donation_pending" and m.parent_id=c.id group by parent_id) donation_pending,
   (select sum(npeople) from speakeasy_petition_metrics m where activity="donation_amount" and m.parent_id=c.id group by parent_id) donation_amount,
   (select sum(npeople) from speakeasy_petition_metrics m where activity="donation_pending_amount" and m.parent_id=c.id group by parent_id) donation_pending_amount,
+  (select sum(npeople) from speakeasy_petition_metrics m where activity="recurring_donation" and m.parent_id=c.id group by parent_id) recurring_donation,
+  (select sum(npeople) from speakeasy_petition_metrics m where activity="recurring_donation_amount" and m.parent_id=c.id group by parent_id) recurring_donation_amount,
   (select sum(npeople) from speakeasy_petition_metrics m where activity="unique_opened" and m.parent_id=c.id group by parent_id) open,
   (select sum(npeople) from speakeasy_petition_metrics m where activity="unique_clicks" and m.parent_id=c.id group by parent_id) click,
   (select sum(npeople) from speakeasy_petition_metrics m where activity="click_1" and m.parent_id=c.id group by parent_id) click_1,
