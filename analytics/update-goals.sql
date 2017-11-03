@@ -1,3 +1,5 @@
+SELECT @gb := 1226;
+
 -- Active member count per language
 UPDATE 
   analytics_goals_dates goal
@@ -6,10 +8,13 @@ UPDATE
       scope, `end`, SUM(e.active) AS nb
     FROM analytics_goals_dates
     JOIN (
-      SELECT kpidate, language, SUM(active) AS active
+      SELECT 
+        kpidate, 
+        IF(language='en_GB' AND country_id!=@gb, 'en_INT', language) AS segment, 
+        SUM(active) AS active
       FROM analytics_active_3m
-      GROUP BY kpidate, language
-    ) e ON e.language=scope AND e.kpidate=`end`
+      GROUP BY kpidate, segment
+    ) e ON e.segment=scope AND e.kpidate=`end` 
     WHERE metric = 'active_member_growth'
     GROUP BY scope, `end`
   ) val ON val.scope=goal.scope AND val.end=goal.end
@@ -26,7 +31,7 @@ UPDATE
     JOIN (
       SELECT kpidate, SUM(active) AS active
       FROM analytics_active_3m
-      GROUP BY kpidate, language
+      GROUP BY kpidate
     ) e ON scope='organization' AND e.kpidate=`end`
     WHERE metric = 'active_member_growth'
     GROUP BY scope, `end`
@@ -42,14 +47,20 @@ UPDATE
         scope, `begin`, `end`, 100 * (SUM(e.active) - SUM(b.active)) / SUM(b.active) AS growth
       FROM analytics_goals_dates
       JOIN (
-        SELECT kpidate, language, SUM(active) AS active
+        SELECT
+          kpidate, 
+          IF(language='en_GB' AND country_id!=@gb, 'en_INT', language) AS segment, 
+          SUM(active) AS active
         FROM analytics_active_3m
-        GROUP BY kpidate, language
+        GROUP BY kpidate, segment
       ) b ON b.language=scope AND b.kpidate=`begin`
       JOIN (
-        SELECT kpidate, language, SUM(active) AS active
+        SELECT
+          kpidate, 
+          IF(language='en_GB' AND country_id!=@gb, 'en_INT', language) AS segment, 
+          SUM(active) AS active
         FROM analytics_active_3m
-        GROUP BY kpidate, language
+        GROUP BY kpidate, segment
       ) e ON e.language=scope AND e.kpidate=`end`
       WHERE metric = 'active_member_growth'
       GROUP BY scope, `begin`, `end`
@@ -113,13 +124,16 @@ WHERE g2.metric = 'recurring_donations' AND g2.scope = 'organization';
 UPDATE analytics_goals_dates g2
   JOIN (
     SELECT
-      m.language, g.`end`, SUM(m.number_added) - SUM(m.number_removed) AS nb_members
+      IF(language='en_GB' AND country_id!=@gb, 'en_INT', language) AS segment, 
+      g.`end`, 
+      SUM(m.number_added) - SUM(m.number_removed) AS nb_members
     FROM analytics_member_metrics m
-    JOIN analytics_goals_dates g ON m.language = g.scope AND m.added_date <= g.`end`
+    JOIN analytics_goals_dates g 
+      ON IF(language='en_GB' AND country_id!=@gb, 'en_INT', language) = g.scope AND m.added_date <= g.`end`
     WHERE g.metric = 'member_count'
-    GROUP BY m.language, g.`end`
+    GROUP BY segment, g.`end`
   ) t
-  ON g2.scope = t.language AND g2.end = t.end
+  ON g2.scope = t.segment AND g2.end = t.end
 SET g2.actual = t.nb_members
 WHERE g2.metric = 'member_count';
 
@@ -137,28 +151,34 @@ UPDATE analytics_goals_dates g2
 SET g2.actual = t.nb_members
 WHERE g2.metric = 'member_count';
 
--- Member growth per organization
+-- Member growth per language
 UPDATE analytics_goals_dates g2
   JOIN (
     SELECT
-      pre.language, pre.begin, round((sum_post - sum_pre) / sum_pre * 100, 0) growth
+      pre.segment, pre.begin, round((sum_post - sum_pre) / sum_pre * 100, 0) growth
     FROM
       (SELECT
-        m.language, g.`begin`, SUM(m.number_added) - SUM(m.number_removed) sum_pre
+        IF(language='en_GB' AND country_id!=@gb, 'en_INT', language) AS segment, 
+        g.`begin`, 
+        SUM(m.number_added) - SUM(m.number_removed) sum_pre
       FROM analytics_member_metrics m
-        JOIN analytics_goals_dates g ON m.language = g.scope
+      JOIN analytics_goals_dates g
+        ON IF(language='en_GB' AND country_id!=@gb, 'en_INT', language) = g.scope
       WHERE g.metric = 'member_growth' AND m.added_date < g.`begin`
-      GROUP BY m.language, g.`begin`) pre
+      GROUP BY segment, g.`begin`) pre
     JOIN
       (SELECT
-        m.language, g.`begin`, SUM(m.number_added) - SUM(m.number_removed) sum_post
+        IF(language='en_GB' AND country_id!=@gb, 'en_INT', language) AS segment, 
+        g.`begin`, 
+        SUM(m.number_added) - SUM(m.number_removed) sum_post
       FROM analytics_member_metrics m
-        JOIN analytics_goals_dates g ON m.language = g.scope
+      JOIN analytics_goals_dates g 
+        ON IF(language='en_GB' AND country_id!=@gb, 'en_INT', language) = g.scope
       WHERE g.metric = 'member_growth' AND m.added_date < g.`end`
-      GROUP BY m.language, g.`begin`) post
-    ON post.language = pre.language AND post.begin = pre.begin
+      GROUP BY segment, g.`begin`) post
+    ON post.segment = pre.segment AND post.begin = pre.begin
   ) t
-  ON g2.scope = t.language AND g2.begin = t.begin
+  ON g2.scope = t.segment AND g2.begin = t.begin
 SET g2.actual = t.growth
 WHERE g2.metric = 'member_growth';
 
