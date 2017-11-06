@@ -53,7 +53,7 @@ UPDATE
           SUM(active) AS active
         FROM analytics_active_3m
         GROUP BY kpidate, segment
-      ) b ON b.language=scope AND b.kpidate=`begin`
+      ) b ON b.segment=scope AND b.kpidate=`begin`
       JOIN (
         SELECT
           kpidate, 
@@ -61,7 +61,7 @@ UPDATE
           SUM(active) AS active
         FROM analytics_active_3m
         GROUP BY kpidate, segment
-      ) e ON e.language=scope AND e.kpidate=`end`
+      ) e ON e.segment=scope AND e.kpidate=`end`
       WHERE metric = 'active_member_growth'
       GROUP BY scope, `begin`, `end`
   ) val ON val.scope=goal.scope AND val.begin=goal.begin AND val.end=goal.end
