@@ -1,5 +1,5 @@
 -- how many days to analyse after the mailing
-SELECT @timeslot := 10;
+SELECT @timeslot := 11;
 
 -- Recipients
 -- INSERT IGNORE does not work because A/B mailing recipients may not be correct until they are sent
