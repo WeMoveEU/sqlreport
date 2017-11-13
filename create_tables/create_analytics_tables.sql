@@ -52,8 +52,8 @@ CREATE TABLE IF NOT EXISTS analytics_goals_dates (
   `metric` VARCHAR(45) NOT NULL COMMENT 'active_members, donations_count, donations_amount...',
   `begin` DATE NULL,
   `end` DATE NOT NULL COMMENT 'The goal should be filled out at this end date.',
-  `goal` INT NOT NULL,
-  `actual` INT NULL COMMENT 'Actual value of the metric at the end date',
+  `goal` FLOAT NOT NULL,
+  `actual` FLOAT NULL COMMENT 'Actual value of the metric at the end date',
   UNIQUE INDEX `analytics_goals_dates_unique` USING BTREE (`scope` ASC, `metric` ASC, `begin` ASC, `end` ASC))
   ENGINE = InnoDB
   COMMENT = 'Goals for organization or for languages (of members) per dates';

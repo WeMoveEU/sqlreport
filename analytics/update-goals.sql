@@ -44,7 +44,7 @@ UPDATE
   analytics_goals_dates goal
   JOIN (
     SELECT
-        scope, `begin`, `end`, 100 * (SUM(e.active) - SUM(b.active)) / SUM(b.active) AS growth
+        scope, `begin`, `end`, (SUM(e.active) - SUM(b.active)) / SUM(b.active) * 100 growth
       FROM analytics_goals_dates
       JOIN (
         SELECT
@@ -73,7 +73,7 @@ UPDATE
   analytics_goals_dates goal
   JOIN (
     SELECT
-      `begin`, `end`, ROUND(100 * (SUM(e.active) - SUM(b.active)) / SUM(b.active)) AS growth
+      `begin`, `end`, (SUM(e.active) - SUM(b.active)) / SUM(b.active) * 100 growth
     FROM analytics_goals_dates
       JOIN (
         SELECT
@@ -155,7 +155,7 @@ WHERE g2.metric = 'member_count';
 UPDATE analytics_goals_dates g2
   JOIN (
     SELECT
-      pre.segment, pre.begin, round((sum_post - sum_pre) / sum_pre * 100, 0) growth
+      pre.segment, pre.begin, (sum_post - sum_pre) / sum_pre * 100 growth
     FROM
       (SELECT
         IF(language='en_GB' AND country_id!=@gb, 'en_INT', language) AS segment, 
@@ -185,7 +185,7 @@ WHERE g2.metric = 'member_growth';
 -- Member growth per organization
 UPDATE analytics_goals_dates g2
   JOIN (SELECT
-    pre.begin, round((sum_post - sum_pre) / sum_pre * 100, 0) growth
+    pre.begin, (sum_post - sum_pre) / sum_pre * 100 growth
   FROM
     (SELECT
       g.`begin`, SUM(m.number_added) - SUM(m.number_removed) sum_pre
