@@ -7,7 +7,7 @@ JOIN (
 ) o ON g.id=o.id
 SET g.is_active=0;
 
-DELETE LOW_PRIORITY g, gc, gh
+DELETE g, gc, gh
 FROM (
   SELECT go.id AS id
   FROM civicrm_group go JOIN civicrm_subscription_history h ON h.group_id=go.id
