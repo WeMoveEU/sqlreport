@@ -24,7 +24,7 @@ select
   (select sum(npeople) from speakeasy_petition_metrics m where activity="new_member_mail" and m.campaign_id=c.id group by c.id) new_member_mail,
   (select sum(npeople) from speakeasy_petition_metrics m where activity="new_member_share" and m.campaign_id=c.id group by c.id) new_member_share,
   (select sum(npeople) from speakeasy_petition_metrics m where activity="new_now_recurdonors" and m.campaign_id=c.id group by c.id) new_member_now_recur_donors,
-  (select sum(npeople) from speakeasy_petition_metrics m where activity="new_active_2mlater" and m.campaign_id=c.id group by c.id) new_member_active_2months_later,
+  (select sum(npeople) from speakeasy_petition_metrics m where activity="new_active_3mlater" and m.campaign_id=c.id group by c.id) new_member_active_3months_later,
   (select sum(npeople) from speakeasy_petition_metrics m where activity="new_active_now" and m.campaign_id=c.id group by c.id) new_member_active_now,
   (select sum(npeople) from speakeasy_petition_metrics m where m.activity="petition" and status='10' and m.campaign_id=c.id group by c.id) activated,
   (select sum(npeople) from speakeasy_petition_metrics m where activity="unsub" and m.campaign_id=c.id group by c.id) unsubscribed,
