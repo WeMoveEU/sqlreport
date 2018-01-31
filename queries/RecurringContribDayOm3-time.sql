@@ -13,7 +13,7 @@ amount
 
 FROM
     civicrm_contribution_recur AS R
-        JOIN
+        LEFT JOIN
     civicrm_payment_processor pp ON payment_processor_id = pp.id
         LEFT JOIN
     civicrm_option_value status ON option_group_id = 11

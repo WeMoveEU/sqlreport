@@ -16,7 +16,7 @@ SUM(if (status not in(2,5),total,0)) as €_nok
 
 
 from (
-select  pp.name, contribution_status_id as status, count(*) as qty,sum(amount) as total, DATE_FORMAT(create_date, '%Y-%m') as date from civicrm_contribution_recur join civicrm_payment_processor pp on pp.id=payment_processor_id group by YEAR(create_date),MONTH(create_date), payment_processor_id ,payment_instrument_id,contribution_status_id order by date desc
+select  pp.name, contribution_status_id as status, count(*) as qty,sum(amount) as total, DATE_FORMAT(create_date, '%Y-%m') as date from civicrm_contribution_recur join civicrm_payment_processor pp on pp.id=payment_processor_id group by YEAR(create_date),MONTH(create_date), payment_processor_id ,civicrm_contribution_recur.payment_instrument_id,contribution_status_id order by date desc
 ) as rcur group by date order by date desc;
 
 

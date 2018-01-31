@@ -29,7 +29,6 @@ FROM
         amount
       FROM civicrm_contribution_recur AS R
       JOIN civicrm_contact co ON R.contact_id = co.id
-      JOIN civicrm_payment_processor pp ON payment_processor_id = pp.id
       LEFT JOIN civicrm_contribution c ON contribution_recur_id = R.id
       WHERE R.is_test=0 AND c.is_test=0
       GROUP BY R.id
@@ -51,7 +50,6 @@ FROM
       FROM
         civicrm_contribution_recur AS R
         JOIN civicrm_contact co ON R.contact_id = co.id
-        JOIN civicrm_payment_processor pp ON payment_processor_id = pp.id
         LEFT JOIN civicrm_contribution c ON contribution_recur_id = R.id
       WHERE R.is_test=0 AND c.is_test=0
       GROUP BY R.id
@@ -95,7 +93,6 @@ FROM
         FROM
           civicrm_contribution_recur AS R
           JOIN civicrm_contact co ON R.contact_id = co.id
-          JOIN civicrm_payment_processor pp ON payment_processor_id = pp.id
           LEFT JOIN civicrm_contribution c ON contribution_recur_id = R.id
           LEFT JOIN civicrm_address a ON a.contact_id = R.contact_id AND is_primary = 1
           LEFT JOIN civicrm_country ctry ON a.country_id = ctry.id
@@ -142,7 +139,6 @@ FROM
         FROM
           civicrm_contribution_recur AS R
           JOIN civicrm_contact co ON R.contact_id = co.id
-          JOIN civicrm_payment_processor pp ON payment_processor_id = pp.id
           LEFT JOIN civicrm_contribution c ON contribution_recur_id = R.id
           LEFT JOIN civicrm_address a ON a.contact_id = R.contact_id
             AND is_primary = 1
