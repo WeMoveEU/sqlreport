@@ -1,0 +1,1 @@
+select date(create_date) as date, M.status, frequency_unit as frequency, count(*) as nb, sum(amount) sum, avg(amount) avg from civicrm_contribution_recur  as R join civicrm_sdd_mandate M on R.id=M.entity_id and M.entity_table="civicrm_contribution_recur"  group by date(create_date),status, frequency_unit order by date desc;
