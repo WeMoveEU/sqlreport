@@ -90,6 +90,7 @@ SET
     language = speakout_integration.language_4
 WHERE
     analytics_petitions_1week.civicrm_camp_id IS NOT NULL
+    AND camp.external_identifier REGEXP '^[0-9]+$'
 ;
 
 
@@ -156,6 +157,7 @@ SET
     language = speakout_integration.language_4
 WHERE
     analytics_petitions_48h.civicrm_camp_id IS NOT NULL
+    AND camp.external_identifier REGEXP '^[0-9]+$'
 ;
 
 
@@ -221,13 +223,11 @@ SET
     language = speakout_integration.language_4
 WHERE
     analytics_petitions_total.civicrm_camp_id IS NOT NULL
+    AND camp.external_identifier REGEXP '^[0-9]+$'
 ;
 
 
 insert into analytics_calculation_times
 ( calculation ) 
 values ("after speakout petition kpis");
-
-
-
 
