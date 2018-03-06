@@ -93,3 +93,11 @@ CREATE VIEW v_analytics_latest_survey_names AS
   SELECT entity_id AS nid, field_internal_name_value AS name 
     FROM field_data_field_internal_name 
     ORDER BY entity_id DESC LIMIT 250;
+
+-- new approach to update supershares, workaround to CRM-20958
+-- occured after upgrade from 4.7.24 to 4.7.30
+DROP TABLE IF EXISTS sqlreport_supershares;
+CREATE TABLE `sqlreport_supershares` (
+  `entity_id` int(10) PRIMARY KEY COMMENT 'Table that this extends',
+  `counter` bigint(21) NOT NULL DEFAULT 0
+);
