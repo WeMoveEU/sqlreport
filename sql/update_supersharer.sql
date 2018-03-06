@@ -1,5 +1,5 @@
 -- update signatures
-DELETE FROM sqlreport_supershares;
+TRUNCATE TABLE sqlreport_supershares;
 INSERT INTO sqlreport_supershares (entity_id, counter)
   SELECT
     sh.entity_id, count(a.id) counter
@@ -15,7 +15,7 @@ UPDATE civicrm_value_share_params_6 shup
 SET shup.signatures_46 = s.counter;
 
 -- update shares
-DELETE FROM sqlreport_supershares;
+TRUNCATE TABLE sqlreport_supershares;
 INSERT INTO sqlreport_supershares (entity_id, counter)
   SELECT
     sh.entity_id, count(a.id) counter
@@ -31,7 +31,7 @@ UPDATE civicrm_value_share_params_6 shup
 SET shup.shares_47 = s.counter;
 
 -- update new members
-DELETE FROM sqlreport_supershares;
+TRUNCATE TABLE sqlreport_supershares;
 INSERT INTO sqlreport_supershares (entity_id, counter)
   SELECT
     sh.entity_id, count(a.id) counter
