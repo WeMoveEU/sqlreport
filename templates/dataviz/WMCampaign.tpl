@@ -1,10 +1,10 @@
-{crmTitle string="Campaign Activities"}
 {if !isset($id)}
   {include file='dataviz/_WMCampaign.tpl'}
     <script type="text/javascript">
 //        location.replace('events');
     </script>
 {else}
+
 <nav id="campaign-nav" class="navbar navbar-inverse navbar-fixed-top">
   <div class="container-fluid">
     <div class="navbar-header">
@@ -122,6 +122,10 @@
 </div>
 
 
+{crmAPI var='name' entity='campaign' action='getvalue' sequential=1 return="name" id=$id}
+{capture name="title"}Campaign dataviz {$name} #{$id}{/capture}
+{crmTitle string=$smarty.capture.title}
+since {$request.since}
 
 <script>
 ////    'use strict';
@@ -129,7 +133,11 @@ var campaign = {crmAPI action="get" entity="campaign" option_limit=1000 return="
 if (campaign.count==0) //need to fix so it has a parent...
   campaign.values=[{id:$id,name:"Fix #"+$id}];
 //custom_8=url custom_11=utm custom_4=language
+{if $request.since}
+var activities= {crmSQL json="AllCampaignActivitiesSince" id=$id since=$request.since debug=1};
+{else}
 var activities= {crmSQL json="AllCampaignActivities" id=$id};
+{/if}
 var mailings= {crmSQL json="AllCampaignMailings" id=$id};
 {literal}
 var ndx = crossfilter(activities.values);
