@@ -9,7 +9,7 @@ SELECT
     SUM(IF(language = 'fr_FR', active, 0)) AS fr_FR,
     SUM(IF(language = 'it_IT', active, 0)) AS it_IT,
     SUM(IF(language = 'en_US', active, 0)) AS en_US,
-    stamp as calculated_on
+    MAX(stamp) as calculated_on
 FROM
 analytics_active_1m
 GROUP BY kpidate
