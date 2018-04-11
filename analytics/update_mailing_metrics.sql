@@ -111,6 +111,7 @@ INSERT INTO data_mailing_counter
   ON DUPLICATE KEY UPDATE value=VALUES(value), last_updated=NOW();
 
 -- Contribution amounts
+-- TODO: fix and simplify: we do not need the recur_amount anymore, specific query
 INSERT INTO data_mailing_counter
   SELECT 
       SUBSTRING(utm_source_30, 10),
@@ -129,7 +130,13 @@ INSERT INTO data_mailing_counter
     GROUP BY utm_source_30, counter, b.box
   ON DUPLICATE KEY UPDATE value=VALUES(value), last_updated=NOW();
 
+-- contribution recurring amount
+
+INSERT INTO data_mailing_counter select SUBSTRING(utm_source, 10), 'recur_amount' AS counter, 14400, CAST(SUM(amount) AS UNSIGNED INTEGER), NOW() from civicrm_contribution_recur r join civicrm_value_recur_utm utm on utm.entity_id=r.id  where utm_source like "civimail-%" group by utm_source order by utm_source desc ON DUPLICATE KEY UPDATE value=VALUES(value), last_updated=NOW();
+
+
 -- Number of contributions
+-- TODO: fix and simplify: we do not need the recur_donation anymore, specific query
 INSERT INTO data_mailing_counter
   SELECT 
       SUBSTRING(utm_source_30, 10),
@@ -148,3 +155,5 @@ INSERT INTO data_mailing_counter
     GROUP BY utm_source_30, counter, b.box
   ON DUPLICATE KEY UPDATE value=VALUES(value), last_updated=NOW();
 
+-- Number of recurring contributions
+INSERT INTO data_mailing_counter select SUBSTRING(utm_source, 10), 'recur_donations' AS counter, 14400, count(*) a, NOW() from civicrm_contribution_recur r join civicrm_value_recur_utm utm on utm.entity_id=r.id  where utm_source like "civimail-%" group by utm_source order by utm_source desc ON DUPLICATE KEY UPDATE value=VALUES(value), last_updated=NOW();
