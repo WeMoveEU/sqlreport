@@ -23,3 +23,10 @@ INSERT INTO civicrm_group_contact (group_id, contact_id, status)
       AND a1.activity_date_time >= DATE_ADD(DATE_SUB(CURRENT_DATE(), INTERVAL 1 DAY), INTERVAL -12 MONTH)
       AND a1.activity_date_time >= DATE_ADD(c.created_date, INTERVAL 1 DAY)
   GROUP BY gc.contact_id;
+
+DELETE FROM civicrm_subscription_history WHERE group_id = @gdpr_group_id;
+
+INSERT INTO civicrm_subscription_history (contact_id, group_id, date, status)
+  SELECT contact_id, group_id, NOW(), status FROM civicrm_group_contact
+  WHERE group_id = @gdpr_group_id AND status = 'Added'
+  LIMIT 1;
