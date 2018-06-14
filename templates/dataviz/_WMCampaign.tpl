@@ -104,19 +104,10 @@ for (var i = 0, len = campaigns.values.length; i < len; i++) {
 		 alert(campaigns.error_message);
 	}
 	var instrumentLabel = {};
-	var numberformat2 = function(d) { return d? d3.format(".2s")(d) : ""};
-var numberformat = function (d) {
-  if (d > 999 && d < 100000) {
-    if (d % 1000 < 50) {
-        return d3.format('.0s')(d);
-    } else {
-        return d3.format('.2s')(d);
-    }
-  } else if (d >= 100000) {
-    return d3.format('.3s')(d);
-  }
-  return d;
-}
+	var numberformat = function(d) { 
+          return d > 999 && d < 10000 ? d3.format('.0s')(d) : d >= 10000 ? d3.format('.3s')(d) : d;
+        };
+
 	var dateFormat = d3.time.format("%Y-%m-%d");
 	var dateTimeFormat= d3.time.format("%Y-%m-%d %H:%M:%S");
         var day = d3.time.format("%Y%m%d");
