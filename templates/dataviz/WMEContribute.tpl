@@ -1,21 +1,37 @@
 {crmTitle string="Contributions"}
-<h1><span id="totalQty"></span> contributions for a total of <span id="totalAmount"></span> (avg. <span id="totalAvg"></span>)</h1>
-<div id="type" style="width:250px;">
+<h1><span id="totalQty"></span> contributions for a total of <span id="totalAmount"></span> (avg. <span id="totalAvg"></span>) since a month ago</h1>
+<div class="row">
+<div id="recur" class="col-md-3">
+    <strong>Recurring</strong>
+    <a class="reset" href="javascript:graphs.recur.filterAll();dc.redrawAll();" style="display: none;">reset</a>
+    <graph />
+    <div class="clearfix"></div>
+</div>
+
+<div id="status" class="col-md-3">
+    <strong>Recurring</strong>
+    <a class="reset" href="javascript:graphs.recur.filterAll();dc.redrawAll();" style="display: none;">reset</a>
+    <graph />
+    <div class="clearfix"></div>
+</div>
+
+<div id="contact_type" class="col-md-4 hidden">
     <strong>Type</strong>
     <a class="reset" href="javascript:pietype.filterAll();dc.redrawAll();" style="display: none;">reset</a>
     <div class="clearfix"></div>
 </div>
 
-<div id="instrument" style="width:250px;">
+<div id="instrument" class="col-md-3">
     <strong>Payment instrument</strong>
     <a class="reset" href="javascript:pieinstrument.filterAll();dc.redrawAll();" style="display: none;">reset</a>
     <div class="clearfix"></div>
 </div>
 
-<div id="amountg">
+<div id="amountg" class="col-md-3">
     <strong>Donations by amount</strong>
     <a class="reset" href="javascript:dayOfWeekChart.filterAll();dc.redrawAll();" style="display: none;">reset</a>
     <div class="graph"></div>
+</div>
 </div>
 
 <div class="row clear">
@@ -38,7 +54,7 @@ style="display: none;">reset</a>
 <th>Donor</th>
 <th>status</th>
 <th>amount</th>
-<th>type</th>
+<th>since (days)</th>
 <th>Campaign</th>
 <th>Medium</th>
 <th>Source</th>
@@ -52,13 +68,19 @@ style="display: none;">reset</a>
     'use strict';
 
     var data = {crmSQL file="WMEContribute"};
-    var i = {crmAPI entity="OptionValue" option_group_id="10"}; {*todo on 4.4, use the payment_instrument as id *}
+    var i = {crmAPI entity="OptionValue" option_group_id="10"};
+    var statuses = {crmAPI entity="OptionValue" option_group_id="11"};
 
     {literal}
         if(!data.is_error){
             var instrumentLabel = {};
+            var statusLabel = {};
             i.values.forEach (function(d) {
                 instrumentLabel[d.value] = d.label;
+            });
+
+            statuses.values.forEach (function(d) {
+                statusLabel[d.value] = d.label;
             });
 
             var numberFormat = d3.format(".2f");
@@ -81,6 +103,8 @@ drawNumbers();
                 drawTable('#table');
                 drawInstrument();
                 drawAmount('#amountg .graph');
+                drawRecur('#recur graph');
+                drawStatus('#status graph');
 //                drawDump();
 
                 dc.renderAll();
@@ -130,6 +154,32 @@ function drawNumbers (){
       .group(group);
 }
 
+        function drawStatus(dom){
+          var dim = ndx.dimension(function(d) {return d.status_id;});
+          var group = dim.group().reduceSum(function(d) { return 1; });
+          var graph = dc.pieChart(dom)
+            .innerRadius(20)
+            .radius(90)
+            .dimension(dim)
+            .group(group)
+            .label(function (d) { return statusLabel[d.key];})
+            .title(function (d) { return (d.key +": "+d.value);});
+          ;
+          return graph;
+        }
+        function drawRecur(dom){
+          var dim = ndx.dimension(function(d) {return d.recurring;});
+          var group = dim.group().reduceSum(function(d) { return 1; });
+          var graph = dc.pieChart(dom)
+            .innerRadius(20)
+            .radius(90)
+            .dimension(dim)
+            .group(group)
+            .label(function (d) { ;return d.key? "Recurring":"One Off";})
+            .title(function (d) { return (d.key? "Recurring":"One Off") +": "+d.value;});
+          ;
+          return graph;
+        }
 
 function drawAmount(dom) {
   var graph = dc.barChart(dom);
@@ -268,7 +318,7 @@ function drawTable(dom) {
               function(d){ return d.amount +" "+d.currency},
               function(d){return d.created_age},
               function(d){return d.instrument},
-              function(d){return d.utm_campaign},
+              function(d){return "<span title='campaign "+d.campaign_id + "'>" +d.utm_campaign+"</span>"},
               function(d){return d.utm_medium},
               function(d){return d.utm_source},
              ])
