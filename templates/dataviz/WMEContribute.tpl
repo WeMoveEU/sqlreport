@@ -9,7 +9,7 @@
 </div>
 
 <div id="status" class="col-md-3">
-    <strong>Recurring</strong>
+    <strong>Status</strong>
     <a class="reset" href="javascript:graphs.recur.filterAll();dc.redrawAll();" style="display: none;">reset</a>
     <graph />
     <div class="clearfix"></div>
@@ -68,6 +68,7 @@ style="display: none;">reset</a>
     'use strict';
 
     var data = {crmSQL file="WMEContribute"};
+    var mailings = {crmSQL file="WMMailingCampaign"};
     var i = {crmAPI entity="OptionValue" option_group_id="10"};
     var statuses = {crmAPI entity="OptionValue" option_group_id="11"};
 
@@ -75,12 +76,29 @@ style="display: none;">reset</a>
         if(!data.is_error){
             var instrumentLabel = {};
             var statusLabel = {};
+            var _getMailing = {};
+            mailings.values.forEach(function(d,i){
+              _getMailing[d.id]=i;
+            });
+
+            var getMailing = function(id){
+              return mailings.values[_getMailing[+id]];
+            };
+
             i.values.forEach (function(d) {
                 instrumentLabel[d.value] = d.label;
             });
 
             statuses.values.forEach (function(d) {
                 statusLabel[d.value] = d.label;
+            });
+            data.values.forEach(function(d){
+              if (d.utm_source.indexOf("civimail-") == 0){
+                var m= getMailing(d.utm_source.substring(9));
+                if (!m) return;
+                d.campaign_id = m.campaign_id;
+                d.mailing = m.name;
+              }
             });
 
             var numberFormat = d3.format(".2f");
@@ -312,7 +330,7 @@ function drawTable(dom) {
     })
     .sortBy(function (d) { return d.key })
     .order(d3.descending)
-    .size(9999)
+    .size(999)
     .columns([function(d){return "<a href='/civicrm/contact/view?cid="+d.contact_id+"' title='view the contact' target='_blank'>&#x1F60D;</a>"},
               function(d){ return d.status_id},
               function(d){ return d.amount +" "+d.currency},
@@ -320,7 +338,7 @@ function drawTable(dom) {
               function(d){return d.instrument},
               function(d){return "<span title='campaign "+d.campaign_id + "'>" +d.utm_campaign+"</span>"},
               function(d){return d.utm_medium},
-              function(d){return d.utm_source},
+              function(d){return d.mailing || d.utm_source},
              ])
     ;
 /*              {
