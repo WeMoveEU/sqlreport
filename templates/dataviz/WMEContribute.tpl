@@ -331,11 +331,11 @@ function drawTable(dom) {
     .sortBy(function (d) { return d.key })
     .order(d3.descending)
     .size(999)
-    .columns([function(d){return "<a href='/civicrm/contact/view?cid="+d.contact_id+"' title='view the contact' target='_blank'>&#x1F60D;</a>"},
+    .columns([function(d){return "<a href='/civicrm/contact/view?cid="+d.contact_id+"' title='view the contact' target='_blank'>"+d.first_name+"</a>"},
               function(d){ return d.status_id},
               function(d){ return d.amount +" "+d.currency},
               function(d){return d.created_age},
-              function(d){return d.instrument},
+//              function(d){return instrumentLabel[d.instrument_id]},
               function(d){return "<span title='campaign "+d.campaign_id + "'>" +d.utm_campaign+"</span>"},
               function(d){return d.utm_medium},
               function(d){return d.mailing || d.utm_source},
@@ -375,20 +375,19 @@ function drawType() {
 }
 function drawInstrument () {
                 pieinstrument = dc.pieChart("#instrument").innerRadius(50).radius(90);
-                var instrument        = ndx.dimension(function(d) {return d.instrument;});
+                var instrument        = ndx.dimension(function(d) {return d.instrument_id;});
                 var instrumentGroup   = instrument.group().reduceSum(function(d) { return 1; });
                 pieinstrument
                     .width(200)
                     .height(200)
                     .dimension(instrument)
                     .group(instrumentGroup)
-/*                    .title(function(d) {
+                    .title(function(d) {
                         return instrumentLabel[d.key]+":"+d.value;
                     })
                     .label(function(d) {
                         return instrumentLabel[d.key];
                     })
-*/
 ;	   
 
    return pieinstrument;

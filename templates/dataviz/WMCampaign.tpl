@@ -47,6 +47,7 @@
 				<li class="list-group-item"><span class="badge nb_signature"></span><a href="#focus=signature" class="btn btn-default btn-xs" id="focus_signature">Signatures</a></li>
 				<li class="list-group-item"><span class="badge nb_new_member"></span><a href="#focus=growth" id="focus_growth" class="btn btn-default btn-xs active">New Members</a></li>
 			<li class="list-group-item"><span class="badge nb_pending"></span><span class="glyphicon glyphicon-chevron-right"></span><i>pending</i></li>
+			<li class="list-group-item"><span class="badge nb_optout"></span><span class="glyphicon glyphicon-chevron-right"></span><strike>optout</strike></li>
 			<li class="list-group-item"><span class="badge nb_bounced" title="signatures from invalid emails"></span><span class="glyphicon glyphicon-chevron-right"></span><strike>bounced</strike></li>
 				<li class="list-group-item" title="2nd signature or 1st signature since at least a month of inactivity"><span class="badge nb_activated"></span>Activated Members</li>
 				<li class="list-group-item"><span class="badge nb_share"></span>Shares</li>
@@ -334,6 +335,12 @@ function drawNumbers (graphs){
 	.valueAccessor(function(d){ return d.pending})
 	.html({some:"%number",none:"no signature pending"})
 	.renderlet(function(chart) {renderLetDisplay(chart,20, graphs.nb_signature.data())})
+	.group(group);
+
+	dc.numberDisplay(".nb_optout") 
+	.valueAccessor(function(d){ return d.optout})
+	.html({some:"%number",none:"all good"})
+	.renderlet(function(chart) {renderLetDisplay(chart,-5, graphs.nb_signature.data())})
 	.group(group);
 
 	dc.numberDisplay(".nb_activated") 
