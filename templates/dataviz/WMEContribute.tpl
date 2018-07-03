@@ -1,11 +1,25 @@
 {crmTitle string="Contributions"}
 <h1><span id="totalQty"></span> contributions for a total of <span id="totalAmount"></span> (avg. <span id="totalAvg"></span>) since a month ago</h1>
+	<div class="row">
+        <div id="lang" class="col-md-3">
+          <div class="panel panel-default compact"><div class="panel-heading">Lang</div>
+          <div class="panel-body"> <div class="graph"><graph /></div></div></div>
+        </div>
+
+	<div id="date" class="col-md-9"><div class="panel panel-default"><div class="panel-heading">Date
+
+	<div class="btn-group" id="btn-date"></div>
+
+	</div>
+	<div class="panel-body"> <div class="graph"></div></div></div>
+	</div>
+	</div>
 <div class="row">
 <div id="recur" class="col-md-3">
-    <strong>Recurring</strong>
-    <a class="reset" href="javascript:graphs.recur.filterAll();dc.redrawAll();" style="display: none;">reset</a>
-    <graph />
-    <div class="clearfix"></div>
+          <div class="panel panel-default compact"><div class="panel-heading">Recurring
+             <a class="reset" href="javascript:graphs.recur.filterAll();dc.redrawAll();" style="display: none;">reset</a>
+          </div>
+          <div class="panel-body"> <div class="graph"><graph /></div></div></div>
 </div>
 
 <div id="status" class="col-md-3">
@@ -73,6 +87,8 @@ style="display: none;">reset</a>
     var statuses = {crmAPI entity="OptionValue" option_group_id="11"};
 
     {literal}
+    var graphs={};
+
         if(!data.is_error){
             var instrumentLabel = {};
             var statusLabel = {};
@@ -103,11 +119,14 @@ style="display: none;">reset</a>
 
             var numberFormat = d3.format(".2f");
             var volumeChart=null,dayOfWeekChart=null,moveChart=null,pieinstrument,pietype;  
+var pastel2= ["#fbb4ae","#b3cde3","#ccebc5","#decbe4","#fed9a6","#ffffcc","#e5d8bd","#fddaec","#f2f2f2"];
+var colorType = d3.scale.ordinal().range(pastel2);
 
 
             cj(function($) {
                 var dateFormat = d3.time.format("%Y-%m-%d");
                 var dateTimeFormat= d3.time.format("%Y-%m-%d %H:%M:%S");
+	      $(".crm-container").removeClass("crm-container");
                 //data.values.forEach(function(d){data.values[i].dd = new Date(d.receive_date)});
 
                 data.values.forEach(function(d){d.dd = dateTimeFormat.parse(d.date)});
@@ -118,15 +137,163 @@ style="display: none;">reset</a>
 
 drawNumbers();
 //                drawType();
-                drawTable('#table');
-                drawInstrument();
-                drawAmount('#amountg .graph');
-                drawRecur('#recur graph');
-                drawStatus('#status graph');
+                graphs.table=drawTable('#table');
+                graphs.instrument=drawInstrument();
+                graphs.amount=drawAmount('#amountg .graph');
+                graphs.recur=drawRecur('#recur graph');
+                graphs.status=drawStatus('#status graph');
+                graphs.lang=drawLang('#lang .graph');
+                graphs.date= drawDate('#date .graph');
+                graphs.btn_date = drawDateButton("#date .btn-group",graphs.date);
 //                drawDump();
 
                 dc.renderAll();
                 //  pietype.render();
+
+function drawDateButton(dom, graph) {
+var data = [
+    { key: "today", label: "Today" },
+    { key: "yesterday", label: "Yesterday" },
+    { key: "1", label: "Last 24h" },
+    { key: "7", label: "Last 7 days" },
+    { key: "month", label: "This month" },
+    { key: "future", label: "Planned" }
+];
+  d3.select(dom)
+    .selectAll("button")
+    .data(data)
+    .enter()
+    .append ("button")
+    .text(function (d) {return d.label})
+    .classed("btn",true)
+    .classed("btn-default",true)
+    .on("click", function () {
+       var btn=d3.select(this);
+       d3.selectAll(dom +" .active").classed("active", false);
+       btn.classed("active",true);
+	    var s = new Date(), e = new Date();
+	    switch (btn.data()[0].key) {
+	      case "today":
+		s = d3.time.day.utc(e);
+		break;
+	      case "yesterday":
+		e = d3.time.day.utc(s);
+		s = d3.time.day.utc.offset(e, -1);
+		break;
+	      case "week":
+		s = d3.time.monday.utc(e);
+		break;
+	      case "future":
+	        e = Number.POSITIVE_INFINITY;
+		break;
+	      case "month":
+		s = d3.time.month.utc(e);
+		break;
+	      default:
+		s = d3.time.day.offset(e, - + btn.data()[0].key);
+	    }
+
+	    graph.filterAll(); //reset filter
+	    graph.filter(dc.filters.RangedFilter(s,e));
+	    graph.redrawGroup();
+    });
+
+
+}
+
+function drawDate (dom) {
+  var dim = ndx.dimension(function(d){
+    return d3.time.day.utc(d.dd);
+  });
+  var group = dim.group().reduceSum(function(d){return d.amount;});
+
+  //var graph=dc.lineChart(dom)
+  var graph=dc.compositeChart(dom)
+   .margins({top: 0, right: 50, bottom: 20, left:30})
+    .height(150)
+    .width(0)
+    .dimension(dim)
+    .brushOn(true)
+    .mouseZoomable(false)
+    .renderHorizontalGridLines(true)
+    .title (function(d) {return dateFormat(d.key)+": "+d.value+" amount"})
+    .x(d3.time.scale.utc().domain([dim.bottom(1)[0].dd,dim.top(1)[0].dd]))
+    .round(d3.time.day.utc.round)
+    .elasticY(true)
+    .xUnits(d3.time.days.utc);
+
+    function line (group,name) {
+      return dc.lineChart(graph)
+       .group(group)
+//       .colors(colorType)
+//       .colorAccessor(function () { return name})
+       .ordinalColors(["orange"])
+       .title (function(d) {return dateFormat(d.key)+": "+d.value+" donations"})
+       .renderDataPoints({radius: 1, fillOpacity: 0.8, strokeOpacity: 0})
+       .interpolate('monotone');
+    };
+    
+    function today (chart) {
+        var x_vert = d3.time.day.utc(new Date());
+        var extra_data = [
+            {x: chart.x()(x_vert), y: 0},
+            {x: chart.x()(x_vert), y: chart.effectiveHeight()}
+        ];
+        var line = d3.svg.line()
+            .x(function(d) { return d.x; })
+            .y(function(d) { return d.y; })
+            .interpolate('linear');
+        var chartBody = chart.select('g');
+        var path = chartBody.selectAll('line#today').data([extra_data]);
+        var path = path.enter()
+                .append('path')
+                .attr('class', 'today')
+                .attr('stroke', 'red')
+                .attr('id', 'today')
+                .attr("stroke-width", 1)
+                .style("stroke-dasharray", ("10,3"));
+        path.attr('d', line);
+    };
+
+  //graph.on('pretransition', today);
+
+  var lang=[line(group,"total Amount")
+          .ordinalColors(["blue"])
+          .renderArea(false)];
+
+  graphs.lang.group().top(20).forEach(function(l){
+     var group=dim.group().reduceSum(function(d){
+        return (l.key == d.lang ? 1 : 0);
+     });
+     
+     lang.push(line(group,l.key).renderArea(true).useRightYAxis(true));
+});
+
+  graph.compose(lang);
+  graph
+    .yAxisLabel("Amount")
+    .rightYAxisLabel("Nb Donations")
+/*
+    graph.compose([
+        line(group,"total")
+          .on('pretransition', today)
+          .renderArea(true),
+        line(groupNew,"new")
+          .renderArea(true),
+        line(groupExisting,"existing"),
+        line(groupPending,"pending"),
+        line(groupShare,"share")
+          .dashStyle([3,1,1,1]),
+        line(groupActivated,"activated")
+          .renderArea(true),
+    ]);
+*/
+   graph.yAxis().ticks(5).tickFormat(d3.format(".2s"));
+   graph.rightYAxis().ticks(5).tickFormat(d3.format(".2s"));
+   graph.xAxis().ticks(7);
+
+  return graph;
+}
 
 function drawNumbers (){
   var average = function(d) {
@@ -172,6 +339,20 @@ function drawNumbers (){
       .group(group);
 }
 
+        function drawLang(dom){
+          var dim = ndx.dimension(function(d) {return d.lang;});
+          var group = dim.group().reduceSum(function(d) { return 1; });
+          var graph = dc.pieChart(dom)
+            .innerRadius(20)
+            .radius(0)
+            .dimension(dim)
+            .group(group)
+            .label(function (d) { return d.key;})
+            .title(function (d) { return (d.key +": "+d.value);});
+          ;
+          return graph;
+        }
+
         function drawStatus(dom){
           var dim = ndx.dimension(function(d) {return d.status_id;});
           var group = dim.group().reduceSum(function(d) { return 1; });
@@ -193,9 +374,11 @@ function drawNumbers (){
             .radius(90)
             .dimension(dim)
             .group(group)
-            .label(function (d) { ;return d.key? "Recurring":"One Off";})
-            .title(function (d) { return (d.key? "Recurring":"One Off") +": "+d.value;});
+//            .label(function (d) { ;return d.key? "Recurring":"One Off";})
+//            .title(function (d) { return (d.key? "Recurring":"One Off") +": "+d.value;});
           ;
+          graph.filter("one_off");
+          graph.filter("first_recur");
           return graph;
         }
 
@@ -204,7 +387,7 @@ function drawAmount(dom) {
   var dim = ndx.dimension(function (d) {return d.amount;});
   var group = dim.group().reduceSum(function(d) { return 1; });
   graph.width(200)
-                    .height(200)
+                    .height(100)
                     .centerBar(true)
                     .gap(1)
                     .x(d3.scale.linear().domain([0, 100]))
@@ -214,7 +397,8 @@ function drawAmount(dom) {
                     .group(group)
                     .dimension(dim)
                     .ordinalColors(["#d95f02","#1b9e77","#7570b3","#e7298a","#66a61e","#e6ab02","#a6761d"]);
-  graph.yAxis().ticks(10, ",.0f").tickSize(5, 0);
+  graph.yAxis().ticks(5, ",.0f").tickSize(2, 0);
+   graph.xAxis().ticks(5);
   return graph;
 }
 
@@ -322,6 +506,10 @@ function drawDump () {
 
 function drawTable(dom) {
   var dim = ndx.dimension(function(d) {return d.date;});
+  var currency = function(name) {
+    var symbol = {"EUR":"€","GBP":"£","PLN":"zł"};
+    return symbol[name];
+  };
 
   var graph=dc.dataTable(dom)
     .dimension(dim)
@@ -332,8 +520,9 @@ function drawTable(dom) {
     .order(d3.descending)
     .size(999)
     .columns([function(d){return "<a href='/civicrm/contact/view?cid="+d.contact_id+"' title='view the contact' target='_blank'>"+d.first_name+"</a>"},
-              function(d){ return d.status_id},
-              function(d){ return d.amount +" "+d.currency},
+              function(d){ return statusLabel[d.status_id]},
+              function(d){ 
+                return d.amount +" "+currency(d.currency)},
               function(d){return d.created_age},
 //              function(d){return instrumentLabel[d.instrument_id]},
               function(d){return "<span title='campaign "+d.campaign_id + "'>" +d.utm_campaign+"</span>"},
@@ -427,3 +616,21 @@ function toCsv (dom,array) {
     {/literal}
 </script>
 <div class="clear"></div>
+
+<style>{literal}
+  .compact .panel-heading {
+    padding:5px;
+    position:absolute;
+    border-bottom-right-radius: 4px;
+    border-right-style:solid;
+    border-right-width:1px;
+    color:grey;
+  }
+  .compact .panel-body {
+    padding:0;
+    position:relative;
+    padding-top:5px;
+  }
+
+{/literal}
+</style>
