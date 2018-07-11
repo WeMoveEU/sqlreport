@@ -74,6 +74,7 @@
     <li role="presentation" class="active"><a href="#absolute" data-y="" aria-controls="map" role="tab" data-toggle="tab">Absolute</a></li>
     <li role="presentation"><a href="#signature" data-y="signature" aria-controls="pie" role="tab" data-toggle="tab">% signatures</a></li>
     <li role="presentation"><a href="#recipient" data-y="recipient" aria-controls="list" role="tab" data-toggle="tab">% recipients</a></li>
+    <li role="presentation"><a href="#recipient" data-y="new_signature" aria-controls="list" role="tab" data-toggle="tab">% new signatures</a></li>
     <li role="presentation"><a href="#recipient" data-y="open" aria-controls="list" role="tab" data-toggle="tab">% opened</a></li>
     <li role="presentation"><a href="#recipient" data-y="click" aria-controls="list" role="tab" data-toggle="tab">% clicks</a></li>
     <li role="presentation"><a href="#recipient" data-y="share" aria-controls="list" role="tab" data-toggle="tab">% shares</a></li>
@@ -276,48 +277,67 @@ jQuery(function($) {
 })(cj);
 
 
+function newSignature (d) {
+   var new_signature=0;
+   ["new_member","optout","bounced","pending"].forEach(function(r){
+     new_signature += d[r];
+   });
+  return new_signature;
+}
+
 function drawNumbers (graphs){
   var average = function(d) {
       return d.qty ? d.total / d.qty : 0;
   };
 
   var group = ndx.groupAll().reduce(
-		function (p, v) {
-				p.new_member += +v.completed_new_member;
-				p.activated += +v.activated;
-				p.bounced += +v.bounced;
-				p.optout += +v.optout;
-				p.pending += +v.pending;
-				p.share+= +v.share;
-				p.signature += +v.total;
-				if (v.mailing && v.mailing.campaign_id==v.campaign_id) p.recipient += +v.mailing.recipient;
-				if (v.mailing && v.mailing.campaign_id==v.campaign_id) p.open += +v.mailing.open;
-				if (v.mailing && v.mailing.campaign_id==v.campaign_id) p.click += +v.mailing.click;
-				return p;
-		},
-		function (p, v) {
-				p.optout -= +v.optout;
-				p.new_member -= +v.completed_new_member;
-				p.activated -= +v.activated;
-				p.bounced -= +v.bounced;
-				p.pending -= +v.pending;
-				p.share -= +v.share;
-				p.signature -= +v.total;
-				if (v.mailing && v.mailing.campaign_id==v.campaign_id) p.recipient -= +v.mailing.recipient;
-				if (v.mailing && v.mailing.campaign_id==v.campaign_id) p.open -= +v.mailing.open;
-				if (v.mailing && v.mailing.campaign_id==v.campaign_id) p.click -= +v.mailing.click;
-				return p;
-		},
-		function () { return {share:0,new_member:0,optout:0,pending:0,signature:0,recipient:0,click:0,open:0,bounced:0, activated:0}; }
-	);
+	function (p, v) {
+		p.new_member += +v.completed_new_member;
+		p.activated += +v.activated;
+		p.bounced += +v.bounced;
+		p.optout += +v.optout;
+		p.pending += +v.pending;
+		p.share+= +v.share;
+		p.signature += +v.total;
+		if (v.mailing && v.mailing.campaign_id==v.campaign_id) p.recipient += +v.mailing.recipient;
+		if (v.mailing && v.mailing.campaign_id==v.campaign_id) p.open += +v.mailing.open;
+		if (v.mailing && v.mailing.campaign_id==v.campaign_id) p.click += +v.mailing.click;
+		return p;
+	},
+	function (p, v) {
+		p.optout -= +v.optout;
+		p.new_member -= +v.completed_new_member;
+		p.activated -= +v.activated;
+		p.bounced -= +v.bounced;
+		p.pending -= +v.pending;
+		p.share -= +v.share;
+		p.signature -= +v.total;
+		if (v.mailing && v.mailing.campaign_id==v.campaign_id) p.recipient -= +v.mailing.recipient;
+		if (v.mailing && v.mailing.campaign_id==v.campaign_id) p.open -= +v.mailing.open;
+		if (v.mailing && v.mailing.campaign_id==v.campaign_id) p.click -= +v.mailing.click;
+		return p;
+	},
+	function () { return {share:0,new_member:0,optout:0,pending:0,signature:0,recipient:0,click:0,open:0,bounced:0, activated:0}; }
+		);
 
 	function renderLetDisplay(chart,factor, ref) {
-		 ref = ref || graphs.nb_recipient.value() || 1;
-		 factor= factor || 1;
-		 d3.selectAll(chart.anchor()).style("background-color", color(factor*chart.value()/ref) )
-		 .classed("tip",true)
-		 .attr("data-original-title", d3.format(".2%")(chart.value()/ref))
-		 .attr("title", d3.format(".2%")(chart.value()/ref));
+       //var $=jQuery;
+//       $(dom +" .bar title").each(function(){$(this).parent().attr("title",$(this).text())}).remove();
+//       $(dom +" .bar").tooltip({container: 'body',html:true, placement:"auto right"});
+//console.log(char.value/);
+//graphs.nb_signature.group().value() //share new_member, optout, pending, signature, recipients, click, 
+
+         var n = 0;
+         "new_member,optout,pending,bounced".split(",").forEach (function(e){
+            n += +graphs.nb_signature.group().value()[e];
+         });
+console.log(n);
+	 ref = ref || graphs.nb_recipient.value() || 1;
+	 factor= factor || 1;
+	 d3.selectAll(chart.anchor()).style("background-color", color(factor*chart.value()/ref) )
+	 .classed("tip",true)
+	 .attr("data-original-title", d3.format(".2%")(chart.value()/ref))
+	 .attr("title", d3.format(".2%")(chart.value()/ref));
 	}
 	graphs.nb_signature=dc.numberDisplay(".nb_signature") 
 	.valueAccessor(function(d){ return d.signature})
@@ -449,7 +469,12 @@ function drawNewMember (dom) {
 
   function stackRelative(i,ref) {
 	  return function(d) {
-			return d.value[ref]?d.value[i]/d.value[ref] : 0;
+            if (ref =="new_signature"){
+	      return d.value[i]/newSignature(d.value);
+            }
+            if (!d.value[ref]) 
+              return 0;
+	    return d.value[i]/d.value[ref];
 	  };
   }
 
@@ -489,8 +514,9 @@ function drawNewMember (dom) {
 		.clipPadding(10)
 		.title(function(d) {
 			//return this.layer +' ' + d.value['name'] + ' : ' + d.value[this.layer];
-			var t= "<h4>"+d.value[this.layer]  + " " + this.layer+ '</h4><li>' 
-                           + d3.format(".1%")(d.value[this.layer]/d.value.signature) + " of the signatures</li>";
+			var t= "<h4>"+d.value[this.layer]  + " " + this.layer+ '</h4>' 
+                           + '<li>' + d3.format(".1%")(d.value[this.layer]/d.value.signature) + " of the signatures</li>"
+                           + '<li>' + d3.format(".1%")(d.value[this.layer]/newSignature(d.value)) + " of the new signatures</li>";
                         if (d.value.recipient)
                            t += "<li>"+ d3.format(".1%")(d.value[this.layer]/d.value.recipient) + " of the recipients</li>";
                         return t;
@@ -508,6 +534,7 @@ function drawNewMember (dom) {
   stacks();
 
   graph.stacks=stacks;
+  graph.xAxis().ticks(4);
   return graph;
 
 }
