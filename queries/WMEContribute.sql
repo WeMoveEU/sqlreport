@@ -13,7 +13,7 @@ END as recurring
 , total_amount as amount, cont.currency
 , CASE 
     WHEN sepa.creation_date is not NULL THEN sepa.creation_date
-    WHEN sepa_recur.creation_date is not NULL THEN sepa_recur.creation_date
+    WHEN sepa_recur.creation_date is not NULL and cont.payment_instrument_id = 6 THEN sepa_recur.creation_date
     ELSE receive_date
 END as date
 , IF(datediff(receive_date,c.created_date)>1,datediff(receive_date,c.created_date),0) as created_age
