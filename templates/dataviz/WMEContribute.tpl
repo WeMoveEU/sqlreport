@@ -323,9 +323,7 @@ function drawDate (dom) {
 
   //graph.on('pretransition', today);
 
-  var lang=[line(group,"total Amount")
-          .ordinalColors(["blue"])
-          .renderArea(false)];
+  var lang=[];
 
   graphs.lang.group().top(20).forEach(function(l){
      var group=dim.group().reduceSum(function(d){
@@ -335,6 +333,9 @@ function drawDate (dom) {
      lang.push(line(group,l.key).renderArea(true).useRightYAxis(true));
 });
 
+  lang.push(line(group,"total Amount")
+          .ordinalColors(["blue"])
+          .renderArea(false));
   graph.compose(lang);
   graph
     .yAxisLabel("Amount")
@@ -455,6 +456,7 @@ function drawAmount(dom) {
   graph.width(200)
                     .height(100)
                     .centerBar(true)
+                     .elasticY(true)
                     .gap(1)
                     .x(d3.scale.linear().domain([0, 100]))
 //                    .round(d3.time.month.round)
@@ -463,8 +465,8 @@ function drawAmount(dom) {
                     .group(group)
                     .dimension(dim)
                     .ordinalColors(["#d95f02","#1b9e77","#7570b3","#e7298a","#66a61e","#e6ab02","#a6761d"]);
-  graph.yAxis().ticks(5, ",.0f").tickSize(2, 0);
-   graph.xAxis().ticks(5);
+  graph.yAxis().ticks(3, ",.0f").tickSize(2, 0);
+   graph.xAxis().ticks(4);
   return graph;
 }
 
@@ -586,7 +588,7 @@ function drawTable(dom) {
     .order(d3.descending)
     .size(999)
     .columns([function(d){return "<a href='/civicrm/contact/view?cid="+d.contact_id+"' title='view the contact' target='_blank'>"+d.first_name+"</a>"},
-              function(d){ return statusLabel[d.status_id]},
+              function(d){ return d.recurring.replace("_"," ") +" " +statusLabel[d.status_id].toLowerCase()},
               function(d){ 
                 return d.amount +" "+currency(d.currency)},
               function(d){return d.created_age},
