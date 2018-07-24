@@ -42,6 +42,8 @@
 </div>
 
 <div id="amountg" class="col-md-3">
+			<div class="panel-heading" title="Campaigns"><input id="input-filter" placeholder="Campaign"/></div>
+
     <strong>Donations by amount</strong>
     <a class="reset" href="javascript:dayOfWeekChart.filterAll();dc.redrawAll();" style="display: none;">reset</a>
     <div class="graph"></div>
@@ -87,6 +89,31 @@ style="display: none;">reset</a>
     var statuses = {crmAPI entity="OptionValue" option_group_id="11"};
 
     {literal}
+	  jQuery.urlParam = function(name, value){
+            if (arguments.length == 2) {
+              name = encodeURIComponent(name); value = encodeURIComponent(value);
+
+              var s = document.location.search;
+              var kvp = name+"="+value;
+
+              var r = new RegExp("(&|\\?)"+name+"=[^\&]*");
+
+              s = s.replace(r,"$1"+kvp);
+
+              if(!RegExp.$1) {s += (s.length>0 ? '&' : '?') + kvp;};
+              
+              history.pushState({"name":value},"filter on "+value, window.location.pathname + s);
+              return s;
+            }
+
+	    var results = new RegExp('[\?&]' + name + '=([^&#]*)').exec(window.location.href);
+	    if (results==null){
+	       return null;
+	    }
+	    else{
+	       return decodeURI(results[1]) || 0;
+	    }
+	};
     var graphs={};
 
         if(!data.is_error){
@@ -144,11 +171,50 @@ drawNumbers();
                 graphs.status=drawStatus('#status graph');
                 graphs.lang=drawLang('#lang .graph');
                 graphs.date= drawDate('#date .graph');
+  		graphs.search = drawTextSearch('#input-filter');
                 graphs.btn_date = drawDateButton("#date .btn-group",graphs.date);
 //                drawDump();
 
                 dc.renderAll();
                 //  pietype.render();
+
+function drawTextSearch (dom) {
+  var dom=dom; //so it's accessible in inner functions
+
+  var dim = ndx.dimension(function(d) { 
+       return d.utm_source.toLowerCase() 
+       + (d.mailing ? " " + d.mailing.toLowerCase() : "")
+       || "?"
+     });
+
+	function debounce(fn, delay) {
+		var timer = null;
+		return function () {
+			var context = this, args = arguments;
+			clearTimeout(timer);
+			timer = setTimeout(function () {
+				fn.apply(context, args);
+			}, delay);
+		};
+	}
+
+  d3.select(dom).on("keyup",debounce (function () {
+    var s= d3.select(this).property("value").toLowerCase();
+    dim.filterAll();
+    dim.filterFunction(function (d) { return d.indexOf (s) !== -1;} );
+    jQuery.urlParam("name",s);
+    dc.redrawAll();
+  },250));
+
+  (function () {
+    var s= jQuery.urlParam("name");
+    if (!s) return;
+    d3.select(dom).property("value",s);
+    dim.filterFunction(function (d) { return d.indexOf (s) !== -1;} );
+  })();
+  return dim;
+
+}
 
 function drawDateButton(dom, graph) {
 var data = [

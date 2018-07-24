@@ -1,5 +1,7 @@
 You can [download](/civicrm/delivery/) the list of all signatures.
 
+*Tip: you can add a ?since=20181224 to filter and only look at actions taken after 2018-12-24*
+
 ## Overview on the top left column
 
 Total number of signatures (*if you click on it, it will change the columns on the right to look a all signatures instead of the new ones only*. if you mouse over the badge, you see what it represents as a percentage of the emails sent. Some of these signatures didn't come from a mailing but from another channel.
