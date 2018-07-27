@@ -1,4 +1,12 @@
-
+-- Activity types:
+-- 2: phone call
+-- 3: email
+-- 6: contribution
+-- 28: survey
+-- 32: petition signature
+-- 54: share
+-- 59: tweet
+-- 67: facebook comment
 
 SET @yesterday=DATE_SUB(CURRENT_DATE(), INTERVAL 1 DAY);
 
@@ -22,7 +30,7 @@ INSERT IGNORE INTO analytics_active_3m (kpidate, language, country_id, active)
           AND gc.status = 'Added'
           AND email.is_primary IS TRUE
           AND email.on_hold = 0
-          AND a1.activity_type_id IN (6, 28, 32)
+          AND a1.activity_type_id IN (2, 3, 6, 28, 32, 54, 59, 67)
           AND a1.activity_date_time >= DATE_ADD(@yesterday, INTERVAL - 3 MONTH)
           AND a1.activity_date_time <= @yesterday
           AND a1.activity_date_time >= DATE_ADD(c.created_date, INTERVAL 1 DAY)
@@ -54,7 +62,7 @@ INSERT IGNORE INTO analytics_active_1m (kpidate, language, country_id, active)
           AND gc.status = 'Added'
           AND email.is_primary IS TRUE
           AND email.on_hold = 0
-          AND a1.activity_type_id IN (6, 28, 32)
+          AND a1.activity_type_id IN (2, 3, 6, 28, 32, 54, 59, 67)
           AND a1.activity_date_time >= DATE_ADD(@yesterday, INTERVAL - 1 MONTH)
           AND a1.activity_date_time <= @yesterday
           AND a1.activity_date_time >= DATE_ADD(c.created_date, INTERVAL 1 DAY)
@@ -93,7 +101,7 @@ INSERT IGNORE INTO analytics_active_2m_decay_4m (kpidate, language, country_id, 
           AND gc.status = 'Added'
           AND email.is_primary IS TRUE
           AND email.on_hold = 0
-          AND a1.activity_type_id IN (6, 28, 32)
+          AND a1.activity_type_id IN (2, 3, 6, 28, 32, 54, 59, 67)
           AND a1.activity_date_time >= @fourmonthsago
           AND a1.activity_date_time <= @yesterday
           AND a1.activity_date_time >= DATE_ADD(c.created_date, INTERVAL 1 DAY)

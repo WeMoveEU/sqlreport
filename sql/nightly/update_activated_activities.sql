@@ -1,6 +1,6 @@
 -- Set to "Completed Activated (id:10)" the status of activities
 -- that are completed and [re-]activated the member
--- Activity types looked at: contribution, survey, petition signature
+-- Activity types looked at: phone call, email, contribution, survey, petition signature, share, tweet, facebook
 
 SELECT @stamp := NULL, @contact := NULL, @active_once := 0, @active_threshold := 90; 
 UPDATE
@@ -19,7 +19,7 @@ UPDATE
     FROM civicrm_activity_contact ac 
     JOIN civicrm_activity a ON a.id=ac.activity_id 
     JOIN civicrm_contact c ON c.id=ac.contact_id
-    WHERE a.activity_type_id IN (6, 28, 32) 
+    WHERE a.activity_type_id IN (2, 3, 6, 28, 32, 54, 59, 67) 
       AND a.status_id IN (2, 9, 10)
     ORDER BY ac.contact_id ASC, a.activity_date_time ASC
   ) aa
