@@ -4,7 +4,7 @@ select c.id as contact_id
 , cont.payment_instrument_id as instrument_id
 , IF(cont.contribution_recur_id is NULL, 0, 1) as is_recurring
 , CASE
-    WHEN cont.receive_date=r.create_date THEN "first_recur"
+    WHEN date(cont.receive_date)=date(r.create_date) THEN "first_recur"
     WHEN cont.payment_instrument_id = 6 THEN "first_recur"
     WHEN cont.payment_instrument_id = 7 THEN "recur"
     WHEN cont.payment_instrument_id not in (6,7) AND cont.contribution_recur_id is NOT NULL THEN "recur"
