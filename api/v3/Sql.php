@@ -14,7 +14,7 @@ function _civicrm_api3_sql_runupdate_spec(&$params) {
 function civicrm_api3_sql_runupdateall ($params) {
   $load = sys_getloadavg();
   $load = $load[0];
-  if ($load > 2) {
+  if ($load > 3) {
     throw new API_Exception ("load too high, try later $load");
   }
   $directory = dirname( __FILE__ ) .'/../../sql';
