@@ -3,13 +3,12 @@ DELIMITER @@@
 DROP FUNCTION IF EXISTS dontusSetGroupContact@@@
 CREATE FUNCTION dontusSetGroupContact(gid INT, cid INT, gst VARCHAR(8)) RETURNS INT(11)
   READS SQL DATA
-  DETERMINISTIC
   BEGIN
     DECLARE i INT DEFAULT 0;
     IF (SELECT id FROM civicrm_group_contact WHERE group_id = gid AND contact_id = cid) THEN
       UPDATE civicrm_group_contact
       SET status = gst
-      WHERE group_id = gid AND contact_id = cid AND status != gst ;
+      WHERE group_id = gid AND contact_id = cid AND status COLLATE utf8_unicode_ci != gst COLLATE utf8_unicode_ci;
       SET i = ROW_COUNT();
     ELSE
       INSERT INTO civicrm_group_contact (group_id, contact_id, status)
