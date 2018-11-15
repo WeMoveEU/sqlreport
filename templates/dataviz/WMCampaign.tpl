@@ -149,9 +149,10 @@ var color = d3.scale.linear().range(["red", "green"]).domain([0,1]).interpolate(
 
 jQuery(function($) {
 
+  var campName = campaign.values[0].name
 	$(".crm-container").removeClass("crm-container");
   $("h1.page-header,.breadcrumb,#page-header").hide();
-  $(".navbar-brand").html(campaign.values[0].name.slice(0,-3));
+  $(".navbar-brand").html(campName.slice(0, campName.lastIndexOf('-')));
   $(".dropdown-toggle").dropdown();
   $("#bary a").click(function(){
     $("#bary li").removeClass("active");
@@ -180,11 +181,14 @@ jQuery(function($) {
   var html="";
   if (campaign.count <= 10) {
     $.each( campaign.values, function( i, d ){
-      html += dd.replace("[lang]",d.custom_4.slice(-2))
-              .replace("[index]",i)
-              .replace("[name]",d.name)
-              .replace(/\[id\]/g, d.id)
-              .replace(/\[external_id\]/g, d.external_identifier);
+      var country = d.custom_4.slice(-2);
+      if (country && country != 'ZZ') {
+        html += dd.replace("[lang]", country)
+                  .replace("[index]", i)
+                  .replace("[name]", d.name)
+                  .replace(/\[id\]/g, d.id)
+                  .replace(/\[external_id\]/g, d.external_identifier);
+      }
     });
   } else {
     var l = "";
