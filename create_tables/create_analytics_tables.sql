@@ -1,7 +1,4 @@
 
-use analytics;
-
-
 drop table ab_mailings; 
 
 create table ab_mailings
@@ -16,33 +13,6 @@ scheduled_date_a datetime,
 stamp timestamp,
 primary key(id)
 );
-
-/* 
-
-create table analytics_surveys 
-(
-id int not null auto_increment,
-nid int,
-internal_name varchar(255),
-scheduled_date datetime,
-abtest_id int, 
-mails_received int,
--- ++, + , - , -- ,?
-total_pp int, 
-total_p int,
-total_m int,
-total_mm int,
-total_q int, 
-h2_pos int,
-h5_pos int,
-h24_pos int,
-h48_pos int,
-stamp timestamp,
-primary key(id)
-);
-
-*/
-
 
 -- goals per dates
 DROP TABLE IF EXISTS analytics_goals_dates;
@@ -101,3 +71,28 @@ CREATE TABLE `sqlreport_supershares` (
   `entity_id` int(10) PRIMARY KEY COMMENT 'Table that this extends',
   `counter` bigint(21) NOT NULL DEFAULT 0
 );
+
+-------
+-- Petition metrics
+-------
+DROP TABLE IF EXISTS speakeasy_petition_metrics;
+
+CREATE TABLE speakeasy_petition_metrics
+(
+  id INT NOT NULL AUTO_INCREMENT,
+  speakout_id INT,
+  campaign_id INT,
+  speakout_name VARCHAR(255), /* TODO: join on campaign instead */
+  speakout_title VARCHAR (255), /* TODO: join on campaign instead */
+  language VARCHAR(5), /* TODO: join on campaign instead */
+  country VARCHAR(255),
+  npeople INT,
+  activity VARCHAR(255), /* petition signature, share etc. */
+  status VARCHAR(255), /* completed, scheduled etc. */
+  is_opt_out TINYINT(4),
+  parent_id INT,
+  last_updated TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  need_refresh TINYINT NOT NULL DEFAULT 1,
+  PRIMARY KEY(id)
+);
+

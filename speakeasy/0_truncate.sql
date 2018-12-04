@@ -1,0 +1,1 @@
+truncate tmp_petition_metrics;
