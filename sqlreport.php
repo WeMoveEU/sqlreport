@@ -125,7 +125,7 @@ function sqlreport_civicrm_postMailing($mailingId) {
   $campaignId = @(int)$mailing['values'][0]['campaign_id'];
   if ($campaignId) {
     $query =
-      "UPDATE speakeasy_petition_metrics SET need_refresh = 1"
+      "UPDATE analytics_petition_metrics SET need_refresh = 1"
       . " WHERE campaign_id = %1"
       . "   AND activity = %2"
     ;

@@ -75,9 +75,9 @@ CREATE TABLE `sqlreport_supershares` (
 -------
 -- Petition metrics
 -------
-DROP TABLE IF EXISTS speakeasy_petition_metrics;
+DROP TABLE IF EXISTS analytics_petition_metrics;
 
-CREATE TABLE speakeasy_petition_metrics
+CREATE TABLE analytics_petition_metrics
 (
   id INT NOT NULL AUTO_INCREMENT,
   speakout_id INT,

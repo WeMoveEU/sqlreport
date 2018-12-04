@@ -22,7 +22,7 @@ GRANT ALL ON wemove_47.analytics_petitions_total TO analytics@localhost;
 GRANT ALL ON wemove_47.analytics_temp_mailing TO analytics@localhost;
 GRANT ALL ON wemove_47.data_mailing_ab TO analytics@localhost;
 GRANT ALL ON wemove_47.data_mailing_counter TO analytics@localhost;
-GRANT ALL ON wemove_47.speakeasy_petition_metrics TO analytics@localhost;
+GRANT ALL ON wemove_47.analytics_petition_metrics TO analytics@localhost;
 GRANT ALL ON wemove_47.tmp_petition_metrics TO analytics@localhost;
 
 GRANT EXECUTE ON FUNCTION wemove_47.analyticsMedianOriginalTimeStamp TO 'analytics'@'pirandello.wemove.eu';
