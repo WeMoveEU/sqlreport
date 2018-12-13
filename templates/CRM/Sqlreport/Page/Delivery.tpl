@@ -4,8 +4,11 @@ var campaigns= {crmSQL file="Campaigns"};
 jQuery(function($){
   var html="";
   $(".crm-container").removeClass("crm-container");
-  campaigns.values.forEach(function (d){
-    html += "<option value='"+d.id+"'>"+(d.utm_campaign||d.name)+"</option>";
+  campaigns.values.sort(function (a, b) { return b.id - a.id; });
+  campaigns.values.forEach(function (d) {
+    if (d.type_id == 4 || d.type_id == 6) {
+      html += "<option value='"+d.id+"'>"+(d.name || d.utm_campaign)+"</option>";
+    }
   });  
   $("#campaign").html(html).on('change', function() {
     window.location.href="/civicrm/delivery/"+this.value;
