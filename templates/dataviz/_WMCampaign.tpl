@@ -4,67 +4,73 @@
 	<div class="col-md-12">
 		<div class="panel panel-default" id="date">
 			<div class="panel-heading" title="when was the campaign created?">Date
-<select id="date_select" class="hidden">
-  <option value="Infinity">All</option>
-  <option value="today">Today</option>
-  <option value='1'>last 24 hours</option>
-  <option value="week">This week</option>
-  <option value="month">This month</option>
-  <option value='30'>last 30 days</option>
-  <option value='90'>last 90 days</option>
-</select>
-</div>
-			<div class="panel-body"> <graph />
-			</div>
+        <select id="date_select" class="hidden">
+          <option value="Infinity">All</option>
+          <option value="today">Today</option>
+          <option value='1'>last 24 hours</option>
+          <option value="week">This week</option>
+          <option value="month">This month</option>
+          <option value='30'>last 30 days</option>
+          <option value='90'>last 90 days</option>
+        </select>
+      </div>
+			<div class="panel-body"> <graph /> </div>
 		</div>
 	</div>
-
 </div>
+
 <div class="row">
 
-<div class="col-md-4">
-<div class="well">
-<b>Work in progress</b>. this page aim at providing you an overview of what's happening now (say past 24 hours). Right now, it's just to provide you a link to the different campaign viz
-</div>
-</div>
-		<div class="col-md-3 col-sm-6 col-xs-6">
-			<div id="overview">
-				<ul class="list-group">
-					<li class="list-group-item"><span class="summary_total"></span> total
-<a class="btn btn-danger bt-xs pull-right" id="resetall" href="javascript: jQuery('#btn-date .active').removeClass('active');dc.filterAll();dc.redrawAll();"><span class="glyphicon glyphicon-refresh"></span></a>
+  <div class="col-md-4">
+    <div class="well">
+      <b>Work in progress</b>. this page aim at providing you an overview of what's happening now (say past 24 hours). Right now, it's just to provide you a link to the different campaign viz
+    </div>
+  </div>
 
-</li>
-					<li class="list-group-item list-group-item-success"><span class="hidden badge total_percent"></span><span class="total"></span> Campaigns</button></li>
-				</ul>
-	</div>
-		</div>
-<div class="col-md-4 col-sm-6 col-xs-6">
-<div class="panel" id="type">
-<graph/>
+  <div class="col-md-3 col-sm-6 col-xs-6">
+    <div id="overview">
+      <ul class="list-group">
+        <li class="list-group-item">
+          <span class="summary_total"></span> total
+          <a class="btn btn-danger bt-xs pull-right" id="resetall" 
+              href="javascript: jQuery('#btn-date .active').removeClass('active');dc.filterAll();dc.redrawAll();">
+            <span class="glyphicon glyphicon-refresh"></span>
+          </a>
+        </li>
+        <li class="list-group-item list-group-item-success">
+          <span class="hidden badge total_percent"></span>
+          <span class="total"></span> Campaigns
+        </li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="col-md-4 col-sm-6 col-xs-6">
+    <div class="panel" id="type"> <graph/> </div>
+  </div>
 </div>
-</div>
-</div>
+
 <div class="row">
-<div class="col-md-12">
-<table class="table table-striped" id="activities">
-<thead><tr>
-<th>Date</th>
-<th>Name</th>
-<th>Parent Campaign</th>
-<th>Action</th>
-<th title='nb of unique recipients of our mailings'>Targeted</th>
-<th title='nb of unique clicks of our mailings'>Click</th>
-<th>Signature</th>
-<th>New member</th>
-<th>Activated</th>
-<th>Share</th>
-<th>Donations</th>
-</tr></thead>
-<tbody>
-</tbody>
-</table>
-since {$request.since}
-</div>
+  <div class="col-md-12">
+    <table class="table table-striped" id="activities">
+      <thead><tr>
+        <th>Date</th>
+        <th>Name</th>
+        <th>Parent Campaign</th>
+        <th>Action</th>
+        <th title='nb of unique recipients of our mailings'>Targeted</th>
+        <th title='nb of unique clicks of our mailings'>Click</th>
+        <th>Signature</th>
+        <th>New member</th>
+        <th>Activated</th>
+        <th>Share</th>
+        <th>Donations</th>
+      </tr></thead>
+      <tbody></tbody>
+    </table>
+
+    since {$request.since}
+  </div>
 </div>
 
 
@@ -79,15 +85,16 @@ var campaigns= {crmSQL json="CampaignsSince" since=$request.since debug=1};
 var campaigns= {crmSQL file="Campaigns"};
 {/if}
 var types = {crmAPI entity='Campaign' action='getoptions' sequential=0 field="campaign_type_id"};
+
 {literal}
- jQuery.urlParam = function(name){
-    var results = new RegExp('[\?&]' + name + '=([^&#]*)').exec(window.location.href);
-    if (results==null){
-       return null;
-    }
-    else{
-       return decodeURI(results[1]) || 0;
-    }
+jQuery.urlParam = function(name){
+  var results = new RegExp('[\?&]' + name + '=([^&#]*)').exec(window.location.href);
+  if (results==null) {
+    return null;
+  }
+  else {
+    return decodeURI(results[1]) || 0;
+  }
 };
 
 var ndx = crossfilter(campaigns.values);
@@ -103,36 +110,35 @@ for (var i = 0, len = campaigns.values.length; i < len; i++) {
 	if(campaigns.is_error){
 		 alert(campaigns.error_message);
 	}
-	var instrumentLabel = {};
-	var numberformat = function(d) { 
-          return d > 999 && d < 10000 ? d3.format('.0s')(d) : d >= 10000 ? d3.format('.3s')(d) : d;
-        };
 
+	var instrumentLabel = {};
+	var formatNumber = function(d) { 
+    return d > 999 && d < 10000 ? d3.format('.0s')(d) : d >= 10000 ? d3.format('.3s')(d) : d;
+  };
 	var dateFormat = d3.time.format("%Y-%m-%d");
 	var dateTimeFormat= d3.time.format("%Y-%m-%d %H:%M:%S");
-        var day = d3.time.format("%Y%m%d");
-              var formatNumber = numberformat; //function (d){ return d3.format(",")(d).replace(",","'")};
-              var formatPercent =d3.format(".2%");
-	  var blacklist = ["id","parent_id","type_id","external_identifier"];
-	  var metrics = Object.keys(campaigns.values[0]);
-	  metrics = metrics.filter( function( e ){
-	    if (typeof campaigns.values[0][e] == "string" && campaigns.values[0][e] != "") return false;
-	    return !blacklist.includes( e );
-	  });
-          metrics.forEach(function(m){
-            $("#overview ul").append('<li class="list-group-item '+m+'"><span class="badge"></span><span class="value"></span>&nbsp;'+ m.replace(/_/g, " ")+'</li>');
-          });
-	  var getMetrics = function (d){
-	    var f="<dl>";
-	    metrics.forEach(function(k){
-	      f += "<dt>"+k.replace(/_/g, " ")+"</dt><dd>&nbsp;"+numberformat(d[k])+"</dd>";
-	    });
-	    return f + "</dl>";
-	  }
+  var day = d3.time.format("%Y%m%d");
+  var formatPercent =d3.format(".2%");
+  var blacklist = ["id","parent_id","type_id","external_identifier"];
 
+  var metrics = Object.keys(campaigns.values[0]);
+  metrics = metrics.filter( function( e ){
+    if (typeof campaigns.values[0][e] == "string" && campaigns.values[0][e] != "") return false;
+    return !blacklist.includes( e );
+  });
+  metrics.forEach(function(m){
+    $("#overview ul").append(
+      '<li class="list-group-item '+m+'"><span class="badge"></span><span class="value"></span>&nbsp;'+ m.replace(/_/g, " ")+'</li>'
+    );
+  });
 
-//			all = ndx.groupAll();
-
+  var getMetrics = function (d){
+    var f="<dl>";
+    metrics.forEach(function(k){
+      f += "<dt>"+k.replace(/_/g, " ")+"</dt><dd>&nbsp;"+formatNumber(d[k])+"</dd>";
+    });
+    return f + "</dl>";
+  }
 
   drawNumbers(graphs);
   summary.total = graphs.total.data();
@@ -141,7 +147,6 @@ for (var i = 0, len = campaigns.values.length; i < len; i++) {
   graphs.date = drawDate('#date graph');
   graphs.table = drawTable('#activities');
   graphs.type=drawType('#type graph');
-  graphs.type.filter(4);//Petitions only by default
   dc.renderAll();
 
 function drawDate (dom) {
@@ -217,7 +222,7 @@ function drawDate (dom) {
 
           .title(function (p) {return ;})
          ;
-  graph.yAxis().tickFormat(numberformat);
+  graph.yAxis().tickFormat(formatNumber);
 
   d3.select('#date_select').on('change', function(){ 
 	  var nd = new Date(), now = new Date();
@@ -269,7 +274,7 @@ var reducer = reductio();
        summary.filtered=d.value.count;
        return d.value.count
     })
-    .formatNumber(numberformat)
+    .formatNumber(formatNumber)
     .group(group);
 
   graphs.total_percent=dc.numberDisplay(".total_percent") 
@@ -345,14 +350,14 @@ function drawType (dom) {
           },
 				function(d){return '<a href="/civicrm/dataviz/WMCampaign/'+d.id+'">'+d.name+'</a>';},
 				function(d){return '<a href="'+d.url+'" title="'+d.external_identifier+'">Speakout</a>'},
-				function(d){return '<span class="tip" title="mails sent:'+numberformat(d.recipient)+"<br>avg:"+ numberformat(d.recipient/d.unique_recipient)+'">'+numberformat(d.unique_recipient)+'</span>'},
-				function(d){return '<span class="tip" title="mails sent:'+numberformat(d.recipient)+"<br>seeder <i>more than 1 click</i>:"+ numberformat(d.click_1)+"<br>superseeder <i>more than 42 clicks</i>:"+ numberformat(d.click_42)+'">'+numberformat(d.signature)+'</span>'},
-				function(d){return '<span class="tip" title="new signature:'+numberformat(d.new_signature)+'">'+numberformat(d.signature)+'</span>'},
-				function(d){return '<span class="tip" title="with > 1 new signature:'+numberformat(d.effective_share)+'">'+numberformat(d.share)+'</span>'},
-				function(d){return '<span class="tip" title="from speakout share:'+numberformat(d.new_member_share)+"<br>from mail fwd:"+ numberformat(d.new_member_mail)+'">'+numberformat(d.new_member)+'</span>'},
-				function(d){return numberformat(d.activated)},
-				function(d){return '<span class="tip" title="new members created:'+numberformat(d.new_member_share)+"<br>effective share (at least one member created):"+ numberformat(d.effective_share)+'">'+numberformat(d.share)+'</span>'},
-				function(d){return '<a class="tip" href="/civicrm/dataviz/WM_contribution_campaign#campaign='+d.id+'" title="nb donations:'+( +d.donation + +d.donation_pending)+'<br>amount still pending:'+d.donation_pending_amount+'">'+numberformat(+d.donation_amount+ +d.donation_pending_amount)+'</a>'},
+				function(d){return '<span class="tip" title="mails sent:'+formatNumber(d.recipient)+"<br>avg:"+ formatNumber(d.recipient/d.unique_recipient)+'">'+formatNumber(d.unique_recipient)+'</span>'},
+				function(d){return '<span class="tip" title="mails sent:'+formatNumber(d.recipient)+"<br>seeder <i>more than 1 click</i>:"+ formatNumber(d.click_1)+"<br>superseeder <i>more than 42 clicks</i>:"+ formatNumber(d.click_42)+'">'+formatNumber(d.signature)+'</span>'},
+				function(d){return '<span class="tip" title="new signature:'+formatNumber(d.new_signature)+'">'+formatNumber(d.signature)+'</span>'},
+				function(d){return '<span class="tip" title="with > 1 new signature:'+formatNumber(d.effective_share)+'">'+formatNumber(d.share)+'</span>'},
+				function(d){return '<span class="tip" title="from speakout share:'+formatNumber(d.new_member_share)+"<br>from mail fwd:"+ formatNumber(d.new_member_mail)+'">'+formatNumber(d.new_member)+'</span>'},
+				function(d){return formatNumber(d.activated)},
+				function(d){return '<span class="tip" title="new members created:'+formatNumber(d.new_member_share)+"<br>effective share (at least one member created):"+ formatNumber(d.effective_share)+'">'+formatNumber(d.share)+'</span>'},
+				function(d){return '<a class="tip" href="/civicrm/dataviz/WM_contribution_campaign#campaign='+d.id+'" title="nb donations:'+( +d.donation + +d.donation_pending)+'<br>amount still pending:'+d.donation_pending_amount+'">'+formatNumber(+d.donation_amount+ +d.donation_pending_amount)+'</a>'},
 			 ])
             .on("renderlet.tootltip", function(){
               jQuery("table .tip").tooltip({html:true})});
