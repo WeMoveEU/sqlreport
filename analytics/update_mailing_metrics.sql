@@ -110,6 +110,11 @@ INSERT INTO data_mailing_counter
     GROUP BY source.source_27, inf_a.activity_type_id, inf_a.status_id, b.box
   ON DUPLICATE KEY UPDATE value=VALUES(value), last_updated=NOW();
 
+-- sum signatures
+
+insert into data_mailing_counter (mailing_id, counter, value, timebox,last_updated) select mailing_id, 'signs',sum(value), timebox as sign,now() from data_mailing_counter where timebox=14400 and counter like '%_signs' group by mailing_id on DUPLICATE KEY UPDATE value=VALUES(value), last_updated=NOW();
+
+
 -- Contribution amounts
 -- TODO: fix and simplify: we do not need the recur_amount anymore, specific query
 INSERT INTO data_mailing_counter
