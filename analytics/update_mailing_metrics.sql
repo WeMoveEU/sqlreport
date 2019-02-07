@@ -63,6 +63,9 @@ INSERT INTO data_mailing_counter
           WHEN a.status_id=9 THEN 'new_direct_signs'
           WHEN a.status_id=4 THEN 'optout_direct_signs'
           WHEN a.status_id=2 THEN 'known_direct_signs'
+          WHEN a.status_id=5 THEN 'bounced_direct_signs'
+          WHEN a.status_id=10 THEN 'activated_direct_signs'
+
           ELSE 'pending_direct_signs'
         END, 
         'direct_shares'), 
@@ -76,7 +79,7 @@ INSERT INTO data_mailing_counter
       ON j.mailing_id=SUBSTRING(s.source_27, 10)
     JOIN data_timeboxes b ON TIMESTAMPDIFF(MINUTE, j.start_date, a.activity_date_time)<b.box
     WHERE (a.activity_type_id=32 OR a.activity_type_id=54)
-      AND a.status_id IN (1, 2, 4, 9)
+      AND a.status_id IN (1, 2, 4, 5, 9, 10)
       AND s.source_27 LIKE 'civimail-%'
       AND TIMESTAMPADD(DAY, @timeslot, j.start_date) > NOW()
     GROUP BY s.source_27, a.activity_type_id, a.status_id, b.box
@@ -92,6 +95,8 @@ INSERT INTO data_mailing_counter
           WHEN inf_a.status_id=9 THEN 'new_viral_signs'
           WHEN inf_a.status_id=4 THEN 'optout_viral_signs'
           WHEN inf_a.status_id=2 THEN 'known_viral_signs'
+          WHEN inf_a.status_id=5 THEN 'bounced_viral_signs'
+          WHEN inf_a.status_id=10 THEN 'activated_viral_signs'
           ELSE 'pending_viral_signs'
         END, 
         'viral_shares'), 
