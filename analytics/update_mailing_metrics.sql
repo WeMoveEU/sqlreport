@@ -65,10 +65,9 @@ INSERT INTO data_mailing_counter
           WHEN a.status_id=2 THEN 'known_direct_signs'
           WHEN a.status_id=5 THEN 'bounced_direct_signs'
           WHEN a.status_id=10 THEN 'activated_direct_signs'
-
           ELSE 'pending_direct_signs'
         END, 
-        'direct_shares'), 
+        'direct_shares') AS counter,
       b.box, 
       COUNT(DISTINCT c.contact_id),
       NOW() 
@@ -82,7 +81,7 @@ INSERT INTO data_mailing_counter
       AND a.status_id IN (1, 2, 4, 5, 9, 10)
       AND s.source_27 LIKE 'civimail-%'
       AND TIMESTAMPADD(DAY, @timeslot, j.start_date) > NOW()
-    GROUP BY s.source_27, a.activity_type_id, a.status_id, b.box
+    GROUP BY s.source_27, counter, b.box
   ON DUPLICATE KEY UPDATE value=VALUES(value), last_updated=NOW();
 
 -- Viral activities
