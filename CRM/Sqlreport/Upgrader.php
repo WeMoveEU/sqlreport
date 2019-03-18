@@ -15,24 +15,31 @@ class CRM_Sqlreport_Upgrader extends CRM_Sqlreport_Upgrader_Base {
 
   public function createCustomFields() {
 		//Contact segments custom group
-    civicrm_api3('CustomGroup', 'create', [
-      'title' => "Segments",
-      'extends' => "Contact",
-      'name' => "contact_segments",
-      'table_name' => "civicrm_value_contact_segments",
-    ]);
+    $result = civicrm_api3('CustomGroup', 'get', [ 'name' => "contact_segments" ]);
+    if ($result['count'] == 0) {
+      civicrm_api3('CustomGroup', 'create', [
+        'title' => "Segments",
+        'extends' => "Contact",
+        'name' => "contact_segments",
+        'table_name' => "civicrm_value_contact_segments",
+      ]);
+    }
+
     //Recurring donors segment
-    civicrm_api3('CustomField', 'create', [
-      'custom_group_id' => "contact_segments",
-      'label' => "Recurring donor",
-      'name' => "recurring_donor",
-      'column_name' => "recurring_donor",
-      'data_type' => "Int",
-      'html_type' => "Radio",
-      'is_view' => 1,
-      'option_type' => 1,
-      'option_values' => ["Not a recurring donor", "Failed recurring donor", "Past recurring donor", "Current recurring donor"],
-    ]);
+    $result = civicrm_api3('CustomField', 'get', [ 'name' => "recurring_donor" ]);
+    if ($result['count'] == 0) {
+      civicrm_api3('CustomField', 'create', [
+        'custom_group_id' => "contact_segments",
+        'label' => "Recurring donor",
+        'name' => "recurring_donor",
+        'column_name' => "recurring_donor",
+        'data_type' => "Int",
+        'html_type' => "Radio",
+        'is_view' => 1,
+        'option_type' => 1,
+        'option_values' => ["Not a recurring donor", "Failed recurring donor", "Past recurring donor", "Current recurring donor"],
+      ]);
+    }
   }
 
   /**
