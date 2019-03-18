@@ -1,5 +1,6 @@
 -- alter table data_mailing_ab add column category varchar(32) DEFAULT NULL COMMENT 'launch,reminder,kicker,fundraiser,report_back...';
 -- Query to set the privileges of the analytics user;
+-- Replace localhost with server where sql jobs are run
 
 GRANT USAGE, SELECT ON wemove_47.* TO analytics@localhost;
 GRANT USAGE, SELECT ON drupal_47.* TO analytics@localhost;
@@ -20,6 +21,7 @@ GRANT ALL ON wemove_47.analytics_petitions_1week TO analytics@localhost;
 GRANT ALL ON wemove_47.analytics_petitions_48h TO analytics@localhost;
 GRANT ALL ON wemove_47.analytics_petitions_total TO analytics@localhost;
 GRANT ALL ON wemove_47.analytics_temp_mailing TO analytics@localhost;
+GRANT ALL ON wemove_47.civicrm_value_contact_segments TO analytics@localhost;
 GRANT ALL ON wemove_47.data_mailing_ab TO analytics@localhost;
 GRANT ALL ON wemove_47.data_mailing_counter TO analytics@localhost;
 GRANT ALL ON wemove_47.analytics_petition_metrics TO analytics@localhost;
