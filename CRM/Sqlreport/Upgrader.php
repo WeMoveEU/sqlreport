@@ -36,6 +36,7 @@ class CRM_Sqlreport_Upgrader extends CRM_Sqlreport_Upgrader_Base {
         'data_type' => "Int",
         'html_type' => "Radio",
         'is_view' => 1,
+        'is_searchable' => 1,
         'option_type' => 1,
         'option_values' => ["Not a recurring donor", "Failed recurring donor", "Past recurring donor", "Current recurring donor"],
       ]);
