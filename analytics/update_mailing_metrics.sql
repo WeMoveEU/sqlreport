@@ -11,6 +11,7 @@ INSERT INTO data_mailing_counter
   ON DUPLICATE KEY UPDATE value=VALUES(value), last_updated=NOW();
 
 -- Delivered by Mailjet
+SET TRANSACTION ISOLATION LEVEL READ UNCOMMITTED;
 INSERT INTO data_mailing_counter
   SELECT mj.mailing_id, 'delivered_mailjet', 0, COUNT(ed.id), NOW()
   FROM civicrm_mailing_event_delivered ed
