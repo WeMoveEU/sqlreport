@@ -57,7 +57,6 @@
         <th>Date</th>
         <th>Name</th>
         <th>Parent Campaign</th>
-        <th>Action</th>
         <th title='nb of unique recipients of our mailings'>Targeted</th>
         <th title='nb of unique clicks of our mailings'>Click</th>
         <th>Signature</th>
@@ -112,7 +111,8 @@ for (var i = 0, len = campaigns.values.length; i < len; i++) {
 	}
 
 	var instrumentLabel = {};
-	var formatNumber = function(d) { 
+	var formatNumber = function(d) {
+    if (d == Infinity) return "";
     return d > 999 && d < 10000 ? d3.format('.0s')(d) : d >= 10000 ? d3.format('.3s')(d) : d;
   };
 	var dateFormat = d3.time.format("%Y-%m-%d");
@@ -332,7 +332,7 @@ function drawType (dom) {
 		var graph=dc.dataTable(dom)
 			.dimension(dim)
 			.group(function(d) {
-					return '<h2 id="'+types.values[d.type_id]+'">'+types.values[d.type_id]+'</h2>';
+					return '<span class="hidden">'+(100-d.type_id )+'</span><h2 id="'+types.values[d.type_id]+'">'+types.values[d.type_id]+'</h2>';
 			})
 			.sortBy(function (d) { return d.date })
 			.order(d3.descending)
@@ -348,9 +348,11 @@ function drawType (dom) {
           var name= d.utm_campaign.trim() ||"??";
           return "<a href='"+CRM.url("civicrm/campaign/add",{action:"update",id:d.id})+"'> "+name+"</a>";
           },
-				function(d){return '<a href="/civicrm/dataviz/WMCampaign/'+d.id+'">'+d.name+'</a>';},
-				function(d){return '<a href="'+d.url+'" title="'+d.external_identifier+'">Speakout</a>'},
-				function(d){return '<span class="tip" title="mails sent:'+formatNumber(d.recipient)+"<br>avg:"+ formatNumber(d.recipient/d.unique_recipient)+'">'+formatNumber(d.unique_recipient)+'</span>'},
+				function(d){return '<a href="/civicrm/dataviz/WMCampaign/'+d.id+'">'+d.name.replace("-PARENT","").replace(/_/g, '_<wbr>')+'</a>';},
+//				function(d){return '<a href="'+d.url+'" title="'+d.external_identifier+'">Speakout</a>'},
+				function(d){
+console.log(d.recipient);
+return '<span class="tip" title="mails sent:'+formatNumber(d.recipient)+"<br>avg:"+ formatNumber(d.recipient/d.unique_recipient)+'">'+formatNumber(d.unique_recipient)+'</span>'},
 				function(d){return '<span class="tip" title="mails sent:'+formatNumber(d.recipient)+"<br>seeder <i>more than 1 click</i>:"+ formatNumber(d.click_1)+"<br>superseeder <i>more than 42 clicks</i>:"+ formatNumber(d.click_42)+'">'+formatNumber(d.signature)+'</span>'},
 				function(d){return '<span class="tip" title="new signature:'+formatNumber(d.new_signature)+'">'+formatNumber(d.signature)+'</span>'},
 				function(d){return '<span class="tip" title="with > 1 new signature:'+formatNumber(d.effective_share)+'">'+formatNumber(d.share)+'</span>'},
