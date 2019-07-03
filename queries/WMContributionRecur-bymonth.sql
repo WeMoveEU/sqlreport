@@ -3,7 +3,9 @@ SELECT
   nr.new_recur-lr.cancelled_recur as net_recurring_donors,
   nr.new_amount-lr.cancelled_amount as net_recurring_amount,
   nr.new_recur, nr.new_amount,
-  lr.cancelled_recur, lr.cancelled_amount, lr.cancelled_completed_recur, lr.cancelled_completed2_recur,
+  lr.cancelled_recur, lr.cancelled_amount, 
+	lr.cancelled_completed_recur, lr.cancelled_completed_amount,
+	lr.cancelled_completed2_recur, lr.cancelled_completed2_amount,
   nrl.nrc_total, nrl.nrc_en_INT, nrl.nrc_de_DE, nrl.nrc_UK, nrl.nrc_es_ES, nrl.nrc_fr_FR, nrl.nrc_it_IT, nrl.nrc_pl_PL,
   nrl.nrc_en_US, nrl.nrc_other, nrl.nrm_total, nrl.nrm_en_INT, nrl.nrm_de_DE, nrl.nrm_UK, nrl.nrm_es_ES, nrl.nrm_fr_FR,
   nrl.nrm_it_IT, nrl.nrm_pl_PL, nrl.nrm_en_US, nrl.nrm_other,
@@ -38,9 +40,13 @@ FROM
   LEFT JOIN 
   (
     SELECT
-      DATE_FORMAT(cancel_date, '%Y-%m') AS month, COUNT(*) AS cancelled_recur, SUM(amount) cancelled_amount, 
+      DATE_FORMAT(cancel_date, '%Y-%m') AS month,
+      COUNT(*) AS cancelled_recur, 
+      SUM(amount) cancelled_amount, 
       SUM(nb_complete > 0) AS cancelled_completed_recur,
-      SUM(nb_complete > 1) AS cancelled_completed2_recur
+      SUM((nb_complete > 0) * amount) AS cancelled_completed_amount,
+      SUM(nb_complete > 1) AS cancelled_completed2_recur,
+      SUM((nb_complete > 1) * amount) AS cancelled_completed2_amount
     FROM (
       SELECT
         R.id,
