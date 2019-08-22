@@ -1,3 +1,5 @@
+SET TRANSACTION ISOLATION LEVEL READ UNCOMMITTED;
+
 INSERT INTO tmp_petition_metrics (campaign_id, activity, status, npeople)
   SELECT
     ca.civicrm_camp_id AS civicrm_camp_id,
