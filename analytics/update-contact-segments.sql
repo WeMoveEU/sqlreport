@@ -1,11 +1,12 @@
 -- Create the value of recurring_donor segment
+-- it's necessary to remove triggers on civicrm_value_contact_segments! in order to use civicrm_contact table
 INSERT INTO civicrm_value_contact_segments (entity_id, recurring_donor)
   SELECT
     c.id,
     IF(contact_id IS NULL, 0, segment_value)
   FROM civicrm_contact c
   LEFT JOIN (
-    SELECT 
+    SELECT
         r.contact_id AS contact_id,
         MAX(
           CASE
