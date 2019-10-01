@@ -10,9 +10,11 @@ INSERT INTO civicrm_value_contact_segments (entity_id, recurring_donor)
         r.contact_id AS contact_id,
         MAX(
           CASE
-            WHEN d.id IS NULL OR d.contribution_status_id != 1 THEN 1
-            WHEN r.cancel_date IS NOT NULL OR r.end_date IS NOT NULL THEN 2
-            ELSE 3
+            WHEN d.id IS NULL AND r.cancel_date IS NOT NULL THEN 1 -- failed
+            WHEN d.id IS NULL THEN 3 -- current (new)
+            WHEN d.contribution_status_id != 1 THEN 1 -- failed
+            WHEN r.cancel_date IS NOT NULL OR r.end_date IS NOT NULL THEN 2 -- past
+            ELSE 3 -- current
           END
         ) AS segment_value
       FROM civicrm_contribution_recur r
