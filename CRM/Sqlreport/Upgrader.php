@@ -14,7 +14,7 @@ class CRM_Sqlreport_Upgrader extends CRM_Sqlreport_Upgrader_Base {
   }
 
   public function createCustomFields() {
-		//Contact segments custom group
+    //Contact segments custom group
     $result = civicrm_api3('CustomGroup', 'get', [ 'name' => "contact_segments" ]);
     if ($result['count'] == 0) {
       civicrm_api3('CustomGroup', 'create', [
@@ -39,6 +39,21 @@ class CRM_Sqlreport_Upgrader extends CRM_Sqlreport_Upgrader_Base {
         'is_searchable' => 1,
         'option_type' => 1,
         'option_values' => ["Not a recurring donor", "Failed recurring donor", "Past recurring donor", "Current recurring donor"],
+      ]);
+
+    //Active status
+    $result = civicrm_api3('CustomField', 'get', [ 'name' => "active_status" ]);
+    if ($result['count'] == 0) {
+      civicrm_api3('CustomField', 'create', [
+        'custom_group_id' => "contact_segments",
+        'label' => "Active status",
+        'name' => "active_status",
+        'column_name' => "active_status",
+        'data_type' => "Int",
+        'html_type' => "Radio",
+        'is_view' => 1,
+        'option_type' => 1,
+        'option_values' => ["Not a member", "Inactive", "Active"],
       ]);
     }
   }
