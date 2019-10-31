@@ -24,10 +24,10 @@ TRUNCATE analytics_temp_mailing;
 DELETE FROM analytics_mailing_counter_datetime
 WHERE `value` IS NULL;
 
--- step 0.1 remove of the past month
+-- step 0.1 remove of the past week
 DELETE cd FROM analytics_mailing_counter_datetime cd
   JOIN civicrm_mailing m ON m.id = cd.mailing_id
-WHERE m.scheduled_date >= DATE_ADD(NOW(), INTERVAL -1 MONTH);
+WHERE m.scheduled_date >= DATE_ADD(NOW(), INTERVAL -7 DAY);
 
 
 -- step 1. insert those which don't have counters

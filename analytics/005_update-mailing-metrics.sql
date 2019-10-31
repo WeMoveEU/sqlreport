@@ -11,13 +11,12 @@ INSERT INTO data_mailing_counter
   ON DUPLICATE KEY UPDATE value=VALUES(value), last_updated=NOW();
 
 -- Delivered by Mailjet
-SET TRANSACTION ISOLATION LEVEL READ UNCOMMITTED;
 INSERT INTO data_mailing_counter
   SELECT mj.mailing_id, 'delivered_mailjet', 0, COUNT(ed.id), NOW()
   FROM civicrm_mailing_event_delivered ed
     JOIN civicrm_mailing_event_queue eq ON eq.id = ed.event_queue_id
     JOIN civicrm_mailing_job mj ON mj.id = eq.job_id AND mj.is_test = 0
-  WHERE ed.mailjet_time_stamp > '1970-01-01'
+  WHERE ed.mailjet_time_stamp > '1970-01-01' AND TIMESTAMPADD(DAY, @timeslot , mj.start_date) > NOW()
   GROUP BY mj.mailing_id
 ON DUPLICATE KEY UPDATE value = VALUES(value), last_updated = NOW();
 
