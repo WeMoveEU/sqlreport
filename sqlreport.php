@@ -155,9 +155,11 @@ function sqlreport_civicrm_triggerInfo(&$info, $tableName) {
   // fixme workaround
   // fixme triggers on custom fields for contact - update query fails
   foreach ($info as $k => $v) {
-    foreach ($v['table'] as $n => $table) {
-      if (in_array($table, ['civicrm_value_contact_segments'])) {
-        unset($info[$k]['table'][$n]);
+    if (is_array($v['table'])) {
+      foreach ($v['table'] as $n => $table) {
+        if (in_array($table, ['civicrm_value_contact_segments'])) {
+          unset($info[$k]['table'][$n]);
+        }
       }
     }
   }
