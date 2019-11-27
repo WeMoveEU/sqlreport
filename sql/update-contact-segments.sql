@@ -20,6 +20,7 @@ INSERT INTO civicrm_value_contact_segments (entity_id, recurring_donor)
         ) AS segment_value
       FROM civicrm_contribution_recur r
       LEFT JOIN civicrm_contribution d ON r.id=d.contribution_recur_id
+      WHERE r.is_test = 0
       GROUP BY contact_id
   ) v ON v.contact_id=c.id
   ON DUPLICATE KEY UPDATE recurring_donor=VALUES(recurring_donor)
