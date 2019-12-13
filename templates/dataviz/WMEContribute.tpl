@@ -152,7 +152,7 @@ var colorType = d3.scale.ordinal().range(pastel2);
 
             cj(function($) {
                 var dateFormat = d3.time.format("%Y-%m-%d");
-                var dateTimeFormat= d3.time.format("%Y-%m-%d %H:%m:%s");
+                var dateTimeFormat= d3.time.format("%Y-%m-%d %H:%M:%S");
 	      $(".crm-container").removeClass("crm-container");
                 //data.values.forEach(function(d){data.values[i].dd = new Date(d.receive_date)});
 
