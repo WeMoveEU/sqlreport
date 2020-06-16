@@ -30,9 +30,11 @@ INSERT IGNORE INTO tmp_6months
     eq.contact_id
   FROM civicrm_mailing_event_delivered ed
     JOIN civicrm_mailing_event_queue eq ON eq.id = ed.event_queue_id
+    JOIN civicrm_contact c ON c.id = eq.contact_id
     LEFT JOIN tmp_6months_actions a ON a.contact_id = eq.contact_id
   WHERE ed.time_stamp BETWEEN DATE_ADD(DATE_ADD(CURRENT_DATE, INTERVAL -6 MONTH), INTERVAL -3 DAY)
   AND DATE_ADD(CURRENT_DATE, INTERVAL -3 DAY)
+  AND c.created_date < DATE_ADD(CURRENT_DATE, INTERVAL -6 MONTH)
       AND a.contact_id IS NULL;
 
 -- add if needed
