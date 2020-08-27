@@ -147,12 +147,12 @@ style="display: none;">reset</a>
             var numberFormat = d3.format(".2f");
             var volumeChart=null,dayOfWeekChart=null,moveChart=null,pieinstrument,pietype;  
 var pastel2= ["#fbb4ae","#b3cde3","#ccebc5","#decbe4","#fed9a6","#ffffcc","#e5d8bd","#fddaec","#f2f2f2"];
-var colorType = d3.scale.ordinal().range(pastel2);
+var colorType = d3.scaleOrdinal().range(pastel2);
 
 
             cj(function($) {
-                var dateFormat = d3.time.format("%Y-%m-%d");
-                var dateTimeFormat= d3.time.format("%Y-%m-%d %H:%M:%S");
+                var dateFormat = d3.timeFormat("%Y-%m-%d");
+                var dateTimeFormat= d3.timeFormat("%Y-%m-%d %H:%M:%S");
 	      $(".crm-container").removeClass("crm-container");
                 //data.values.forEach(function(d){data.values[i].dd = new Date(d.receive_date)});
 
@@ -240,23 +240,23 @@ var data = [
 	    var s = new Date(), e = new Date();
 	    switch (btn.data()[0].key) {
 	      case "today":
-		s = d3.time.day.utc(e);
+		s = d3.timeDay.utc(e);
 		break;
 	      case "yesterday":
-		e = d3.time.day.utc(s);
-		s = d3.time.day.utc.offset(e, -1);
+		e = d3.timeDay.utc(s);
+		s = d3.timeDay.utc.offset(e, -1);
 		break;
 	      case "week":
-		s = d3.time.monday.utc(e);
+		s = d3.timeMonday.utc(e);
 		break;
 	      case "future":
 	        e = Number.POSITIVE_INFINITY;
 		break;
 	      case "month":
-		s = d3.time.month.utc(e);
+		s = d3.timeMonth.utc(e);
 		break;
 	      default:
-		s = d3.time.day.offset(e, - + btn.data()[0].key);
+		s = d3.timeDay.offset(e, - + btn.data()[0].key);
 	    }
 
 	    graph.filterAll(); //reset filter
@@ -269,7 +269,7 @@ var data = [
 
 function drawDate (dom) {
   var dim = ndx.dimension(function(d){
-    return d3.time.day.utc(d.dd);
+    return d3.timeDay.utc(d.dd);
   });
   var group = dim.group().reduceSum(function(d){return d.amount;});
 
@@ -283,10 +283,10 @@ function drawDate (dom) {
     .mouseZoomable(false)
     .renderHorizontalGridLines(true)
     .title (function(d) {return dateFormat(d.key)+": "+d.value+" amount"})
-    .x(d3.time.scale.utc().domain([dim.bottom(1)[0].dd,dim.top(1)[0].dd]))
-    .round(d3.time.day.utc.round)
+    .x(d3.scaleUtc().domain([dim.bottom(1)[0].dd,dim.top(1)[0].dd]))
+    .round(d3.timeDay.utc.round)
     .elasticY(true)
-    .xUnits(d3.time.days.utc);
+    .xUnits(d3.timeDays.utc);
 
     function line (group,name) {
       return dc.lineChart(graph)
@@ -300,7 +300,7 @@ function drawDate (dom) {
     };
     
     function today (chart) {
-        var x_vert = d3.time.day.utc(new Date());
+        var x_vert = d3.timeDay.utc(new Date());
         var extra_data = [
             {x: chart.x()(x_vert), y: 0},
             {x: chart.x()(x_vert), y: chart.effectiveHeight()}
@@ -458,9 +458,9 @@ function drawAmount(dom) {
                     .centerBar(true)
                      .elasticY(true)
                     .gap(1)
-                    .x(d3.scale.linear().domain([0, 100]))
-//                    .round(d3.time.month.round)
-//                    .xUnits(d3.time.months);
+                    .x(d3.scaleLinear().domain([0, 100]))
+//                    .round(d3.timeMonth.round)
+//                    .xUnits(d3.timeMonths);
                     .margins({top: 20, left: 40, right: 10, bottom: 20})
                     .group(group)
                     .dimension(dim)
@@ -474,7 +474,7 @@ function drawDump () {
                 volumeChart = dc.barChart("#monthly-volume-chart");
                 dayOfWeekChart = dc.rowChart("#day-of-week-chart");
                 moveChart = dc.lineChart("#monthly-move-chart");
-                var byMonth     = ndx.dimension(function(d) { return d3.time.month(d.dd); });
+                var byMonth     = ndx.dimension(function(d) { return d3.timeMonth(d.dd); });
                 var byDay       = ndx.dimension(function(d) { return d.dd; });
                 var volumeByMonthGroup  = byMonth.group().reduceSum(function(d) { return d.count; });
                 var totalByDayGroup     = byDay.group().reduceSum(function(d) { return d.total; });
@@ -533,7 +533,7 @@ function drawDump () {
 
 
 
-                //.round(d3.time.month.round)
+                //.round(d3.timeMonth.round)
                 //.interpolate('monotone')
                 moveChart.width(850)
                     .height(200)
@@ -541,8 +541,8 @@ function drawDump () {
                     .margins({top: 30, right: 50, bottom: 25, left: 40})
                     .dimension(byDay)
                     .mouseZoomable(true)
-                    .x(d3.time.scale().domain([min,max]))
-                    .xUnits(d3.time.months)
+                    .x(d3.scaleTime().domain([min,max]))
+                    .xUnits(d3.timeMonths)
                     .elasticY(true)
                     .renderHorizontalGridLines(true)
                     .legend(dc.legend().x(800).y(10).itemHeight(13).gap(5))
@@ -565,9 +565,9 @@ function drawDump () {
                     .group(volumeByMonthGroup)
                     .centerBar(true)
                     .gap(1)
-                    .x(d3.time.scale().domain([min, max]))
-                    .round(d3.time.month.round)
-                    .xUnits(d3.time.months);
+                    .x(d3.scaleTime().domain([min, max]))
+                    .round(d3.timeMonth.round)
+                    .xUnits(d3.timeMonths);
 
 
 }
@@ -625,7 +625,7 @@ function drawType() {
                     .width(200)
                     .height(200)
                     .dimension(type)
-                    .colors(d3.scale.category10())
+                    .colors(d3.scaleOrdinal(d3.schemeCategory10))
                     .group(typeGroup);
 
    return pietype;

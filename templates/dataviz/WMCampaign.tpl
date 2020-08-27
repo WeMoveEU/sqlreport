@@ -145,7 +145,7 @@ var mailings= {crmSQL json="AllCampaignMailings" id=$id};
 var ndx = crossfilter(activities.values);
 var graphs = [];
 var focus="growth";
-var color = d3.scale.linear().range(["red", "green"]).domain([0,1]).interpolate(d3.interpolateHcl).clamp(true);
+var color = d3.scaleLinear().range(["red", "green"]).domain([0,1]).interpolate(d3.interpolateHcl).clamp(true);
 
 jQuery(function($) {
 
@@ -233,8 +233,8 @@ jQuery(function($) {
 	}
 	var instrumentLabel = {};
 	var numberFormat = d3.format(".2f");
-	var dateFormat = d3.time.format("%Y-%m-%d");
-	var dateTimeFormat= d3.time.format("%Y-%m-%d %H:%M:%S");
+	var dateFormat = d3.timeFormat("%Y-%m-%d");
+	var dateTimeFormat= d3.timeFormat("%Y-%m-%d %H:%M:%S");
   var mailing_type = {winner:"Final mailing",experiment:"AB Test",standalone:"civimail",unrelated:"other civimail"};
 
   activities.values.forEach(function(d) {
@@ -346,44 +346,44 @@ console.log(n);
 	graphs.nb_signature=dc.numberDisplay(".nb_signature") 
 	.valueAccessor(function(d){ return d.signature})
 	.html({some:"%number",none:"no signature"})
-	.renderlet(function(chart) {renderLetDisplay(chart,20)})
+	.on('renderlet', function(chart) {renderLetDisplay(chart,20)})
 	.group(group);
 
 	dc.numberDisplay(".nb_new_member") 
 	.valueAccessor(function(d){ return d.new_member})
 	.html({some:"%number",none:"nobody joined"})
-	.renderlet(function(chart) {renderLetDisplay(chart,20, graphs.nb_signature.data())})
+	.on('renderlet', function(chart) {renderLetDisplay(chart,20, graphs.nb_signature.data())})
 	.group(group);
 
 	dc.numberDisplay(".nb_pending") 
 	.valueAccessor(function(d){ return d.pending})
 	.html({some:"%number",none:"no signature pending"})
-	.renderlet(function(chart) {renderLetDisplay(chart,20, graphs.nb_signature.data())})
+	.on('renderlet', function(chart) {renderLetDisplay(chart,20, graphs.nb_signature.data())})
 	.group(group);
 
 	dc.numberDisplay(".nb_optout") 
 	.valueAccessor(function(d){ return d.optout})
 	.html({some:"%number",none:"all good"})
-	.renderlet(function(chart) {renderLetDisplay(chart,-5, graphs.nb_signature.data())})
+	.on('renderlet', function(chart) {renderLetDisplay(chart,-5, graphs.nb_signature.data())})
 	.group(group);
 
 	dc.numberDisplay(".nb_activated") 
 	.valueAccessor(function(d){ return d.activated})
 	.html({some:"%number",none:"no member activated"})
-	.renderlet(function(chart) {renderLetDisplay(chart,20, graphs.nb_signature.data())})
+	.on('renderlet', function(chart) {renderLetDisplay(chart,20, graphs.nb_signature.data())})
 	.group(group);
 
 	dc.numberDisplay(".nb_bounced") 
 	.valueAccessor(function(d){ return d.bounced})
 	.html({some:"%number",none:"all good"})
-	.renderlet(function(chart) {renderLetDisplay(chart,-5, graphs.nb_signature.data())})
+	.on('renderlet', function(chart) {renderLetDisplay(chart,-5, graphs.nb_signature.data())})
 	.group(group);
 
 	graphs.nb_recipient= dc.numberDisplay(".nb_recipient") 
 	.valueAccessor(function(d){ return d.recipient})
 	.html({some:"%number",none:"nobody mailed"})
 	.group(group)
-	.renderlet(function(c) {
+	.on('renderlet', function(c) {
 			if (ndx.groupAll().value() == ndx.size())
 				d3.selectAll(".resetall").style("display","none");
 			else
@@ -398,7 +398,7 @@ console.log(n);
 	dc.numberDisplay(".nb_share") 
 	.valueAccessor(function(d){ return d.share})
 	.html({some:"%number",none:"nobody shared"})
-	.renderlet(function(chart) {renderLetDisplay(chart,20, graphs.nb_signature.data())})
+	.on('renderlet', function(chart) {renderLetDisplay(chart,20, graphs.nb_signature.data())})
 	.group(group);
 	dc.numberDisplay(".nb_leave") 
 	.valueAccessor(function(d){ return d.leave})
@@ -408,7 +408,7 @@ console.log(n);
 	dc.numberDisplay(".nb_click") 
 	.valueAccessor(function(d){ return d.click/d.recipient})
 	.html({some:"%number",none:"nobody clicked"})
-	.renderlet(function(chart) {renderLetDisplay(chart,10,1)})
+	.on('renderlet', function(chart) {renderLetDisplay(chart,10,1)})
 	 .formatNumber(d3.format(".0%"))
 	.group(group);
 
@@ -511,7 +511,7 @@ function drawNewMember (dom) {
 		.height(200)
 //		.centerBar(true)
 		.gap(1)
-		.x(d3.scale.ordinal().domain(dim))
+		.x(d3.scaleOrdinal().domain(dim))
     .xUnits(dc.units.ordinal) 
 		.margins({left: 50, top: 20, right: 10, bottom: 20})
 		.brushOn(false)
@@ -617,8 +617,8 @@ function drawPie(dom,attribute) {
 		 .label(function(d) {
 			return d.key.slice(-2);
 		})
-		.colors(d3.scale.category10())
-		.renderlet(function(chart){
+		.colors(d3.scaleOrdinal(d3.schemeCategory10))
+		.on('renderlet', function(chart){
 			 chart.data().forEach(function(d, i) {
 				 d3.selectAll("#campaign-nav a[title='"+d.key+"']").select(".badge").html(d.value);
 			 });
@@ -657,7 +657,7 @@ function drawSource(dom) {
 		.title(function(d) {
 			 return d.key+": "+d.value;
 		 })
-		.colors(d3.scale.category10())
+		.colors(d3.scaleOrdinal(d3.schemeCategory10))
 		.group(group)
     .elasticX(true);
 
@@ -684,7 +684,7 @@ function drawMedia(dom) {
 			 .label(function(d) {
 				return d.key || "?";
 			})
-			.colors(d3.scale.category20())
+			.colors(d3.scaleOrdinal(d3.schemeCategory20))
 			.group(group);
 
    return graph;

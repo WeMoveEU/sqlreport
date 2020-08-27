@@ -115,9 +115,9 @@ for (var i = 0, len = campaigns.values.length; i < len; i++) {
     if (d == Infinity) return "";
     return d > 999 && d < 10000 ? d3.format('.0s')(d) : d >= 10000 ? d3.format('.3s')(d) : d;
   };
-	var dateFormat = d3.time.format("%Y-%m-%d");
-	var dateTimeFormat= d3.time.format("%Y-%m-%d %H:%M:%S");
-  var day = d3.time.format("%Y%m%d");
+	var dateFormat = d3.timeFormat("%Y-%m-%d");
+	var dateTimeFormat= d3.timeFormat("%Y-%m-%d %H:%M:%S");
+  var day = d3.timeFormat("%Y%m%d");
   var formatPercent =d3.format(".2%");
   var blacklist = ["id","parent_id","type_id","external_identifier"];
 
@@ -168,8 +168,8 @@ function drawDate (dom) {
 	.width(0).height(180)
 	.dimension(dim)
     .group(group)
-	.x(d3.time.scale().domain(range))
-//.y(d3.scale.linear().domain([0., 100.]))
+	.x(d3.scaleTime().domain(range))
+//.y(d3.scaleLinear().domain([0., 100.]))
     //.valueAccessor(function(d) { return d.value.min; }) 
     .elasticX(true)
 //    .elasticY(true)
@@ -202,9 +202,9 @@ function drawDate (dom) {
           .radiusValueAccessor(function (p) { return (p.value? Math.sqrt(getCamp(p).new_member/3.14): 0);})
           .sortBubbleSize(true)
 //          .colorCalculator (function (d,i) {return "#3695d8";})
-	  .x(d3.time.scale().domain(range))
-          .y(d3.scale.linear().domain([0, 400000]))
-          .r(d3.scale.linear().domain([0, 984]))
+	  .x(d3.scaleTime().domain(range))
+          .y(d3.scaleLinear().domain([0, 400000]))
+          .r(d3.scaleLinear().domain([0, 984]))
 					.elasticX(true)
           .label(function (p) {
 
@@ -228,13 +228,13 @@ function drawDate (dom) {
 	  var nd = new Date(), now = new Date();
     switch (this.value) {
 			case "today":
-        nd = d3.time.day(now);
+        nd = d3.timeDay(now);
 				break;
 			case "week":
-        nd = d3.time.monday(now);
+        nd = d3.timeMonday(now);
 				break;
 			case "month":
-        nd = d3.time.month(now);
+        nd = d3.timeMonth(now);
 				break;
 			default:
         nd.setDate(nd.getDate() - +this.value);
@@ -247,7 +247,7 @@ function drawDate (dom) {
 //    dc.redrawAll();    
   });
   return graph;
-//    .renderlet(function (chart) {chart.selectAll("g.x text").attr('dx', '-30').attr('dy', '-7').attr('transform', "rotate(-90)");});
+//    .on('renderlet', function (chart) {chart.selectAll("g.x text").attr('dx', '-30').attr('dy', '-7').attr('transform', "rotate(-90)");});
 }
 
 

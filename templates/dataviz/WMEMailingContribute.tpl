@@ -23,8 +23,8 @@
 
 
             cj(function($) {
-                var dateFormat = d3.time.format("%Y-%m-%d");
-                var dateTimeFormat= d3.time.format("%Y-%m-%d %H:%M:%S");
+                var dateFormat = d3.timeFormat("%Y-%m-%d");
+                var dateTimeFormat= d3.timeFormat("%Y-%m-%d %H:%M:%S");
                 //data.values.forEach(function(d){data.values[i].dd = new Date(d.receive_date)});
 
                 data.values.forEach(function(d){d.dd = dateTimeFormat.parse(d.date)});
@@ -135,9 +135,9 @@ function drawAmount(dom) {
                     .height(200)
                     .centerBar(true)
                     .gap(1)
-                    .x(d3.scale.linear().domain([0, 100]))
-//                    .round(d3.time.month.round)
-//                    .xUnits(d3.time.months);
+                    .x(d3.scaleLinear().domain([0, 100]))
+//                    .round(d3.timeMonth.round)
+//                    .xUnits(d3.timeMonths);
                     .margins({top: 20, left: 40, right: 10, bottom: 20})
                     .group(group)
                     .dimension(dim)
@@ -150,7 +150,7 @@ function drawDump () {
                 volumeChart = dc.barChart("#monthly-volume-chart");
                 dayOfWeekChart = dc.rowChart("#day-of-week-chart");
                 moveChart = dc.lineChart("#monthly-move-chart");
-                var byMonth     = ndx.dimension(function(d) { return d3.time.month(d.dd); });
+                var byMonth     = ndx.dimension(function(d) { return d3.timeMonth(d.dd); });
                 var byDay       = ndx.dimension(function(d) { return d.dd; });
                 var volumeByMonthGroup  = byMonth.group().reduceSum(function(d) { return d.count; });
                 var totalByDayGroup     = byDay.group().reduceSum(function(d) { return d.total; });
@@ -209,7 +209,7 @@ function drawDump () {
 
 
 
-                //.round(d3.time.month.round)
+                //.round(d3.timeMonth.round)
                 //.interpolate('monotone')
                 moveChart.width(850)
                     .height(200)
@@ -217,8 +217,8 @@ function drawDump () {
                     .margins({top: 30, right: 50, bottom: 25, left: 40})
                     .dimension(byDay)
                     .mouseZoomable(true)
-                    .x(d3.time.scale().domain([min,max]))
-                    .xUnits(d3.time.months)
+                    .x(d3.scaleTime().domain([min,max]))
+                    .xUnits(d3.timeMonths)
                     .elasticY(true)
                     .renderHorizontalGridLines(true)
                     .legend(dc.legend().x(800).y(10).itemHeight(13).gap(5))
@@ -241,9 +241,9 @@ function drawDump () {
                     .group(volumeByMonthGroup)
                     .centerBar(true)
                     .gap(1)
-                    .x(d3.time.scale().domain([min, max]))
-                    .round(d3.time.month.round)
-                    .xUnits(d3.time.months);
+                    .x(d3.scaleTime().domain([min, max]))
+                    .round(d3.timeMonth.round)
+                    .xUnits(d3.timeMonths);
 
 
 }
@@ -296,7 +296,7 @@ function drawType() {
                     .width(200)
                     .height(200)
                     .dimension(type)
-                    .colors(d3.scale.category10())
+                    .colors(d3.scaleOrdinal(d3.schemeCategory10))
                     .group(typeGroup);
 
    return pietype;

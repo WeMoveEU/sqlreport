@@ -161,10 +161,10 @@ function drawCountry(dom) {
                     .height(130)
                     .centerBar(true)
                     .gap(1)
-.x(d3.scale.ordinal()) // Need empty val to offset first value
+.x(d3.scaleOrdinal()) // Need empty val to offset first value
 .xUnits(dc.units.ordinal) 
-//                    .round(d3.time.month.round)
-//                    .xUnits(d3.time.months);
+//                    .round(d3.timeMonth.round)
+//                    .xUnits(d3.timeMonths);
                     .margins({top: 10, left: 40, right: 10, bottom: 20})
                     .group(group)
                     .dimension(dim)
@@ -178,7 +178,7 @@ function drawType (dom) {
     .innerRadius(10).radius(50)
     .width(100).height(100)
     .dimension(dim).group(group)
-    .colors(d3.scale.category10());
+    .colors(d3.scaleOrdinal(d3.schemeCategory10));
   return graph;
 }
 
@@ -189,7 +189,7 @@ function drawStatus (dom) {
     .innerRadius(10).radius(50)
     .width(100).height(100)
     .dimension(dim).group(group)
-    .colors(d3.scale.category10());
+    .colors(d3.scaleOrdinal(d3.schemeCategory10));
   return graph;
 }
 function drawDate (dom) {
@@ -202,7 +202,7 @@ function drawMonth() {
             var numberFormat = d3.format(".2f");
                 //var graph = dc.lineChart("#monthly-move-chart");
                 var graph = dc.compositeChart("#monthly-move-chart");
-                var dateFormat = d3.time.format("%Y-%m-%d");
+                var dateFormat = d3.timeFormat("%Y-%m-%d");
                 //data.values.forEach(function(d){data.values[i].dd = new Date(d.receive_date)});
 
                 data.values.forEach(function(d){d.dd = dateFormat.parse(d.date)});
@@ -210,7 +210,7 @@ function drawMonth() {
                 var max = d3.max(data.values, function(d) { return d.dd;} );
 
 
-                var dim     = ndx.dimension(function(d) { return d3.time.month(d.dd); });
+                var dim     = ndx.dimension(function(d) { return d3.timeMonth(d.dd); });
                 var groupRCUR   = dim.group().reduceSum(function(d) {
                    if (d.type != 'RCUR') return 0;
                    return d.qty; });
@@ -228,8 +228,8 @@ function drawMonth() {
                     .margins({top: 30, right: 50, bottom: 25, left: 40})
                     .dimension(dim)
                     .mouseZoomable(true)
-                    .x(d3.time.scale().domain([min,max]))
-                    .xUnits(d3.time.months)
+                    .x(d3.scaleTime().domain([min,max]))
+                    .xUnits(d3.timeMonths)
                     .elasticY(true)
                     .renderHorizontalGridLines(true)
                     .legend(dc.legend().x(800).y(10).itemHeight(13).gap(5))
