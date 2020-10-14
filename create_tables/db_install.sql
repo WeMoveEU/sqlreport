@@ -169,9 +169,8 @@ CREATE TABLE analytics_temp_mailing (
 -- todo remember to grant execute after re-create functions, see analytics_grants.sql file
 START TRANSACTION ;
 DELIMITER #
-DROP FUNCTION IF EXISTS analyticsMailjetMedianTimeStamp;
+DROP FUNCTION IF EXISTS analyticsMailjetMedianTimeStamp#
 CREATE FUNCTION analyticsMailjetMedianTimeStamp(mid INT) RETURNS DATETIME
-  BEGIN
     RETURN (SELECT t1.mailjet_time_stamp AS median_val
     FROM (
            SELECT @rownum := @rownum + 1 AS rownum, t.mailjet_time_stamp
@@ -191,11 +190,10 @@ CREATE FUNCTION analyticsMailjetMedianTimeStamp(mid INT) RETURNS DATETIME
       ) AS t2
     WHERE 1
         AND t1.rownum IN (floor((total_rows + 1) / 2)));
-  END#
+    #
 
 DROP FUNCTION IF EXISTS analyticsMedianOriginalTimeStamp;
 CREATE FUNCTION analyticsMedianOriginalTimeStamp(mid INT) RETURNS DATETIME
-  BEGIN
     RETURN (SELECT t1.time_stamp AS median_val
     FROM (
            SELECT @rownum := @rownum + 1 AS rownum, t.time_stamp
@@ -215,7 +213,7 @@ CREATE FUNCTION analyticsMedianOriginalTimeStamp(mid INT) RETURNS DATETIME
       ) AS t2
     WHERE 1
         AND t1.rownum IN (floor((total_rows + 1) / 2)));
-  END#
+    #
 DELIMITER ;
 COMMIT ;
 
