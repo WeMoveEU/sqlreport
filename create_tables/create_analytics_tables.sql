@@ -29,7 +29,7 @@ CREATE TABLE IF NOT EXISTS analytics_goals_dates (
   COMMENT = 'Goals for organization or for languages (of members) per dates';
 
 -- how to use
-INSERT INTO analytics_goals_dates (scope, metric, begin, end, goal) VALUES
+INSERT INTO analytics_goals_dates (scope, metric, `begin`, `end`, goal) VALUES
   ('organization', 'new_active_members', '2017-01-01', '2017-12-31', 250000),
   ('en_GB', 'new_active_members', '2017-01-01', '2017-12-31', 100000),
   ('de_DE', 'new_active_members', '2017-01-01', '2017-12-31', 80000),
@@ -37,7 +37,7 @@ INSERT INTO analytics_goals_dates (scope, metric, begin, end, goal) VALUES
   ('fr_FR', 'new_active_members', '2017-01-01', '2017-12-31', 20000),
   ('es_ES', 'new_active_members', '2017-01-01', '2017-12-31', 10000);
 
-INSERT INTO analytics_goals_dates (scope, metric, begin, end, goal) VALUES
+INSERT INTO analytics_goals_dates (scope, metric, `begin`, `end`, goal) VALUES
   ('organization', 'new_active_members', '2017-01-01', '2017-03-31', 40000),
   ('organization', 'new_active_members', '2017-04-01', '2017-06-30', 60000),
   ('organization', 'new_active_members', '2017-07-01', '2017-09-30', 110000),

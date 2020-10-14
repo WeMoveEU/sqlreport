@@ -17,7 +17,7 @@ UPDATE
     ) e ON e.segment=scope AND e.kpidate=`end` 
     WHERE metric = 'active_member_growth'
     GROUP BY scope, `end`
-  ) val ON val.scope=goal.scope AND val.end=goal.end
+  ) val ON val.scope=goal.scope AND val.`end`=goal.`end`
   SET goal.actual=val.nb
   WHERE goal.metric='active_member_count';
 
@@ -35,7 +35,7 @@ UPDATE
     ) e ON scope='organization' AND e.kpidate=`end`
     WHERE metric = 'active_member_growth'
     GROUP BY scope, `end`
-  ) val ON val.scope=goal.scope AND val.end=goal.end
+  ) val ON val.scope=goal.scope AND val.`end`=goal.`end`
   SET goal.actual=val.nb
   WHERE goal.metric='active_member_count';
 
@@ -64,7 +64,7 @@ UPDATE
       ) e ON e.segment=scope AND e.kpidate=`end`
       WHERE metric = 'active_member_growth'
       GROUP BY scope, `begin`, `end`
-  ) val ON val.scope=goal.scope AND val.begin=goal.begin AND val.end=goal.end
+  ) val ON val.scope=goal.scope AND val.`begin`=goal.`begin` AND val.`end`=goal.`end`
   SET goal.actual=val.growth
   WHERE goal.metric='active_member_growth';
 
@@ -89,20 +89,20 @@ UPDATE
       ) e ON e.kpidate = `end`
     WHERE metric = 'active_member_growth'
     GROUP BY `begin`, `end`
- ) val ON val.begin = goal.begin AND val.end = goal.end
+ ) val ON val.`begin` = goal.`begin` AND val.`end` = goal.`end`
 SET goal.actual = val.growth
 WHERE goal.metric = 'active_member_growth' AND goal.scope = 'organization';
 
 -- Recurring donations per languages
 -- UPDATE analytics_goals_dates g2
 --   JOIN (SELECT
---     g.scope, g.begin, g.end, sum(cr.total_amount) growth
+--     g.scope, g.`begin`, g.`end`, sum(cr.total_amount) growth
 --   FROM civicrm_contribution cr
 --     JOIN analytics_goals_dates g
---       ON g.metric = 'recurring_donations' AND (cr.receive_date >= g.begin AND cr.receive_date <= g.end)
+--       ON g.metric = 'recurring_donations' AND (cr.receive_date >= g.`begin` AND cr.receive_date <= g.`end`)
 --     JOIN civicrm_contact c ON c.id = cr.contact_id AND c.preferred_language COLLATE utf8_unicode_ci = g.scope
 --   WHERE cr.contribution_recur_id IS NOT NULL AND contribution_status_id = 1 AND is_test = 0
---   GROUP BY g.scope, g.begin, g.end) t ON g2.scope = t.scope AND g2.begin = t.begin AND g2.end = t.end
+--   GROUP BY g.scope, g.`begin`, g.`end`) t ON g2.scope = t.scope AND g2.`begin` = t.`begin` AND g2.`end` = t.`end`
 -- SET g2.actual = t.growth
 -- WHERE g2.metric = 'recurring_donations';
 
@@ -110,13 +110,13 @@ WHERE goal.metric = 'active_member_growth' AND goal.scope = 'organization';
 UPDATE analytics_goals_dates g2
   JOIN (
     SELECT
-      g.begin, g.end, sum(cr.total_amount) growth
+      g.`begin`, g.`end`, sum(cr.total_amount) growth
     FROM civicrm_contribution cr
     JOIN analytics_goals_dates g
-        ON g.metric = 'recurring_donations' AND (cr.receive_date >= g.begin AND cr.receive_date <= g.end)
+        ON g.metric = 'recurring_donations' AND (cr.receive_date >= g.`begin` AND cr.receive_date <= g.`end`)
     WHERE g.scope = 'organization' AND cr.contribution_recur_id IS NOT NULL AND contribution_status_id = 1 AND is_test = 0
-    GROUP BY g.begin, g.end
-  ) t ON g2.begin = t.begin AND g2.end = t.end
+    GROUP BY g.`begin`, g.`end`
+  ) t ON g2.`begin` = t.`begin` AND g2.`end` = t.`end`
 SET g2.actual = t.growth
 WHERE g2.metric = 'recurring_donations' AND g2.scope = 'organization';
 
@@ -133,7 +133,7 @@ UPDATE analytics_goals_dates g2
     WHERE g.metric = 'member_count'
     GROUP BY segment, g.`end`
   ) t
-  ON g2.scope = t.segment AND g2.end = t.end
+  ON g2.scope = t.segment AND g2.`end` = t.`end`
 SET g2.actual = t.nb_members
 WHERE g2.metric = 'member_count';
 
@@ -147,7 +147,7 @@ UPDATE analytics_goals_dates g2
     WHERE g.metric = 'member_count'
     GROUP BY g.`end`
   ) t
-  ON g2.scope = 'organization' AND g2.end = t.end
+  ON g2.scope = 'organization' AND g2.`end` = t.`end`
 SET g2.actual = t.nb_members
 WHERE g2.metric = 'member_count';
 
@@ -155,11 +155,11 @@ WHERE g2.metric = 'member_count';
 UPDATE analytics_goals_dates g2
   JOIN (
     SELECT
-      pre.segment, pre.begin, (sum_post - sum_pre) / sum_pre * 100 growth
+      pre.segment, pre.`begin`, (sum_post - sum_pre) / sum_pre * 100 growth
     FROM
       (SELECT
         IF(language='en_GB' AND country_id!=@gb, 'en_INT', language) AS segment, 
-        g.`begin`, 
+        g.`begin`,
         SUM(m.number_added) - SUM(m.number_removed) sum_pre
       FROM analytics_member_metrics m
       JOIN analytics_goals_dates g
@@ -176,16 +176,16 @@ UPDATE analytics_goals_dates g2
         ON IF(language='en_GB' AND country_id!=@gb, 'en_INT', language) = g.scope
       WHERE g.metric = 'member_growth' AND m.added_date < g.`end`
       GROUP BY segment, g.`begin`) post
-    ON post.segment = pre.segment AND post.begin = pre.begin
+    ON post.segment = pre.segment AND post.`begin` = pre.`begin`
   ) t
-  ON g2.scope = t.segment AND g2.begin = t.begin
+  ON g2.scope = t.segment AND g2.`begin` = t.`begin`
 SET g2.actual = t.growth
 WHERE g2.metric = 'member_growth';
 
 -- Member growth per organization
 UPDATE analytics_goals_dates g2
   JOIN (SELECT
-    pre.begin, (sum_post - sum_pre) / sum_pre * 100 growth
+    pre.`begin`, (sum_post - sum_pre) / sum_pre * 100 growth
   FROM
     (SELECT
       g.`begin`, SUM(m.number_added) - SUM(m.number_removed) sum_pre
@@ -197,7 +197,7 @@ UPDATE analytics_goals_dates g2
       g.`begin`, SUM(m.number_added) - SUM(m.number_removed) sum_post
     FROM analytics_member_metrics m, analytics_goals_dates g
     WHERE g.metric = 'member_growth' AND g.scope = 'organization' AND m.added_date < g.`end`
-    GROUP BY g.`begin`) post ON post.begin = pre.begin) t
-    ON g2.begin = t.begin
+    GROUP BY g.`begin`) post ON post.`begin` = pre.`begin`) t
+    ON g2.`begin` = t.`begin`
 SET g2.actual = t.growth
 WHERE g2.metric = 'member_growth' AND g2.scope = 'organization';
