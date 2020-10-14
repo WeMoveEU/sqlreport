@@ -174,7 +174,7 @@ CREATE FUNCTION analyticsMailjetMedianTimeStamp(mid INT) RETURNS DATETIME
   BEGIN
     RETURN (SELECT t1.mailjet_time_stamp AS median_val
     FROM (
-           SELECT @rownum := @rownum + 1 AS row_number, t.mailjet_time_stamp
+           SELECT @rownum := @rownum + 1 AS rownum, t.mailjet_time_stamp
            FROM (SELECT ed.mailjet_time_stamp
            FROM civicrm_mailing_event_delivered ed
              JOIN civicrm_mailing_event_queue eq ON eq.id = ed.event_queue_id
@@ -190,7 +190,7 @@ CREATE FUNCTION analyticsMailjetMedianTimeStamp(mid INT) RETURNS DATETIME
         WHERE mj.mailing_id = mid
       ) AS t2
     WHERE 1
-        AND t1.row_number IN (floor((total_rows + 1) / 2)));
+        AND t1.rownum IN (floor((total_rows + 1) / 2)));
   END#
 
 DROP FUNCTION IF EXISTS analyticsMedianOriginalTimeStamp;
@@ -198,7 +198,7 @@ CREATE FUNCTION analyticsMedianOriginalTimeStamp(mid INT) RETURNS DATETIME
   BEGIN
     RETURN (SELECT t1.time_stamp AS median_val
     FROM (
-           SELECT @rownum := @rownum + 1 AS row_number, t.time_stamp
+           SELECT @rownum := @rownum + 1 AS rownum, t.time_stamp
            FROM (SELECT ed.time_stamp
            FROM civicrm_mailing_event_delivered ed
              JOIN civicrm_mailing_event_queue eq ON eq.id = ed.event_queue_id
@@ -214,7 +214,7 @@ CREATE FUNCTION analyticsMedianOriginalTimeStamp(mid INT) RETURNS DATETIME
         WHERE mj.mailing_id = mid
       ) AS t2
     WHERE 1
-        AND t1.row_number IN (floor((total_rows + 1) / 2)));
+        AND t1.rownum IN (floor((total_rows + 1) / 2)));
   END#
 DELIMITER ;
 COMMIT ;
