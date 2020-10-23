@@ -166,58 +166,6 @@ CREATE TABLE analytics_temp_mailing (
   id INT UNSIGNED PRIMARY KEY
 );
 
--- todo remember to grant execute after re-create functions, see analytics_grants.sql file
-START TRANSACTION ;
-DELIMITER #
-DROP FUNCTION IF EXISTS analyticsMailjetMedianTimeStamp#
-CREATE FUNCTION analyticsMailjetMedianTimeStamp(mid INT) RETURNS DATETIME
-    RETURN (SELECT t1.mailjet_time_stamp AS median_val
-    FROM (
-           SELECT @rownum := @rownum + 1 AS rownum, t.mailjet_time_stamp
-           FROM (SELECT ed.mailjet_time_stamp
-           FROM civicrm_mailing_event_delivered ed
-             JOIN civicrm_mailing_event_queue eq ON eq.id = ed.event_queue_id
-             JOIN civicrm_mailing_job mj ON mj.id = eq.job_id AND mj.is_test = 0
-           WHERE mj.mailing_id = mid
-           ORDER BY ed.mailjet_time_stamp) t, (SELECT @rownum := 0) r
-         ) AS t1,
-      (
-        SELECT count(*) AS total_rows
-        FROM civicrm_mailing_event_delivered ed
-          JOIN civicrm_mailing_event_queue eq ON eq.id = ed.event_queue_id
-          JOIN civicrm_mailing_job mj ON mj.id = eq.job_id AND mj.is_test = 0
-        WHERE mj.mailing_id = mid
-      ) AS t2
-    WHERE 1
-        AND t1.rownum IN (floor((total_rows + 1) / 2)));
-    #
-
-DROP FUNCTION IF EXISTS analyticsMedianOriginalTimeStamp;
-CREATE FUNCTION analyticsMedianOriginalTimeStamp(mid INT) RETURNS DATETIME
-    RETURN (SELECT t1.time_stamp AS median_val
-    FROM (
-           SELECT @rownum := @rownum + 1 AS rownum, t.time_stamp
-           FROM (SELECT ed.time_stamp
-           FROM civicrm_mailing_event_delivered ed
-             JOIN civicrm_mailing_event_queue eq ON eq.id = ed.event_queue_id
-             JOIN civicrm_mailing_job mj ON mj.id = eq.job_id AND mj.is_test = 0
-           WHERE mj.mailing_id = mid
-           ORDER BY ed.time_stamp) t,  (SELECT @rownum := 0) r
-         ) AS t1,
-      (
-        SELECT count(*) AS total_rows
-        FROM civicrm_mailing_event_delivered ed
-          JOIN civicrm_mailing_event_queue eq ON eq.id = ed.event_queue_id
-          JOIN civicrm_mailing_job mj ON mj.id = eq.job_id AND mj.is_test = 0
-        WHERE mj.mailing_id = mid
-      ) AS t2
-    WHERE 1
-        AND t1.rownum IN (floor((total_rows + 1) / 2)));
-    #
-DELIMITER ;
-COMMIT ;
-
-
 CREATE TABLE analytics_log(
   id INT UNSIGNED PRIMARY KEY AUTO_INCREMENT,
   script VARCHAR(255) NOT NULL COMMENT 'Script name executed by api',
