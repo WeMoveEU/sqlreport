@@ -3,7 +3,9 @@
 -- @author Tomasz
 --
 
-SELECT id, 1, 42 INTO @group_id, @cnt, @member_group FROM civicrm_group WHERE title = 'ONE one-off';
+SET @cnt = 1;
+SET @member_group = 42;
+SET @group_id = (SELECT id FROM civicrm_group WHERE title = 'ONE one-off');
 
 DELETE FROM civicrm_group_contact WHERE group_id = @group_id;
 
@@ -33,7 +35,9 @@ INSERT INTO civicrm_subscription_history (contact_id, group_id, method, status, 
   WHERE group_id = @group_id AND status = 'Added';
 
 
-SELECT id, 2, 42 INTO @group_id, @cnt, @member_group FROM civicrm_group WHERE title = 'TWO one-off';
+SET @cnt = 2;
+SET @member_group = 42;
+SET @group_id = (SELECT id FROM civicrm_group WHERE title = 'TWO one-off');
 
 DELETE FROM civicrm_group_contact WHERE group_id = @group_id;
 
@@ -64,7 +68,9 @@ INSERT INTO civicrm_subscription_history (contact_id, group_id, method, status, 
 
 
 
-SELECT id, 3, 42 INTO @group_id, @cnt, @member_group FROM civicrm_group WHERE title = 'THREE one-off';
+SET @cnt = 3;
+SET @member_group = 42;
+SET @group_id = (SELECT id FROM civicrm_group WHERE title = 'THREE one-off');
 
 DELETE FROM civicrm_group_contact WHERE group_id = @group_id;
 
