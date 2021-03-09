@@ -58,12 +58,6 @@ CREATE TABLE `data_mailing_ab` (
   KEY `data_mailing_ab_mailing_abtest_id_inx` (`mailing_abtest_id`)
 );
 
--- View IN DRUPAL DATABASE to limit the number of surveys seen by Metabase
-CREATE VIEW v_analytics_latest_survey_names AS
-  SELECT entity_id AS nid, field_internal_name_value AS name 
-    FROM field_data_field_internal_name 
-    ORDER BY entity_id DESC LIMIT 250;
-
 -- new approach to update supershares, workaround to CRM-20958
 -- occured after upgrade from 4.7.24 to 4.7.30
 DROP TABLE IF EXISTS sqlreport_supershares;
@@ -72,11 +66,8 @@ CREATE TABLE `sqlreport_supershares` (
   `counter` bigint(21) NOT NULL DEFAULT 0
 );
 
--------
 -- Petition metrics
--------
 DROP TABLE IF EXISTS analytics_petition_metrics;
-
 CREATE TABLE analytics_petition_metrics
 (
   id INT NOT NULL AUTO_INCREMENT,
