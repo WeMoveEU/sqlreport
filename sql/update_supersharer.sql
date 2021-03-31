@@ -1,5 +1,5 @@
 -- update signatures
-TRUNCATE TABLE sqlreport_supershares;
+DELETE FROM sqlreport_supershares;
 INSERT INTO sqlreport_supershares (entity_id, counter)
   SELECT
     sh.entity_id, count(a.id) counter
