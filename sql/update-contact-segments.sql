@@ -37,17 +37,11 @@ VALUES(recurring_donor);
 --
 --- Active members segment: pre-fill everyone as not member or inactive
 --
-INSERT INTO civicrm_value_contact_segments (entity_id, active_status)
-SELECT c.id,
-  1 active_status
-FROM civicrm_contact c
-  JOIN civicrm_group_contact gc ON (
-    gc.contact_id = c.id
-    AND gc.group_id = 42
-    AND gc.status = 'Added'
-  ) ON DUPLICATE KEY
-UPDATE active_status =
-VALUES(active_status);
+UPDATE civicrm_value_contact_segments,
+  civicrm_group_contact
+SET active_status = IF(status = 'Added', 1, 0)
+WHERE civicrm_value_contact_segments.entity_id = civicrm_group_cont act.contact_id
+  AND group_id = 42;
 --
 -- Active members segment: update active rows
 --
