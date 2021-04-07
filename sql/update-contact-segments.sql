@@ -1,5 +1,8 @@
+--
 -- it's necessary to remove triggers on civicrm_value_contact_segments! in order to use civicrm_contact table
--- insert any new contacts
+--
+-- Insert any new contacts
+--
 INSERT INTO civicrm_value_contact_segments (entity_id, recurring_donor, active_status)
 SELECT contact.id,
   0,
@@ -9,7 +12,9 @@ WHERE contact.id > (
     SELECT MAX(entity_id)
     FROM civicrm_value_contact_segments
   );
+--
 -- Create the value of recurring_donor segment
+--
 INSERT INTO civicrm_value_contact_segments (entity_id, recurring_donor)
 SELECT recur.contact_id,
   MAX(
@@ -29,17 +34,23 @@ WHERE recur.is_test = 0
 GROUP BY contact_id ON DUPLICATE KEY
 UPDATE recurring_donor =
 VALUES(recurring_donor);
--- Active members segment: pre-fill everyone as not member or inactive
+--
+--- Active members segment: pre-fill everyone as not member or inactive
+--
 INSERT INTO civicrm_value_contact_segments (entity_id, active_status)
 SELECT c.id,
-  IF(group_id IS NULL, 0, 1)
+  1 active_status
 FROM civicrm_contact c
-  LEFT JOIN civicrm_group_contact gc ON gc.contact_id = c.id
-  AND gc.group_id = 42
-  AND gc.status = 'Added' ON DUPLICATE KEY
+  JOIN civicrm_group_contact gc ON (
+    gc.contact_id = c.id
+    AND gc.group_id = 42
+    AND gc.status = 'Added'
+  ) ON DUPLICATE KEY
 UPDATE active_status =
 VALUES(active_status);
+--
 -- Active members segment: update active rows
+--
 UPDATE civicrm_value_contact_segments s
   JOIN (
     SELECT gc.contact_id
