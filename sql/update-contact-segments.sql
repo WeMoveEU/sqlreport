@@ -60,7 +60,7 @@ CREATE TEMPORARY TABLE active_users AS
 
 -- Update segment value for active members
 UPDATE civicrm_value_contact_segments s
-  JOIN active_users active ON s.contact_id = active.contact_id
+  JOIN active_users active ON s.entity_id = active.contact_id
   SET s.active_status = 2
 ;
 
