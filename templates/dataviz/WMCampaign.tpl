@@ -250,7 +250,6 @@ jQuery(function($) {
           ,open:0
           ,'click':0
           ,scheduled_date:"?"
-          ,v_new_member:0
           ,subject:"mailing not associated with this campaign"
         };
       }
@@ -269,7 +268,6 @@ jQuery(function($) {
 			graphs.source = drawSource('#source');
 			graphs.signature= drawPie('#signature','total');
 			graphs.new_member = drawNewMember('#new_member');
-//			graphs.new_member = drawPie('#new_member','completed_new_member');
 			graphs.table = drawTable('#activities');
 //                drawInstrument();
 //                drawAmount('#amountg .graph');
@@ -335,7 +333,6 @@ function drawNumbers (graphs){
          "new_member,optout,pending,bounced".split(",").forEach (function(e){
             n += +graphs.nb_signature.group().value()[e];
          });
-console.log(n);
 	 ref = ref || graphs.nb_recipient.value() || 1;
 	 factor= factor || 1;
 	 d3.selectAll(chart.anchor()).style("background-color", color(factor*chart.value()/ref) )
@@ -585,9 +582,6 @@ function drawTable(dom) {
                 return "<span class='tip' title='"+newbies+"'>"+d3.format(".2%")(newbies/d.total)+"</span>"; 
                 return d.completed_new_member+d.pending+d.optout},
               function(d){
-                if (d.mailing && d.completed_new_member) {
-                 return d.completed_new_member + '<span class="label label-default" class="tip" title="viral across all languages">+'+d.mailing.v_new_member+'</span>';
-                }
                 return d.completed_new_member;
               },
               function(d){return d.pending},

@@ -349,16 +349,12 @@ function drawType (dom) {
           return "<a href='"+CRM.url("civicrm/campaign/add",{action:"update",id:d.id})+"'> "+name+"</a>";
           },
 				function(d){return '<a href="/civicrm/dataviz/WMCampaign/'+d.id+'">'+d.name.replace("-PARENT","").replace(/_/g, '_<wbr>')+'</a>';},
-//				function(d){return '<a href="'+d.url+'" title="'+d.external_identifier+'">Speakout</a>'},
-				function(d){
-console.log(d.recipient);
-return '<span class="tip" title="mails sent:'+formatNumber(d.recipient)+"<br>avg:"+ formatNumber(d.recipient/d.unique_recipient)+'">'+formatNumber(d.unique_recipient)+'</span>'},
+				function(d){return '<span class="tip" title="mails sent:'+formatNumber(d.recipient)+"<br>avg:"+ formatNumber(d.recipient/d.unique_recipient)+'">'+formatNumber(d.unique_recipient)+'</span>'},
 				function(d){return '<span class="tip" title="mails sent:'+formatNumber(d.recipient)+"<br>seeder <i>more than 1 click</i>:"+ formatNumber(d.click_1)+"<br>superseeder <i>more than 42 clicks</i>:"+ formatNumber(d.click_42)+'">'+formatNumber(d.signature)+'</span>'},
 				function(d){return '<span class="tip" title="new signature:'+formatNumber(d.new_signature)+'">'+formatNumber(d.signature)+'</span>'},
-				function(d){return '<span class="tip" title="with > 1 new signature:'+formatNumber(d.effective_share)+'">'+formatNumber(d.share)+'</span>'},
-				function(d){return '<span class="tip" title="from speakout share:'+formatNumber(d.new_member_share)+"<br>from mail fwd:"+ formatNumber(d.new_member_mail)+'">'+formatNumber(d.new_member)+'</span>'},
+				function(d){return '<span class="tip" title="from mail fwd:"' + formatNumber(d.new_member_mail)+'">'+formatNumber(d.new_member)+'</span>'},
 				function(d){return formatNumber(d.activated)},
-				function(d){return '<span class="tip" title="new members created:'+formatNumber(d.new_member_share)+"<br>effective share (at least one member created):"+ formatNumber(d.effective_share)+'">'+formatNumber(d.share)+'</span>'},
+				function(d){return '<span class="tip">'+formatNumber(d.share)+'</span>'},
 				function(d){return '<a class="tip" href="/civicrm/dataviz/WM_contribution_campaign#campaign='+d.id+'" title="nb donations:'+( +d.donation + +d.donation_pending)+'<br>amount still pending:'+d.donation_pending_amount+'">'+formatNumber(+d.donation_amount+ +d.donation_pending_amount)+'</a>'},
 			 ])
             .on("renderlet.tootltip", function(){
