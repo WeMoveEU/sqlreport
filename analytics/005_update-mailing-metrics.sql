@@ -84,38 +84,7 @@ INSERT INTO data_mailing_counter
     GROUP BY s.source_27, counter, b.box
   ON DUPLICATE KEY UPDATE value=VALUES(value), last_updated=NOW();
 
--- Viral activities
--- Assumes that the status of shares is always the same (Completed)
--- Force order of joins for MySQL 5.5, could be removed in later versions
-INSERT INTO data_mailing_counter
-  SELECT STRAIGHT_JOIN SUBSTRING(source.source_27, 10), 
-      IF(inf_a.activity_type_id=32, 
-        CASE
-          WHEN inf_a.status_id=9 THEN 'new_viral_signs'
-          WHEN inf_a.status_id=4 THEN 'optout_viral_signs'
-          WHEN inf_a.status_id=2 THEN 'known_viral_signs'
-          WHEN inf_a.status_id=5 THEN 'bounced_viral_signs'
-          WHEN inf_a.status_id=10 THEN 'activated_viral_signs'
-          ELSE 'pending_viral_signs'
-        END, 
-        'viral_shares'), 
-      b.box, 
-      COUNT(DISTINCT inf_c.contact_id),
-      NOW()
-    FROM civicrm_value_action_source_4 infected
-    JOIN civicrm_value_share_params_6 share ON infected.campaign_26=share.utm_campaign_39 AND infected.media_28=share.utm_medium_38
-    JOIN civicrm_value_action_source_4 source ON share.entity_id=source.entity_id AND source.source_27 LIKE 'civimail-%'
-    JOIN civicrm_activity inf_a ON inf_a.id=infected.entity_id
-    JOIN civicrm_activity_contact inf_c on inf_a.id=inf_c.activity_id
-    JOIN (SELECT mailing_id, MIN(start_date) AS start_date FROM civicrm_mailing_job WHERE is_test=0 GROUP BY mailing_id) j 
-      ON j.mailing_id=SUBSTRING(source.source_27, 10)
-    JOIN data_timeboxes b ON TIMESTAMPDIFF(MINUTE, j.start_date, inf_a.activity_date_time)<b.box
-    WHERE TIMESTAMPADD(DAY, @timeslot, j.start_date) > NOW()
-    GROUP BY source.source_27, inf_a.activity_type_id, inf_a.status_id, b.box
-  ON DUPLICATE KEY UPDATE value=VALUES(value), last_updated=NOW();
-
 -- sum signatures
-
 insert into data_mailing_counter (mailing_id, counter, value, timebox,last_updated) select mailing_id, 'signs',sum(value), timebox as sign,now() from data_mailing_counter where timebox=14400 and counter like '%_signs' group by mailing_id on DUPLICATE KEY UPDATE value=VALUES(value), last_updated=NOW();
 
 
