@@ -58,14 +58,6 @@ CREATE TABLE `data_mailing_ab` (
   KEY `data_mailing_ab_mailing_abtest_id_inx` (`mailing_abtest_id`)
 );
 
--- new approach to update supershares, workaround to CRM-20958
--- occured after upgrade from 4.7.24 to 4.7.30
-DROP TABLE IF EXISTS sqlreport_supershares;
-CREATE TABLE `sqlreport_supershares` (
-  `entity_id` int(10) PRIMARY KEY COMMENT 'Table that this extends',
-  `counter` bigint(21) NOT NULL DEFAULT 0
-);
-
 -- Petition metrics
 DROP TABLE IF EXISTS analytics_petition_metrics;
 CREATE TABLE analytics_petition_metrics
