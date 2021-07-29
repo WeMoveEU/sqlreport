@@ -10,7 +10,7 @@ FROM civicrm_contact contact
 WHERE contact.id > (
   SELECT MAX(entity_id) FROM civicrm_value_contact_segments
 )
-INTO OUTFILE '/var/lib/mysql-files/nightly-contact-segments-%NOW%.tsv');
+INTO OUTFILE '/var/lib/mysql-files/nightly-contact-segments-%NOW%.tsv';
 ;
 
 LOAD DATA INFILE '/var/lib/mysql-files/nightly-contact-segments-%NOW%.tsv'
