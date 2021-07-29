@@ -3,19 +3,24 @@
 --
 -- Insert any new contacts
 --
-INSERT INTO civicrm_value_contact_segments (entity_id, recurring_donor, active_status)
-  SELECT
-    contact.id, 0, 0
-  FROM civicrm_contact contact
-  WHERE contact.id > (
-    SELECT MAX(entity_id) FROM civicrm_value_contact_segments
-  )
+
+SELECT
+  contact.id, 0, 0
+FROM civicrm_contact contact
+WHERE contact.id > (
+  SELECT MAX(entity_id) FROM civicrm_value_contact_segments
+)
+INTO OUTFILE '/var/lib/mysql-files/nightly-contact-segments-%NOW%.tsv');
+;
+
+LOAD DATA INFILE '/var/lib/mysql-files/nightly-contact-segments-%NOW%.tsv'
+  INTO TABLE civicrm_value_contact_segments 
+  (entity_id, recurring_donor, active_status)
 ;
 
 --
 -- Recurring donors segment
 --
-INSERT INTO civicrm_value_contact_segments (entity_id, recurring_donor)
   SELECT recur.contact_id,
     MAX(
       CASE
@@ -31,7 +36,11 @@ INSERT INTO civicrm_value_contact_segments (entity_id, recurring_donor)
   LEFT JOIN civicrm_contribution donation ON recur.id = donation.contribution_recur_id
   WHERE recur.is_test = 0
   GROUP BY contact_id
-ON DUPLICATE KEY UPDATE recurring_donor = VALUES(recurring_donor);
+  INTO OUTFILE '/var/lib/mysql-files/nightly-recurring-segments-%NOW%.tsv';
+
+LOAD DATA INFILE  '/var/lib/mysql-files/nightly-recurring-segments-%NOW%.tsv' 
+REPLACE
+INTO TABLE civicrm_value_contact_segments (entity_id, recurring_donor);
 
 --
 -- Active members segment
@@ -44,19 +53,27 @@ UPDATE civicrm_value_contact_segments s
 ;
 
 -- Temporary table of active members
-CREATE TEMPORARY TABLE active_users AS
-  SELECT
-    DISTINCT gc.contact_id
-  FROM civicrm_contact contact
-  JOIN civicrm_group_contact gc ON gc.contact_id = contact.id
-  JOIN civicrm_activity_contact ac1 ON gc.contact_id = ac1.contact_id
-  JOIN civicrm_activity a1 ON ac1.activity_id = a1.id
-  WHERE gc.group_id = 42
-    AND gc.status = 'Added'
-    AND a1.activity_type_id IN (2, 3, 6, 28, 32, 54, 59, 67)
-    AND a1.activity_date_time >= DATE_ADD(NOW(), INTERVAL - 3 MONTH)
-    AND a1.activity_date_time >= DATE_ADD(contact.created_date, INTERVAL 1 DAY)
+CREATE TEMPORARY TABLE active_users (
+  contact_id int
+);
+
+SELECT
+  DISTINCT gc.contact_id
+FROM civicrm_contact contact
+JOIN civicrm_group_contact gc ON gc.contact_id = contact.id
+JOIN civicrm_activity_contact ac1 ON gc.contact_id = ac1.contact_id
+JOIN civicrm_activity a1 ON ac1.activity_id = a1.id
+WHERE gc.group_id = 42
+  AND gc.status = 'Added'
+  AND a1.activity_type_id IN (2, 3, 6, 28, 32, 54, 59, 67)
+  AND a1.activity_date_time >= DATE_ADD(NOW(), INTERVAL - 3 MONTH)
+  AND a1.activity_date_time >= DATE_ADD(contact.created_date, INTERVAL 1 DAY)
+INTO OUTFILE 
+'/var/lib/mysql-files/nightly-active-users-%NOW%.tsv'
 ;
+LOAD DATA INFILE '/var/lib/mysql-files/nightly-active-users-%NOW%.tsv'
+INTO TABLE active_users
+(contact_id);
 
 -- Update segment value for active members
 UPDATE civicrm_value_contact_segments s
