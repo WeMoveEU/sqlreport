@@ -1,4 +1,5 @@
 SET TRANSACTION ISOLATION LEVEL READ UNCOMMITTED;
+SET SESSION internal_tmp_mem_storage_engine = 'Memory';
 
 INSERT INTO tmp_petition_metrics (campaign_id, activity, status, npeople)
   SELECT
