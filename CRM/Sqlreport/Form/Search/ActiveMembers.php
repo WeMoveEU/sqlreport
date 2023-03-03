@@ -112,7 +112,8 @@ class CRM_Sqlreport_Form_Search_ActiveMembers extends CRM_Contact_Form_Search_Cu
     $params = array();
     $where = "gc.group_id = 42 AND
     gc.status = 'Added' AND
-    a.activity_type_id IN (6, 28, 32)";
+    a.activity_type_id IN (2, 3, 6, 28, 32, 54, 59, 67) AND
+    a.activity_date_time > DATE(DATE_ADD(contact_a.created_date, INTERVAL 1 DAY))";
 
     $count  = 1;
     $clause = array();
